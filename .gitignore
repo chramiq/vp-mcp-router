@@ -1,9 +1,10 @@
-var/
-target/
+*~
 *.class
-*.jar
+dependency-reduced-pom.xml
+.DS_Store
 .idea/
 *.iml
+*.jar
+target/
+var/
 .vscode/
-*~
-.DS_Store
