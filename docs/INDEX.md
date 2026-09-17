@@ -8,3 +8,4 @@
 | [0004](0004-resources.md) | Resources via provider boundary, files on disk | accepted |
 | [0005](0005-opencode.md) | opencode over remote HTTP, minimal skill | accepted |
 | [0006](0006-installer.md) | Installer script, always ask directories | accepted |
+| [0007](0007-export-image.md) | Image results as MCP image blocks | accepted |
