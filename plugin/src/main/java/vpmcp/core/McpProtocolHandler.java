@@ -164,12 +164,36 @@ public final class McpProtocolHandler {
 
         try {
             JsonObject output = invoker.invoke(tool, arguments);
+            if (output.has("image_data")) {
+                return JsonRpc.result(id, imageResult(output));
+            }
             return JsonRpc.result(id, toolResult(gson.toJson(output), false));
         } catch (Throwable failure) {
             // Includes NoClassDefFoundError when the Open API is absent, which is what
             // happens when the protocol layer is exercised outside Visual Paradigm.
             return JsonRpc.result(id, toolResult(describe(failure), true));
         }
+    }
+
+    private JsonObject imageResult(JsonObject output) {
+        JsonObject text = new JsonObject();
+        text.addProperty("type", "text");
+        text.addProperty("text", output.has("summary") ? output.get("summary").getAsString() : "");
+
+        JsonObject image = new JsonObject();
+        image.addProperty("type", "image");
+        image.addProperty("data", output.get("image_data").getAsString());
+        image.addProperty("mimeType", output.has("image_mime")
+                ? output.get("image_mime").getAsString() : "image/png");
+
+        JsonArray contents = new JsonArray();
+        contents.add(text);
+        contents.add(image);
+
+        JsonObject result = new JsonObject();
+        result.add("content", contents);
+        result.addProperty("isError", false);
+        return result;
     }
 
     private JsonObject toolResult(String text, boolean isError) {

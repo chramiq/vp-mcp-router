@@ -9,6 +9,7 @@ import java.io.File;
 import vpmcp.core.McpServer;
 import vpmcp.core.McpToolRegistry;
 import vpmcp.tools.CapabilitiesTool;
+import vpmcp.tools.ExportImageTool;
 import vpmcp.tools.GetDiagramByUrlTool;
 import vpmcp.tools.ListDiagramsTool;
 import vpmcp.vp.EdtToolInvoker;
@@ -23,7 +24,7 @@ import vpmcp.vp.VpLog;
  */
 public final class RouterPlugin implements VPPlugin {
 
-    private static final String VERSION = "0.3.0";
+    private static final String VERSION = "0.4.0";
     private static final String SCHEMA_VERSION = "v18.1";
 
     private McpServer server;
@@ -39,6 +40,7 @@ public final class RouterPlugin implements VPPlugin {
             McpToolRegistry registry = new McpToolRegistry()
                     .register(new CapabilitiesTool(VERSION, SCHEMA_VERSION))
                     .register(new ListDiagramsTool())
+                    .register(new ExportImageTool())
                     .register(new GetDiagramByUrlTool());
             server = new McpServer(config.getBindAddress(), config.getPort(), registry,
                     new EdtToolInvoker(), VERSION, VpLog::error,
