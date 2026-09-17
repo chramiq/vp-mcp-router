@@ -1,5 +1,10 @@
 # Install
 
+Fastest path: `opencode/install.sh` (asks for every directory, merges
+the MCP entry, copies the skill; `--dry-run` previews, env overrides
+in the script header make it testable). What follows is the manual
+equivalent.
+
 ## Build
 
 ```bash
