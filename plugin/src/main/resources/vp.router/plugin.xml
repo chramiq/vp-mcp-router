@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin
+    id="vp.router"
+    name="VP MCP Router"
+    description="Read-only Model Context Protocol router for the open project."
+    provider="vp-mcp-router"
+    class="vpmcp.RouterPlugin">
+  <runtime>
+    <library path="lib/router.jar" relativePath="true"/>
+  </runtime>
+  <actionSets>
+    <actionSet id="vp.router.actionset">
+      <action
+          id="vp.router.actions.status"
+          actionType="generalAction"
+          label="MCP Router Status"
+          tooltip="Show whether the embedded MCP server is running, and at what address"
+          style="normal"
+          menuPath="Tools/MCP Router"
+          ribbonPath="Tools/MCP Router">
+        <actionController class="vpmcp.ui.McpStatusActionController"/>
+      </action>
+    </actionSet>
+  </actionSets>
+</plugin>
