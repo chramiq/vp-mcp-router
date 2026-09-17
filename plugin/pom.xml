@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>vp-mcp-router</groupId>
+  <artifactId>plugin</artifactId>
+  <version>0.1.0</version>
+  <packaging>jar</packaging>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.compiler.release>11</maven.compiler.release>
+    <vp.openApi>/usr/share/visual-paradigm/Application/lib/openapi.jar</vp.openApi>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.vp</groupId>
+      <artifactId>openapi</artifactId>
+      <version>18.1</version>
+      <scope>system</scope>
+      <systemPath>${vp.openApi}</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>2.10.1</version>
+    </dependency>
+  </dependencies>
+</project>
