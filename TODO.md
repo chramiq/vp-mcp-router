@@ -1,10 +1,19 @@
 # TODO
 
-- Probe P0: toolchain versions, `openapi.jar` reflection dump
-  (`IModelElementFactory`, `IDiagramTypeConstants`, `IShapeTypeConstants`).
-- Probe P1: protocol roundtrip via harness with no VP running.
-- Probe P2/P3: live read inside VP 18.1 against a scratch `.vpp`.
-- Vendor avernus `core/` (pinned submodule) after license check.
-- Autovendor script: reflection dump → `schemas/<version>/`.
-- Minimal `opencode/` skill + `mcp.json`.
-- Later: write path (`preview_batch` / `apply_batch`, confirm + dry-run).
+## Done
+
+- Probes P0–P3, phases A–D.
+
+## Next: reads++
+
+- `vp_export_image` first (diagram PNG/SVG for the agent's visual
+  channel; documented `exportDiagramAsImage`, read-only).
+- Connector coverage in tests (current fixture diagram has no edges).
+- Schema-vs-runtime version guard (compare `meta.json` sha at startup,
+  warn on mismatch).
+
+## Later: writes (confirm + dry-run posture)
+
+- `preview_batch` (dry-run diff artifact) / `apply_batch` (explicit
+  confirm token), allowlisted ops only; no auto-save, no delete,
+  no teamwork in v1 of writes.
