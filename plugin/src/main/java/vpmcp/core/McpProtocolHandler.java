@@ -22,11 +22,18 @@ public final class McpProtocolHandler {
     private final McpToolRegistry registry;
     private final ToolInvoker invoker;
     private final String serverVersion;
+    private final ResourceProvider resources;
 
     public McpProtocolHandler(McpToolRegistry registry, ToolInvoker invoker, String serverVersion) {
+        this(registry, invoker, serverVersion, null);
+    }
+
+    public McpProtocolHandler(McpToolRegistry registry, ToolInvoker invoker, String serverVersion,
+            ResourceProvider resources) {
         this.registry = registry;
         this.invoker = invoker;
         this.serverVersion = serverVersion;
+        this.resources = resources;
     }
 
     /**
@@ -54,6 +61,10 @@ public final class McpProtocolHandler {
                 return JsonRpc.result(id, toolsList());
             case "tools/call":
                 return toolsCall(id, request);
+            case "resources/list":
+                return resourcesList(id);
+            case "resources/read":
+                return resourcesRead(id, request);
             default:
                 return JsonRpc.error(id, JsonRpc.METHOD_NOT_FOUND, "Unknown method: " + method);
         }
@@ -65,6 +76,11 @@ public final class McpProtocolHandler {
 
         JsonObject capabilities = new JsonObject();
         capabilities.add("tools", tools);
+        if (resources != null) {
+            JsonObject resourceCaps = new JsonObject();
+            resourceCaps.addProperty("listChanged", false);
+            capabilities.add("resources", resourceCaps);
+        }
 
         JsonObject serverInfo = new JsonObject();
         serverInfo.addProperty("name", SERVER_NAME);
@@ -75,6 +91,42 @@ public final class McpProtocolHandler {
         result.add("capabilities", capabilities);
         result.add("serverInfo", serverInfo);
         return result;
+    }
+
+    private JsonObject resourcesList(JsonElement id) {
+        if (resources == null) {
+            return JsonRpc.error(id, JsonRpc.METHOD_NOT_FOUND, "Unknown method: resources/list");
+        }
+        try {
+            JsonObject result = new JsonObject();
+            result.add("resources", resources.list());
+            return JsonRpc.result(id, result);
+        } catch (McpToolException failure) {
+            return JsonRpc.result(id, toolResult(failure.getMessage(), true));
+        }
+    }
+
+    private JsonObject resourcesRead(JsonElement id, JsonObject request) {
+        if (resources == null) {
+            return JsonRpc.error(id, JsonRpc.METHOD_NOT_FOUND, "Unknown method: resources/read");
+        }
+        JsonElement paramsElement = request.get("params");
+        if (paramsElement == null || !paramsElement.isJsonObject()) {
+            return JsonRpc.error(id, JsonRpc.INVALID_PARAMS, "\"params\" must be an object.");
+        }
+        JsonElement uriElement = paramsElement.getAsJsonObject().get("uri");
+        if (uriElement == null || !uriElement.isJsonPrimitive()) {
+            return JsonRpc.error(id, JsonRpc.INVALID_PARAMS, "\"params.uri\" is required.");
+        }
+        try {
+            JsonArray contents = new JsonArray();
+            contents.add(resources.read(uriElement.getAsString()));
+            JsonObject result = new JsonObject();
+            result.add("contents", contents);
+            return JsonRpc.result(id, result);
+        } catch (McpToolException failure) {
+            return JsonRpc.error(id, JsonRpc.INVALID_PARAMS, failure.getMessage());
+        }
     }
 
     private JsonObject toolsList() {

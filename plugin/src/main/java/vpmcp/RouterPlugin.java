@@ -1,5 +1,6 @@
 package vpmcp;
 
+import com.google.gson.JsonObject;
 import com.vp.plugin.ApplicationManager;
 import com.vp.plugin.VPPlugin;
 import com.vp.plugin.VPPluginInfo;
@@ -7,9 +8,11 @@ import com.vp.plugin.VPProductInfo;
 import java.io.File;
 import vpmcp.core.McpServer;
 import vpmcp.core.McpToolRegistry;
+import vpmcp.tools.CapabilitiesTool;
 import vpmcp.tools.GetDiagramByUrlTool;
 import vpmcp.tools.ListDiagramsTool;
 import vpmcp.vp.EdtToolInvoker;
+import vpmcp.vp.FileResourceProvider;
 import vpmcp.vp.McpServerHandle;
 import vpmcp.vp.ServerConfig;
 import vpmcp.vp.VpLog;
@@ -20,7 +23,8 @@ import vpmcp.vp.VpLog;
  */
 public final class RouterPlugin implements VPPlugin {
 
-    private static final String VERSION = "0.2.0";
+    private static final String VERSION = "0.3.0";
+    private static final String SCHEMA_VERSION = "v18.1";
 
     private McpServer server;
 
@@ -33,10 +37,12 @@ public final class RouterPlugin implements VPPlugin {
         try {
             ServerConfig config = ServerConfig.load(pluginDir);
             McpToolRegistry registry = new McpToolRegistry()
+                    .register(new CapabilitiesTool(VERSION, SCHEMA_VERSION))
                     .register(new ListDiagramsTool())
                     .register(new GetDiagramByUrlTool());
             server = new McpServer(config.getBindAddress(), config.getPort(), registry,
-                    new EdtToolInvoker(), VERSION, VpLog::error);
+                    new EdtToolInvoker(), VERSION, VpLog::error,
+                    new FileResourceProvider(pluginDir, SCHEMA_VERSION, capabilitiesSnapshot()));
             server.start();
             McpServerHandle.started(server, registry, pluginDir);
             VpLog.info("MCP server listening on " + server.getEndpointUrl());
@@ -70,5 +76,20 @@ public final class RouterPlugin implements VPPlugin {
         } catch (RuntimeException | LinkageError unavailable) {
             VpLog.info("Visual Paradigm  : product info unavailable (" + unavailable + ")");
         }
+    }
+
+    private JsonObject capabilitiesSnapshot() {
+        JsonObject snapshot = new JsonObject();
+        snapshot.addProperty("plugin_version", VERSION);
+        snapshot.addProperty("schema_version", SCHEMA_VERSION);
+        try {
+            ApplicationManager application = ApplicationManager.instance();
+            VPProductInfo product = application == null ? null : application.getProductInfo();
+            snapshot.addProperty("vp_name", product == null ? null : product.getName());
+            snapshot.addProperty("vp_version", product == null ? null : product.getVersion());
+        } catch (RuntimeException | LinkageError unavailable) {
+            snapshot.addProperty("vp_error", unavailable.toString());
+        }
+        return snapshot;
     }
 }

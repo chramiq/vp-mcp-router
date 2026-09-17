@@ -1,0 +1,406 @@
+[
+  {
+    "name": "DIAGRAM_TYPE_ACTIVITY_DIAGRAM",
+    "value": "ActivityDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_ANALYSIS_DIAGRAM",
+    "value": "AnalysisDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_ANALYSIS_ITEM_DIAGRAM",
+    "value": "AnalysisItemDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_ARCHITECTURE_ROADMAP",
+    "value": "ArchitectureRoadmap"
+  },
+  {
+    "name": "DIAGRAM_TYPE_ARCHI_MATE4_DIAGRAM",
+    "value": "ArchiMate4Diagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_ARCHI_MATE_DIAGRAM",
+    "value": "ArchiMateDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_BLOCK_DEFINITION_DIAGRAM",
+    "value": "BlockDefinitionDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_BRAINSTORM",
+    "value": "Brainstorm"
+  },
+  {
+    "name": "DIAGRAM_TYPE_BREAKDOWN_STRUCTURE",
+    "value": "BreakdownStructure"
+  },
+  {
+    "name": "DIAGRAM_TYPE_BUSINESS_MOTIVATION_MODEL_DIAGRAM",
+    "value": "BusinessMotivationModelDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_BUSINESS_PROCESS_DIAGRAM",
+    "value": "BusinessProcessDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_BUSINESS_PROCESS_REENGINEERING",
+    "value": "BusinessProcessReengineering"
+  },
+  {
+    "name": "DIAGRAM_TYPE_BUSINESS_RULE_EDITOR_DIAGRAM",
+    "value": "BusinessRuleEditorDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_C4_MODEL_COMPONENT_DIAGRAM",
+    "value": "C4modelComponentDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_C4_MODEL_CONTAINER_DIAGRAM",
+    "value": "C4modelContainerDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_C4_MODEL_DEPLOYMENT_DIAGRAM",
+    "value": "C4modelDeploymentDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_C4_MODEL_DYNAMIC_DIAGRAM",
+    "value": "C4modelDynamicDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_C4_MODEL_SYSTEM_CONTEXT_DIAGRAM",
+    "value": "C4modelSystemContextDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_C4_MODEL_SYSTEM_LANDSCAPE_DIAGRAM",
+    "value": "C4modelSystemLandscapeDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_CHART_DIAGRAM",
+    "value": "ChartDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_CHEN_NOTATION_ERDUI_MODEL",
+    "value": "ChenNotationERD"
+  },
+  {
+    "name": "DIAGRAM_TYPE_CLASS_DIAGRAM",
+    "value": "ClassDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_CMMN_DIAGRAM",
+    "value": "CMMNDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_COMMUNICATION_DIAGRAM",
+    "value": "CommunicationDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_COMPETITOR_ANALYSIS",
+    "value": "CompetitorAnalysis"
+  },
+  {
+    "name": "DIAGRAM_TYPE_COMPONENT_DIAGRAM",
+    "value": "ComponentDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_COMPOSITE_STRUCTURE_DIAGRAM",
+    "value": "CompositeStructureDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_CONVERSATION_DIAGRAM",
+    "value": "ConversationDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_CRC_CARD_DIAGRAM",
+    "value": "CRCCardDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_CUSTOMER_JOURNEY_MAP",
+    "value": "CustomerJourneyMap"
+  },
+  {
+    "name": "DIAGRAM_TYPE_DATA_FLOW_DIAGRAM",
+    "value": "DataFlowDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_DATA_STUDIO_SHEET",
+    "value": "DataStudioSheet"
+  },
+  {
+    "name": "DIAGRAM_TYPE_DATA_TABLE_DIAGRAM",
+    "value": "DataTableDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_DECISION_MODEL_DIAGRAM",
+    "value": "DecisionModelDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_DEPLOYMENT_DIAGRAM",
+    "value": "DeploymentDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_DOCUMENTATION_CABINET",
+    "value": "DocumentationCabinet"
+  },
+  {
+    "name": "DIAGRAM_TYPE_DTB_DECISION_TABLE_EDITOR_DIAGRAM",
+    "value": "DTBDecisionTableEditorDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_EA_FORM_DIAGRAM",
+    "value": "EAFormDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_EA_PROCESS_STEP_DIAGRAM",
+    "value": "EAProcessStepDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_EJB_DIAGRAM",
+    "value": "EJBDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_EPC_DIAGRAM",
+    "value": "EPCDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_ER_DIAGRAM",
+    "value": "ERDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_ETL_TABLE_DIAGRAM",
+    "value": "ETLTableDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_FACT_DIAGRAM",
+    "value": "FactDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_FACT_TYPE_EDITOR_DIAGRAM",
+    "value": "FactTypeEditorDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_FISHBONE_DIAGRAM",
+    "value": "FishboneDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_FLOWCHART",
+    "value": "Flowchart"
+  },
+  {
+    "name": "DIAGRAM_TYPE_FORM",
+    "value": "Form"
+  },
+  {
+    "name": "DIAGRAM_TYPE_FREEHAND_DIAGRAM",
+    "value": "FreehandDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_FREEHAND_DIAGRAM2",
+    "value": "FreehandDiagram2"
+  },
+  {
+    "name": "DIAGRAM_TYPE_GANE_SARSON_DFDUI_MODEL",
+    "value": "GaneSarsonDFD"
+  },
+  {
+    "name": "DIAGRAM_TYPE_GRID_DIAGRAM",
+    "value": "GridDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_INTERACTION_DIAGRAM",
+    "value": "InteractionDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_INTERACTION_OVERVIEW_DIAGRAM",
+    "value": "InteractionOverviewDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_INTERNAL_BLOCK_DIAGRAM",
+    "value": "InternalBlockDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_MATRIX_DIAGRAM",
+    "value": "MatrixDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_MATURITY_ANALYSIS",
+    "value": "MaturityAnalysis"
+  },
+  {
+    "name": "DIAGRAM_TYPE_MIGRATION_ROADMAP",
+    "value": "MigrationRoadmap"
+  },
+  {
+    "name": "DIAGRAM_TYPE_MIND_MAP_DIAGRAM",
+    "value": "MindMapDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_OBJECT_DIAGRAM",
+    "value": "ObjectDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_ORGANIZATION_CHART",
+    "value": "OrganizationChart"
+  },
+  {
+    "name": "DIAGRAM_TYPE_ORM_DIAGRAM",
+    "value": "ORMDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_OVERVIEW_DIAGRAM",
+    "value": "OverviewDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_PACKAGE_DIAGRAM",
+    "value": "PackageDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_PARAMETRIC_DIAGRAM",
+    "value": "ParametricDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_PERT_CHART",
+    "value": "PERTChart"
+  },
+  {
+    "name": "DIAGRAM_TYPE_PM_PROCESS_MAP",
+    "value": "PMProcessMap"
+  },
+  {
+    "name": "DIAGRAM_TYPE_PROCESS_CANVAS",
+    "value": "ProcessCanvas"
+  },
+  {
+    "name": "DIAGRAM_TYPE_PROCESS_MAP_DIAGRAM",
+    "value": "ProcessMapDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_PROFILE_DIAGRAM",
+    "value": "ProfileDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_QUALITY_CONTROL_CANVAS",
+    "value": "QualityControlCanvas"
+  },
+  {
+    "name": "DIAGRAM_TYPE_REPORT_DIAGRAM",
+    "value": "ReportDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_REQUIREMENT_DIAGRAM",
+    "value": "RequirementDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_ROOT_CAUSE_ANALYSIS",
+    "value": "RootCauseAnalysis"
+  },
+  {
+    "name": "DIAGRAM_TYPE_SOA_ML_SERVICES_ARCHITECTURE_DIAGRAM",
+    "value": "SoaMLServicesArchitectureDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_SOA_ML_SERVICE_CATEGORIZATION_DIAGRAM",
+    "value": "SoaMLServiceCategorizationDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_SOA_ML_SERVICE_CONTRACT_DIAGRAM",
+    "value": "SoaMLServiceContractDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_SOA_ML_SERVICE_INTERFACE_DIAGRAM",
+    "value": "SoaMLServiceInterfaceDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_SOA_ML_SERVICE_PARTICIPANT_DIAGRAM",
+    "value": "SoaMLServiceParticipantDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_STATE_DIAGRAM",
+    "value": "StateDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_TABULAR",
+    "value": "Tabular"
+  },
+  {
+    "name": "DIAGRAM_TYPE_TERM_EDITOR_DIAGRAM",
+    "value": "TermEditorDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_TEXTUAL_ANALYSIS",
+    "value": "TextualAnalysis"
+  },
+  {
+    "name": "DIAGRAM_TYPE_TIMING_DIAGRAM",
+    "value": "TimingDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_USER_INTERFACE_DIAGRAM",
+    "value": "UserInterfaceDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_USER_STORY_MAP_DIAGRAM",
+    "value": "UserStoryMapDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_USE_CASE_DESCRIPTION_DIAGRAM",
+    "value": "UseCaseDescriptionDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_USE_CASE_DIAGRAM",
+    "value": "UseCaseDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_VIEW_EDITOR_DIAGRAM",
+    "value": "ViewEditorDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_WEB_DIAGRAM",
+    "value": "WebDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_WFI_PAD_DIAGRAM",
+    "value": "WFIPadDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_WFI_PHONE_DIAGRAM",
+    "value": "WFIPhoneDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_WF_ANDROID_PHONE_DIAGRAM",
+    "value": "WFAndroidPhoneDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_WF_ANDROID_TABLET_DIAGRAM",
+    "value": "WFAndroidTabletDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_WF_DESKTOP_DIAGRAM",
+    "value": "WFDesktopDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_WF_WEB_DIAGRAM",
+    "value": "WFWebDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_WIREFLOW_DIAGRAM",
+    "value": "WireflowDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_WSDL_DIAGRAM",
+    "value": "WSDLDiagram"
+  },
+  {
+    "name": "DIAGRAM_TYPE_YOURDON_AND_COAD_DFDUI_MODEL",
+    "value": "YourdonAndCoadDFD"
+  },
+  {
+    "name": "DIAGRAM_TYPE_YOURDON_DE_MARCO_DFDUI_MODEL",
+    "value": "YourdonDeMarcoDFD"
+  },
+  {
+    "name": "DIAGRAM_TYPE_ZACHMAN_DIAGRAM",
+    "value": "ZachmanDiagram"
+  }
+]

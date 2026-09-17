@@ -34,9 +34,14 @@ public final class McpServer {
     private ExecutorService workers;
 
     public McpServer(String bindAddress, int port, McpToolRegistry registry, ToolInvoker invoker, String serverVersion, ServerLog log) {
+        this(bindAddress, port, registry, invoker, serverVersion, log, null);
+    }
+
+    public McpServer(String bindAddress, int port, McpToolRegistry registry, ToolInvoker invoker, String serverVersion, ServerLog log,
+            ResourceProvider resources) {
         this.bindAddress = bindAddress;
         this.port = port;
-        this.protocol = new McpProtocolHandler(registry, invoker, serverVersion);
+        this.protocol = new McpProtocolHandler(registry, invoker, serverVersion, resources);
         this.log = log;
     }
 

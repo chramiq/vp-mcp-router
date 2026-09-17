@@ -1,0 +1,2646 @@
+[
+  {
+    "name": "SHAPE_TYPE_ABSTRACTION",
+    "value": "Abstraction"
+  },
+  {
+    "name": "SHAPE_TYPE_ACCEPT_EVENT_ACTION",
+    "value": "AcceptEventAction"
+  },
+  {
+    "name": "SHAPE_TYPE_ACCESS",
+    "value": "Access"
+  },
+  {
+    "name": "SHAPE_TYPE_ACTION_STATE",
+    "value": "ActionState"
+  },
+  {
+    "name": "SHAPE_TYPE_ACTIVATION",
+    "value": "Activation"
+  },
+  {
+    "name": "SHAPE_TYPE_ACTIVITY",
+    "value": "Activity"
+  },
+  {
+    "name": "SHAPE_TYPE_ACTIVITY_ACTION",
+    "value": "ActivityAction"
+  },
+  {
+    "name": "SHAPE_TYPE_ACTIVITY_EDGE_CONNECTOR",
+    "value": "ActivityEdgeConnector"
+  },
+  {
+    "name": "SHAPE_TYPE_ACTIVITY_FINAL_NODE",
+    "value": "ActivityFinalNode"
+  },
+  {
+    "name": "SHAPE_TYPE_ACTIVITY_OBJECT",
+    "value": "ActivityObject"
+  },
+  {
+    "name": "SHAPE_TYPE_ACTIVITY_OBJECT_FLOW",
+    "value": "ActivityObjectFlow"
+  },
+  {
+    "name": "SHAPE_TYPE_ACTIVITY_PARAMETER_NODE",
+    "value": "ActivityParameterNode"
+  },
+  {
+    "name": "SHAPE_TYPE_ACTIVITY_PARTITION_HEADER",
+    "value": "ActivityPartitionHeader"
+  },
+  {
+    "name": "SHAPE_TYPE_ACTIVITY_SWIMLANE2",
+    "value": "ActivitySwimlane2"
+  },
+  {
+    "name": "SHAPE_TYPE_ACTIVITY_SWIMLANE2_COMPARTMENT",
+    "value": "ActivitySwimlane2Compartment"
+  },
+  {
+    "name": "SHAPE_TYPE_ACTIVITY_SWIM_LANE",
+    "value": "ActivitySwimLane"
+  },
+  {
+    "name": "SHAPE_TYPE_ACTOR",
+    "value": "Actor"
+  },
+  {
+    "name": "SHAPE_TYPE_ANALYSIS_COMPOSITION",
+    "value": "AnalysisComposition"
+  },
+  {
+    "name": "SHAPE_TYPE_ANALYSIS_DIAGRAM_GROUP_NODE",
+    "value": "AnalysisDiagramGroupNode"
+  },
+  {
+    "name": "SHAPE_TYPE_ANALYSIS_DIAGRAM_NODE",
+    "value": "AnalysisDiagramNode"
+  },
+  {
+    "name": "SHAPE_TYPE_ANALYSIS_DIAGRAM_TRANSITOR",
+    "value": "AnalysisDiagramTransitor"
+  },
+  {
+    "name": "SHAPE_TYPE_ANALYSIS_LOGICAL_VIEW",
+    "value": "AnalysisLogicalView"
+  },
+  {
+    "name": "SHAPE_TYPE_ANALYSIS_LOGICAL_VIEW_GROUP_NODE",
+    "value": "AnalysisLogicalViewGroupNode"
+  },
+  {
+    "name": "SHAPE_TYPE_ANALYSIS_LOGICAL_VIEW_NODE",
+    "value": "AnalysisLogicalViewNode"
+  },
+  {
+    "name": "SHAPE_TYPE_ANALYSIS_MODEL_GROUP_NODE",
+    "value": "AnalysisModelGroupNode"
+  },
+  {
+    "name": "SHAPE_TYPE_ANALYSIS_MODEL_NODE",
+    "value": "AnalysisModelNode"
+  },
+  {
+    "name": "SHAPE_TYPE_ANALYSIS_PARENT_CHILD",
+    "value": "AnalysisParentChild"
+  },
+  {
+    "name": "SHAPE_TYPE_ANALYSIS_REFERENCE",
+    "value": "AnalysisReference"
+  },
+  {
+    "name": "SHAPE_TYPE_ANALYSIS_RELATIONSHIP",
+    "value": "AnalysisRelationship"
+  },
+  {
+    "name": "SHAPE_TYPE_ANALYSIS_RELATIONSHIP_FROM",
+    "value": "AnalysisRelationshipFrom"
+  },
+  {
+    "name": "SHAPE_TYPE_ANALYSIS_RELATIONSHIP_TO",
+    "value": "AnalysisRelationshipTo"
+  },
+  {
+    "name": "SHAPE_TYPE_ANALYSIS_SUB_DIAGRAM",
+    "value": "AnalysisSubDiagram"
+  },
+  {
+    "name": "SHAPE_TYPE_ANALYSIS_TRANSITOR",
+    "value": "AnalysisTransitor"
+  },
+  {
+    "name": "SHAPE_TYPE_ANALYSIS_USED",
+    "value": "AnalysisUsed"
+  },
+  {
+    "name": "SHAPE_TYPE_ANALYSIS_VIEW",
+    "value": "AnalysisView"
+  },
+  {
+    "name": "SHAPE_TYPE_ANALYSIS_VIEW_GROUP_NODE",
+    "value": "AnalysisViewGroupNode"
+  },
+  {
+    "name": "SHAPE_TYPE_ANALYSIS_VIEW_NODE",
+    "value": "AnalysisViewNode"
+  },
+  {
+    "name": "SHAPE_TYPE_ANALYSIS_VIEW_PARENT_CHILD",
+    "value": "AnalysisViewParentChild"
+  },
+  {
+    "name": "SHAPE_TYPE_ANCHOR",
+    "value": "Anchor"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_ACCESS",
+    "value": "ArchiMate4Access"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_AGGREGATION",
+    "value": "ArchiMate4Aggregation"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_AND_JUNCTION",
+    "value": "ArchiMate4AndJunction"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_APPLICATION_COMPONENT",
+    "value": "ArchiMate4ApplicationComponent"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_APPLICATION_DATA_OBJECT",
+    "value": "ArchiMate4ApplicationDataObject"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_APPLICATION_INTERFACE",
+    "value": "ArchiMate4ApplicationInterface"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_ASSIGNMENT",
+    "value": "ArchiMate4Assignment"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_ASSOCIATION",
+    "value": "ArchiMate4Association"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_BUSINESS_ACTOR",
+    "value": "ArchiMate4BusinessActor"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_BUSINESS_INTERFACE",
+    "value": "ArchiMate4BusinessInterface"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_BUSINESS_OBJECT",
+    "value": "ArchiMate4BusinessObject"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_BUSINESS_PRODUCT",
+    "value": "ArchiMate4BusinessProduct"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_COMMON_COLLABORATION",
+    "value": "ArchiMate4CommonCollaboration"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_COMMON_EVENT",
+    "value": "ArchiMate4CommonEvent"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_COMMON_FUNCTION",
+    "value": "ArchiMate4CommonFunction"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_COMMON_GROUPING",
+    "value": "ArchiMate4CommonGrouping"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_COMMON_LOCATION",
+    "value": "ArchiMate4CommonLocation"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_COMMON_PATH",
+    "value": "ArchiMate4CommonPath"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_COMMON_PROCESS",
+    "value": "ArchiMate4CommonProcess"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_COMMON_ROLE",
+    "value": "ArchiMate4CommonRole"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_COMMON_SERVICE",
+    "value": "ArchiMate4CommonService"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_FLOW",
+    "value": "ArchiMate4Flow"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_IMPLEMENTATION_DELIVERABLE",
+    "value": "ArchiMate4ImplementationDeliverable"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_IMPLEMENTATION_PLATEAU",
+    "value": "ArchiMate4ImplementationPlateau"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_IMPLEMENTATION_WORK_PACKAGE",
+    "value": "ArchiMate4ImplementationWorkPackage"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_INFLUENCE",
+    "value": "ArchiMate4Influence"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_MOTIVATION_ASSESSMENT",
+    "value": "ArchiMate4MotivationAssessment"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_MOTIVATION_DRIVER",
+    "value": "ArchiMate4MotivationDriver"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_MOTIVATION_GOAL",
+    "value": "ArchiMate4MotivationGoal"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_MOTIVATION_MEANING",
+    "value": "ArchiMate4MotivationMeaning"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_MOTIVATION_OUTCOME",
+    "value": "ArchiMate4MotivationOutcome"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_MOTIVATION_PRINCIPLE",
+    "value": "ArchiMate4MotivationPrinciple"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_MOTIVATION_REQUIREMENT",
+    "value": "ArchiMate4MotivationRequirement"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_MOTIVATION_STAKEHOLDER",
+    "value": "ArchiMate4MotivationStakeholder"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_MOTIVATION_VALUE",
+    "value": "ArchiMate4MotivationValue"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_OR_JUNCTION",
+    "value": "ArchiMate4OrJunction"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_REALIZATION",
+    "value": "ArchiMate4Realization"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_SERVING",
+    "value": "ArchiMate4Serving"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_SPECIALIZATION",
+    "value": "ArchiMate4Specialization"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_STRATEGY_CAPABILITY",
+    "value": "ArchiMate4StrategyCapability"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_STRATEGY_COURSE_OF_ACTION",
+    "value": "ArchiMate4StrategyCourseOfAction"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_STRATEGY_RESOURCE",
+    "value": "ArchiMate4StrategyResource"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_STRATEGY_VALUE_STREAM",
+    "value": "ArchiMate4StrategyValueStream"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_TECHNOLOGY_ARTIFACT",
+    "value": "ArchiMate4TechnologyArtifact"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_TECHNOLOGY_COMMUNICATION_NETWORK",
+    "value": "ArchiMate4TechnologyCommunicationNetwork"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_TECHNOLOGY_DEVICE",
+    "value": "ArchiMate4TechnologyDevice"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_TECHNOLOGY_DISTRIBUTION_NETWORK",
+    "value": "ArchiMate4TechnologyDistributionNetwork"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_TECHNOLOGY_EQUIPMENT",
+    "value": "ArchiMate4TechnologyEquipment"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_TECHNOLOGY_FACILITY",
+    "value": "ArchiMate4TechnologyFacility"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_TECHNOLOGY_INTERFACE",
+    "value": "ArchiMate4TechnologyInterface"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_TECHNOLOGY_MATERIAL",
+    "value": "ArchiMate4TechnologyMaterial"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_TECHNOLOGY_NODE",
+    "value": "ArchiMate4TechnologyNode"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_TECHNOLOGY_SYSTEM_SOFTWARE",
+    "value": "ArchiMate4TechnologySystemSoftware"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE4_TRIGGERING",
+    "value": "ArchiMate4Triggering"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_ACCESS",
+    "value": "ArchiMateAccess"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_AGGREGATION",
+    "value": "ArchiMateAggregation"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_APPLICATION_COLLABORATION",
+    "value": "ArchiMateApplicationCollaboration"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_APPLICATION_COMPONENT",
+    "value": "ArchiMateApplicationComponent"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_APPLICATION_EVENT",
+    "value": "ArchiMateApplicationEvent"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_APPLICATION_FUNCTION",
+    "value": "ArchiMateApplicationFunction"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_APPLICATION_INTERACTION",
+    "value": "ArchiMateApplicationInteraction"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_APPLICATION_INTERFACE",
+    "value": "ArchiMateApplicationInterface"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_APPLICATION_PROCESS",
+    "value": "ArchiMateApplicationProcess"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_APPLICATION_SERVICE",
+    "value": "ArchiMateApplicationService"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_ARTIFACT",
+    "value": "ArchiMateArtifact"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_ASSESSMENT",
+    "value": "ArchiMateAssessment"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_ASSIGNMENT",
+    "value": "ArchiMateAssignment"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_ASSOCIATION",
+    "value": "ArchiMateAssociation"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_BUSINESS_ACTOR",
+    "value": "ArchiMateBusinessActor"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_BUSINESS_COLLABORATION",
+    "value": "ArchiMateBusinessCollaboration"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_BUSINESS_EVENT",
+    "value": "ArchiMateBusinessEvent"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_BUSINESS_FUNCTION",
+    "value": "ArchiMateBusinessFunction"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_BUSINESS_INTERACTION",
+    "value": "ArchiMateBusinessInteraction"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_BUSINESS_INTERFACE",
+    "value": "ArchiMateBusinessInterface"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_BUSINESS_OBJECT",
+    "value": "ArchiMateBusinessObject"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_BUSINESS_PROCESS",
+    "value": "ArchiMateBusinessProcess"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_BUSINESS_ROLE",
+    "value": "ArchiMateBusinessRole"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_BUSINESS_SERVICE",
+    "value": "ArchiMateBusinessService"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_CAPABILITY",
+    "value": "ArchiMateCapability"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_COMMUNICATION_PATH",
+    "value": "ArchiMateCommunicationPath"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_COMMUNICATION_PATH_BOX",
+    "value": "ArchiMateCommunicationPathBox"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_COMPOSITION",
+    "value": "ArchiMateComposition"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_CONSTRAINT",
+    "value": "ArchiMateConstraint"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_CONTRACT",
+    "value": "ArchiMateContract"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_COURSE_OF_ACTION",
+    "value": "ArchiMateCourseOfAction"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_DATA_OBJECT",
+    "value": "ArchiMateDataObject"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_DELIVERABLE",
+    "value": "ArchiMateDeliverable"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_DERIVED",
+    "value": "ArchiMateDerived"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_DEVICE",
+    "value": "ArchiMateDevice"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_DISTRIBUTION_NETWORK",
+    "value": "ArchiMateDistributionNetwork"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_DISTRIBUTION_NETWORK_BOX",
+    "value": "ArchiMateDistributionNetworkBox"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_DRIVER",
+    "value": "ArchiMateDriver"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_EQUIPMENT",
+    "value": "ArchiMateEquipment"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_FACILITY",
+    "value": "ArchiMateFacility"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_FLOW",
+    "value": "ArchiMateFlow"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_GAP",
+    "value": "ArchiMateGap"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_GOAL",
+    "value": "ArchiMateGoal"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_GROUPING",
+    "value": "ArchiMateGrouping"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_IMPLEMENTATION_EVENT",
+    "value": "ArchiMateImplementationEvent"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_INFLUENCE",
+    "value": "ArchiMateInfluence"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_INFRASTRUCTURE_FUNCTION",
+    "value": "ArchiMateInfrastructureFunction"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_INFRASTRUCTURE_INTERFACE",
+    "value": "ArchiMateInfrastructureInterface"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_INFRASTRUCTURE_SERVICE",
+    "value": "ArchiMateInfrastructureService"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_JUNCTION",
+    "value": "ArchiMateJunction"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_LOCATION",
+    "value": "ArchiMateLocation"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_MATERIAL",
+    "value": "ArchiMateMaterial"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_MEANING",
+    "value": "ArchiMateMeaning"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_NETWORK",
+    "value": "ArchiMateNetwork"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_NETWORK_BOX",
+    "value": "ArchiMateNetworkBox"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_NODE",
+    "value": "ArchiMateNode"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_OR_JUNCTION",
+    "value": "ArchiMateOrJunction"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_OUTCOME",
+    "value": "ArchiMateOutcome"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_PLATEAU",
+    "value": "ArchiMatePlateau"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_PRINCIPLE",
+    "value": "ArchiMatePrinciple"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_PRODUCT",
+    "value": "ArchiMateProduct"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_PROVIDE",
+    "value": "ArchiMateProvide"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_REALIZATION",
+    "value": "ArchiMateRealization"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_REPRESENTATION",
+    "value": "ArchiMateRepresentation"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_REQUIRE",
+    "value": "ArchiMateRequire"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_REQUIREMENT",
+    "value": "ArchiMateRequirement"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_RESOURCE",
+    "value": "ArchiMateResource"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_SPECIALIZATION",
+    "value": "ArchiMateSpecialization"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_STAKEHOLDER",
+    "value": "ArchiMateStakeholder"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_SYSTEM_SOFTWARE",
+    "value": "ArchiMateSystemSoftware"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_TECHNOLOGY_COLLABORATION",
+    "value": "ArchiMateTechnologyCollaboration"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_TECHNOLOGY_EVENT",
+    "value": "ArchiMateTechnologyEvent"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_TECHNOLOGY_INTERACTION",
+    "value": "ArchiMateTechnologyInteraction"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_TECHNOLOGY_PROCESS",
+    "value": "ArchiMateTechnologyProcess"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_TRIGGERING",
+    "value": "ArchiMateTriggering"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_USED_BY",
+    "value": "ArchiMateUsedBy"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_VALUE",
+    "value": "ArchiMateValue"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_VALUE_STREAM",
+    "value": "ArchiMateValueStream"
+  },
+  {
+    "name": "SHAPE_TYPE_ARCHI_MATE_WORK_PACKAGE",
+    "value": "ArchiMateWorkPackage"
+  },
+  {
+    "name": "SHAPE_TYPE_ARTIFACT",
+    "value": "Artifact"
+  },
+  {
+    "name": "SHAPE_TYPE_ASSOCIATION",
+    "value": "Association"
+  },
+  {
+    "name": "SHAPE_TYPE_ASSOCIATION_CLASS",
+    "value": "AssociationClass"
+  },
+  {
+    "name": "SHAPE_TYPE_ASSOCIATION_ROLE",
+    "value": "AssociationRole"
+  },
+  {
+    "name": "SHAPE_TYPE_ATTRIBUTE_COLUMN_MAPPING",
+    "value": "AttributeColumnMapping"
+  },
+  {
+    "name": "SHAPE_TYPE_BINDING_DEPENDENCY",
+    "value": "BindingDependency"
+  },
+  {
+    "name": "SHAPE_TYPE_BITMAP_SHAPE",
+    "value": "BitmapShape"
+  },
+  {
+    "name": "SHAPE_TYPE_BMM_ASSESSMENT",
+    "value": "BMMAssessment"
+  },
+  {
+    "name": "SHAPE_TYPE_BMM_ASSET",
+    "value": "BMMAsset"
+  },
+  {
+    "name": "SHAPE_TYPE_BMM_BUSINESS_POLICY",
+    "value": "BMMBusinessPolicy"
+  },
+  {
+    "name": "SHAPE_TYPE_BMM_BUSINESS_PROCESS",
+    "value": "BMMBusinessProcess"
+  },
+  {
+    "name": "SHAPE_TYPE_BMM_BUSINESS_RULE",
+    "value": "BMMBusinessRule"
+  },
+  {
+    "name": "SHAPE_TYPE_BMM_COMPOSITION",
+    "value": "BMMComposition"
+  },
+  {
+    "name": "SHAPE_TYPE_BMM_END",
+    "value": "BMMEnd"
+  },
+  {
+    "name": "SHAPE_TYPE_BMM_EXTERNAL_INFLUENCER",
+    "value": "BMMExternalInfluencer"
+  },
+  {
+    "name": "SHAPE_TYPE_BMM_GOAL",
+    "value": "BMMGoal"
+  },
+  {
+    "name": "SHAPE_TYPE_BMM_INFLUENCING_ORGANIZATION",
+    "value": "BMMInfluencingOrganization"
+  },
+  {
+    "name": "SHAPE_TYPE_BMM_INTERNAL_INFLUENCER",
+    "value": "BMMInternalInfluencer"
+  },
+  {
+    "name": "SHAPE_TYPE_BMM_LIABILITY",
+    "value": "BMMLiability"
+  },
+  {
+    "name": "SHAPE_TYPE_BMM_MEANS",
+    "value": "BMMMeans"
+  },
+  {
+    "name": "SHAPE_TYPE_BMM_MISSION",
+    "value": "BMMMission"
+  },
+  {
+    "name": "SHAPE_TYPE_BMM_OBJECTIVE",
+    "value": "BMMObjective"
+  },
+  {
+    "name": "SHAPE_TYPE_BMM_ORGANIZATION_UNIT",
+    "value": "BMMOrganizationUnit"
+  },
+  {
+    "name": "SHAPE_TYPE_BMM_POTENTIAL_REWARD",
+    "value": "BMMPotentialReward"
+  },
+  {
+    "name": "SHAPE_TYPE_BMM_RELATIONSHIP",
+    "value": "BMMRelationship"
+  },
+  {
+    "name": "SHAPE_TYPE_BMM_RISK",
+    "value": "BMMRisk"
+  },
+  {
+    "name": "SHAPE_TYPE_BMM_STRATEGY",
+    "value": "BMMStrategy"
+  },
+  {
+    "name": "SHAPE_TYPE_BMM_TACTIC",
+    "value": "BMMTactic"
+  },
+  {
+    "name": "SHAPE_TYPE_BMM_VISION",
+    "value": "BMMVision"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_ASSOCIATION",
+    "value": "BPAssociation"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_CALL_ACTIVITY",
+    "value": "BPCallActivity"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_CALL_CHOREOGRAPHY_ACTIVITY",
+    "value": "BPCallChoreographyActivity"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_CHOREOGRAPHY_SUB_PROCESS",
+    "value": "BPChoreographySubProcess"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_CHOREOGRAPHY_TASK",
+    "value": "BPChoreographyTask"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_DATA_ASSOCIATION",
+    "value": "BPDataAssociation"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_DATA_INPUT",
+    "value": "BPDataInput"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_DATA_OBJECT",
+    "value": "BPDataObject"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_DATA_OUTPUT",
+    "value": "BPDataOutput"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_DATA_STORE",
+    "value": "BPDataStore"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_END_EVENT",
+    "value": "BPEndEvent"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_GATEWAY",
+    "value": "BPGateway"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_GROUP",
+    "value": "BPGroup"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_INTERMEDIATE_EVENT",
+    "value": "BPIntermediateEvent"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_LANE",
+    "value": "BPLane"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_MESSAGE",
+    "value": "BPMessage"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_MESSAGE_FLOW",
+    "value": "BPMessageFlow"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_POOL",
+    "value": "BPPool"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_SEQUENCE_FLOW",
+    "value": "BPSequenceFlow"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_SEQ_MSG_FLOW",
+    "value": "BPSeqMsgFlow"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_START_EVENT",
+    "value": "BPStartEvent"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_SUB_PROCESS",
+    "value": "BPSubProcess"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_TASK",
+    "value": "BPTask"
+  },
+  {
+    "name": "SHAPE_TYPE_BP_TEXT_ANNOTATION",
+    "value": "BPTextAnnotation"
+  },
+  {
+    "name": "SHAPE_TYPE_BRAINSTORM_NOTE",
+    "value": "BrainstormNote"
+  },
+  {
+    "name": "SHAPE_TYPE_BS_CONNECTOR",
+    "value": "BSConnector"
+  },
+  {
+    "name": "SHAPE_TYPE_BS_ELEMENT",
+    "value": "BSElement"
+  },
+  {
+    "name": "SHAPE_TYPE_BUSINESS_RULE",
+    "value": "BusinessRule"
+  },
+  {
+    "name": "SHAPE_TYPE_BUSINESS_RULE_ASSOCIATION",
+    "value": "BusinessRuleAssociation"
+  },
+  {
+    "name": "SHAPE_TYPE_BUSINESS_RULE_GROUP",
+    "value": "BusinessRuleGroup"
+  },
+  {
+    "name": "SHAPE_TYPE_C4MODEL_COMPONENT",
+    "value": "C4modelComponent"
+  },
+  {
+    "name": "SHAPE_TYPE_C4MODEL_CONTAINER",
+    "value": "C4modelContainer"
+  },
+  {
+    "name": "SHAPE_TYPE_C4MODEL_DEPLOYMENT_NODE",
+    "value": "C4modelDeploymentNode"
+  },
+  {
+    "name": "SHAPE_TYPE_C4MODEL_GROUP",
+    "value": "C4modelGroup"
+  },
+  {
+    "name": "SHAPE_TYPE_C4MODEL_INFRASTRUCTURE_NODE",
+    "value": "C4modelInfrastructureNode"
+  },
+  {
+    "name": "SHAPE_TYPE_C4MODEL_PERSON",
+    "value": "C4modelPerson"
+  },
+  {
+    "name": "SHAPE_TYPE_C4MODEL_RELATIONSHIP",
+    "value": "C4modelRelationship"
+  },
+  {
+    "name": "SHAPE_TYPE_C4MODEL_SOFTWARE_SYSTEM",
+    "value": "C4modelSoftwareSystem"
+  },
+  {
+    "name": "SHAPE_TYPE_C4MODEL_SOFTWARE_SYSTEM_SCOPE",
+    "value": "C4modelSoftwareSystemScope"
+  },
+  {
+    "name": "SHAPE_TYPE_C4MODEL_VIA_PRIVATE_NETWORK_CONNECTION",
+    "value": "C4modelViaPrivateNetworkConnection"
+  },
+  {
+    "name": "SHAPE_TYPE_CALLOUT",
+    "value": "Callout"
+  },
+  {
+    "name": "SHAPE_TYPE_CALL_CONVERSATION",
+    "value": "CallConversation"
+  },
+  {
+    "name": "SHAPE_TYPE_CALL_STATE",
+    "value": "CallState"
+  },
+  {
+    "name": "SHAPE_TYPE_CANDIDATE_ITEM",
+    "value": "CandidateItem"
+  },
+  {
+    "name": "SHAPE_TYPE_CENTRAL_BUFFER_NODE",
+    "value": "CentralBufferNode"
+  },
+  {
+    "name": "SHAPE_TYPE_CHEN_ERD_ASSOCIATIVE_ENTITY",
+    "value": "ChenERDAssociativeEntity"
+  },
+  {
+    "name": "SHAPE_TYPE_CHEN_ERD_ATTRIBUTE",
+    "value": "ChenERDAttribute"
+  },
+  {
+    "name": "SHAPE_TYPE_CHEN_ERD_ATTRIBUTE_LINK",
+    "value": "ChenERDAttributeLink"
+  },
+  {
+    "name": "SHAPE_TYPE_CHEN_ERD_DERIVED_ATTRIBUTE",
+    "value": "ChenERDDerivedAttribute"
+  },
+  {
+    "name": "SHAPE_TYPE_CHEN_ERD_ENTITY",
+    "value": "ChenERDEntity"
+  },
+  {
+    "name": "SHAPE_TYPE_CHEN_ERD_GENERALIZATION",
+    "value": "ChenERDGeneralization"
+  },
+  {
+    "name": "SHAPE_TYPE_CHEN_ERD_KEY_ATTRIBUTE",
+    "value": "ChenERDKeyAttribute"
+  },
+  {
+    "name": "SHAPE_TYPE_CHEN_ERD_MULTIVALUED_ATTRIBUTE",
+    "value": "ChenERDMultivaluedAttribute"
+  },
+  {
+    "name": "SHAPE_TYPE_CHEN_ERD_OPTIONAL_PARTICIPATION",
+    "value": "ChenERDOptionalParticipation"
+  },
+  {
+    "name": "SHAPE_TYPE_CHEN_ERD_PARTIAL_KEY_ATTRIBUTE",
+    "value": "ChenERDPartialKeyAttribute"
+  },
+  {
+    "name": "SHAPE_TYPE_CHEN_ERD_RELATIONSHIP",
+    "value": "ChenERDRelationship"
+  },
+  {
+    "name": "SHAPE_TYPE_CHEN_ERD_TOTAL_PARTICIPATION",
+    "value": "ChenERDTotalParticipation"
+  },
+  {
+    "name": "SHAPE_TYPE_CHEN_ERD_WEAK_ENTITY",
+    "value": "ChenERDWeakEntity"
+  },
+  {
+    "name": "SHAPE_TYPE_CHEN_ERD_WEAK_RELATIONSHIP",
+    "value": "ChenERDWeakRelationship"
+  },
+  {
+    "name": "SHAPE_TYPE_CHOICE",
+    "value": "Choice"
+  },
+  {
+    "name": "SHAPE_TYPE_CLASS",
+    "value": "Class"
+  },
+  {
+    "name": "SHAPE_TYPE_CLASS_ENTITY_MAPPING",
+    "value": "ClassEntityMapping"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_ASSOCIATION",
+    "value": "CMMNAssociation"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_CASE_FILE_ITEM",
+    "value": "CMMNCaseFileItem"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_CASE_FILE_ITEM_ON_PART",
+    "value": "CMMNCaseFileItemOnPart"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_CASE_PLAN_MODEL",
+    "value": "CMMNCasePlanModel"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_CASE_TASK",
+    "value": "CMMNCaseTask"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_CASE_TASK_DISCRETIONARY_ITEM",
+    "value": "CMMNCaseTaskDiscretionaryItem"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_CASE_TASK_PLAN_ITEM",
+    "value": "CMMNCaseTaskPlanItem"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_DECISION_TASK",
+    "value": "CMMNDecisionTask"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_DECISION_TASK_DISCRETIONARY_ITEM",
+    "value": "CMMNDecisionTaskDiscretionaryItem"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_DECISION_TASK_PLAN_ITEM",
+    "value": "CMMNDecisionTaskPlanItem"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_DISCRETIONARY_ASSOCIATION",
+    "value": "CMMNDiscretionaryAssociation"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_ENTRY_CRITERION",
+    "value": "CMMNEntryCriterion"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_EXIT_CRITERION",
+    "value": "CMMNExitCriterion"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_GENERAL_EVENT_LISTENER",
+    "value": "CMMNGeneralEventListener"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_GENERAL_EVENT_LISTENER_PLAN_ITEM",
+    "value": "CMMNGeneralEventListenerPlanItem"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_GENERAL_TASK",
+    "value": "CMMNGeneralTask"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_GENERAL_TASK_DISCRETIONARY_ITEM",
+    "value": "CMMNGeneralTaskDiscretionaryItem"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_GENERAL_TASK_PLAN_ITEM",
+    "value": "CMMNGeneralTaskPlanItem"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_HUMAN_TASK",
+    "value": "CMMNHumanTask"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_HUMAN_TASK_DISCRETIONARY_ITEM",
+    "value": "CMMNHumanTaskDiscretionaryItem"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_HUMAN_TASK_PLAN_ITEM",
+    "value": "CMMNHumanTaskPlanItem"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_MILESTONE",
+    "value": "CMMNMilestone"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_MILESTONE_PLAN_ITEM",
+    "value": "CMMNMilestonePlanItem"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_PLANNING_TABLE",
+    "value": "CMMNPlanningTable"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_PLAN_FRAGMENT",
+    "value": "CMMNPlanFragment"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_PLAN_FRAGMENT_DISCRETIONARY_ITEM",
+    "value": "CMMNPlanFragmentDiscretionaryItem"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_PLAN_ITEM_ON_PART",
+    "value": "CMMNPlanItemOnPart"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_PROCESS_TASK",
+    "value": "CMMNProcessTask"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_PROCESS_TASK_DISCRETIONARY_ITEM",
+    "value": "CMMNProcessTaskDiscretionaryItem"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_PROCESS_TASK_PLAN_ITEM",
+    "value": "CMMNProcessTaskPlanItem"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_STAGE",
+    "value": "CMMNStage"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_STAGE_DISCRETIONARY_ITEM",
+    "value": "CMMNStageDiscretionaryItem"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_STAGE_PLAN_ITEM",
+    "value": "CMMNStagePlanItem"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_TEXT_ANNOTATION",
+    "value": "CMMNTextAnnotation"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_TIMER_EVENT_LISTENER",
+    "value": "CMMNTimerEventListener"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_TIMER_EVENT_LISTENER_PLAN_ITEM",
+    "value": "CMMNTimerEventListenerPlanItem"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_USER_EVENT_LISTENER",
+    "value": "CMMNUserEventListener"
+  },
+  {
+    "name": "SHAPE_TYPE_CMMN_USER_EVENT_LISTENER_PLAN_ITEM",
+    "value": "CMMNUserEventListenerPlanItem"
+  },
+  {
+    "name": "SHAPE_TYPE_COLLABORATION",
+    "value": "Collaboration"
+  },
+  {
+    "name": "SHAPE_TYPE_COLLABORATION2",
+    "value": "Collaboration2"
+  },
+  {
+    "name": "SHAPE_TYPE_COLLABORATION_ACTOR",
+    "value": "CollaborationActor"
+  },
+  {
+    "name": "SHAPE_TYPE_COLLABORATION_LINK",
+    "value": "CollaborationLink"
+  },
+  {
+    "name": "SHAPE_TYPE_COLLABORATION_OBJECT",
+    "value": "CollaborationObject"
+  },
+  {
+    "name": "SHAPE_TYPE_COLLABORATION_OCCURRENCE",
+    "value": "CollaborationOccurrence"
+  },
+  {
+    "name": "SHAPE_TYPE_COLLABORATION_ROLE",
+    "value": "CollaborationRole"
+  },
+  {
+    "name": "SHAPE_TYPE_COLLABORATION_SWIM_LANE",
+    "value": "CollaborationSwimLane"
+  },
+  {
+    "name": "SHAPE_TYPE_COMBINED_FRAGMENT",
+    "value": "CombinedFragment"
+  },
+  {
+    "name": "SHAPE_TYPE_COMMUNICATION_ACTOR",
+    "value": "CommunicationActor"
+  },
+  {
+    "name": "SHAPE_TYPE_COMMUNICATION_LIFE_LINE",
+    "value": "CommunicationLifeLine"
+  },
+  {
+    "name": "SHAPE_TYPE_COMMUNICATION_MESSAGE",
+    "value": "CommunicationMessage"
+  },
+  {
+    "name": "SHAPE_TYPE_COMMUNICATION_REVERSE_MESSAGE",
+    "value": "CommunicationReverseMessage"
+  },
+  {
+    "name": "SHAPE_TYPE_COMPONENT",
+    "value": "Component"
+  },
+  {
+    "name": "SHAPE_TYPE_COMPONENT_INSTANCE",
+    "value": "ComponentInstance"
+  },
+  {
+    "name": "SHAPE_TYPE_COMPONENT_INTERFACE",
+    "value": "ComponentInterface"
+  },
+  {
+    "name": "SHAPE_TYPE_COMPONENT_OBJECT",
+    "value": "ComponentObject"
+  },
+  {
+    "name": "SHAPE_TYPE_CONCURRENT",
+    "value": "Concurrent"
+  },
+  {
+    "name": "SHAPE_TYPE_CONCURRENT_STATE",
+    "value": "ConcurrentState"
+  },
+  {
+    "name": "SHAPE_TYPE_CONDITIONAL_NODE",
+    "value": "ConditionalNode"
+  },
+  {
+    "name": "SHAPE_TYPE_CONDITIONAL_NODE_WITH_REGIONS",
+    "value": "ConditionalNodeWithRegions"
+  },
+  {
+    "name": "SHAPE_TYPE_CONSTRAINT",
+    "value": "Constraint"
+  },
+  {
+    "name": "SHAPE_TYPE_CONSTRAINT_ELEMENT",
+    "value": "ConstraintElement"
+  },
+  {
+    "name": "SHAPE_TYPE_CONTAINMENT",
+    "value": "Containment"
+  },
+  {
+    "name": "SHAPE_TYPE_CONTINUATION",
+    "value": "Continuation"
+  },
+  {
+    "name": "SHAPE_TYPE_CONTROL_FLOW",
+    "value": "ControlFlow"
+  },
+  {
+    "name": "SHAPE_TYPE_CONVERSATION_COMMUNICATION",
+    "value": "ConversationCommunication"
+  },
+  {
+    "name": "SHAPE_TYPE_CONVERSATION_LINK",
+    "value": "ConversationLink"
+  },
+  {
+    "name": "SHAPE_TYPE_CONVERSATION_PARTICIPANT",
+    "value": "ConversationParticipant"
+  },
+  {
+    "name": "SHAPE_TYPE_CRC_CARD",
+    "value": "CRCCard"
+  },
+  {
+    "name": "SHAPE_TYPE_DATA_STORE_NODE",
+    "value": "DataStoreNode"
+  },
+  {
+    "name": "SHAPE_TYPE_DB_FOREIGN_KEY",
+    "value": "DBForeignKey"
+  },
+  {
+    "name": "SHAPE_TYPE_DB_SEQUENCE",
+    "value": "DBSequence"
+  },
+  {
+    "name": "SHAPE_TYPE_DB_TABLE",
+    "value": "DBTable"
+  },
+  {
+    "name": "SHAPE_TYPE_DB_TRIGGER_CONTAINER",
+    "value": "DBTriggerContainer"
+  },
+  {
+    "name": "SHAPE_TYPE_DB_VIEW",
+    "value": "DBView"
+  },
+  {
+    "name": "SHAPE_TYPE_DB_VIEW_JOIN",
+    "value": "DBViewJoin"
+  },
+  {
+    "name": "SHAPE_TYPE_DB_VIEW_TABLE",
+    "value": "DBViewTable"
+  },
+  {
+    "name": "SHAPE_TYPE_DECISION_NODE",
+    "value": "DecisionNode"
+  },
+  {
+    "name": "SHAPE_TYPE_DECISION_POINT",
+    "value": "DecisionPoint"
+  },
+  {
+    "name": "SHAPE_TYPE_DEEP_HISTORY",
+    "value": "DeepHistory"
+  },
+  {
+    "name": "SHAPE_TYPE_DEPENDENCY",
+    "value": "Dependency"
+  },
+  {
+    "name": "SHAPE_TYPE_DEPENDENCY_JUNCTION",
+    "value": "DependencyJunction"
+  },
+  {
+    "name": "SHAPE_TYPE_DEPLOYMENT",
+    "value": "Deployment"
+  },
+  {
+    "name": "SHAPE_TYPE_DEPLOYMENT_SPECIFICATION",
+    "value": "DeploymentSpecification"
+  },
+  {
+    "name": "SHAPE_TYPE_DERIVE",
+    "value": "Derive"
+  },
+  {
+    "name": "SHAPE_TYPE_DF_DATA_FLOW",
+    "value": "DFDataFlow"
+  },
+  {
+    "name": "SHAPE_TYPE_DF_DATA_STORE",
+    "value": "DFDataStore"
+  },
+  {
+    "name": "SHAPE_TYPE_DF_EXTERNAL_ENTITY",
+    "value": "DFExternalEntity"
+  },
+  {
+    "name": "SHAPE_TYPE_DF_PROCESS",
+    "value": "DFProcess"
+  },
+  {
+    "name": "SHAPE_TYPE_DIAGRAM_CONTAINMENT",
+    "value": "diagramContainment"
+  },
+  {
+    "name": "SHAPE_TYPE_DIAGRAM_INFO",
+    "value": "DiagramInfo"
+  },
+  {
+    "name": "SHAPE_TYPE_DIAGRAM_OVERVIEW",
+    "value": "DiagramOverview"
+  },
+  {
+    "name": "SHAPE_TYPE_DM_BUSINESS_DECISION",
+    "value": "DMBusinessDecision"
+  },
+  {
+    "name": "SHAPE_TYPE_DM_DECISION_RULE_FAMILY_RELATIONSHIP",
+    "value": "DMDecisionRuleFamilyRelationship"
+  },
+  {
+    "name": "SHAPE_TYPE_DM_INFLUENCE",
+    "value": "DMInfluence"
+  },
+  {
+    "name": "SHAPE_TYPE_DM_RULE_FAMILY",
+    "value": "DMRuleFamily"
+  },
+  {
+    "name": "SHAPE_TYPE_DOCUMENTATION_CABINET_CABINET",
+    "value": "DocumentationCabinetCabinet"
+  },
+  {
+    "name": "SHAPE_TYPE_DOCUMENTATION_CABINET_DRAWER",
+    "value": "DocumentationCabinetDrawer"
+  },
+  {
+    "name": "SHAPE_TYPE_DOCUMENTATION_CABINET_LINK",
+    "value": "DocumentationCabinetLink"
+  },
+  {
+    "name": "SHAPE_TYPE_DTB_DECISION_TABLE",
+    "value": "DTBDecisionTable"
+  },
+  {
+    "name": "SHAPE_TYPE_DTB_DECISION_TABLE_ASSOCIATION",
+    "value": "DTBDecisionTableAssociation"
+  },
+  {
+    "name": "SHAPE_TYPE_DYNAMIC_POINT",
+    "value": "DynamicPoint"
+  },
+  {
+    "name": "SHAPE_TYPE_ENTITY_BEAN_PRIMARY_KEY_LINK",
+    "value": "EntityBeanPrimaryKeyLink"
+  },
+  {
+    "name": "SHAPE_TYPE_ENTRY_POINT",
+    "value": "EntryPoint"
+  },
+  {
+    "name": "SHAPE_TYPE_EPCXOR_OPERATOR",
+    "value": "EPCXOROperator"
+  },
+  {
+    "name": "SHAPE_TYPE_EPC_AND_OPERATOR",
+    "value": "EPCAndOperator"
+  },
+  {
+    "name": "SHAPE_TYPE_EPC_CONTROL_FLOW",
+    "value": "EPCControlFlow"
+  },
+  {
+    "name": "SHAPE_TYPE_EPC_EVENT",
+    "value": "EPCEvent"
+  },
+  {
+    "name": "SHAPE_TYPE_EPC_FUNCTION",
+    "value": "EPCFunction"
+  },
+  {
+    "name": "SHAPE_TYPE_EPC_INFORMATION_FLOW",
+    "value": "EPCInformationFlow"
+  },
+  {
+    "name": "SHAPE_TYPE_EPC_INFORMATION_RESOURCE",
+    "value": "EPCInformationResource"
+  },
+  {
+    "name": "SHAPE_TYPE_EPC_ORGANIZATION_UNIT",
+    "value": "EPCOrganizationUnit"
+  },
+  {
+    "name": "SHAPE_TYPE_EPC_ORGANIZATION_UNIT_ASSIGNMENT",
+    "value": "EPCOrganizationUnitAssignment"
+  },
+  {
+    "name": "SHAPE_TYPE_EPC_OR_OPERATOR",
+    "value": "EPCOrOperator"
+  },
+  {
+    "name": "SHAPE_TYPE_EPC_PROCESS_PATH",
+    "value": "EPCProcessPath"
+  },
+  {
+    "name": "SHAPE_TYPE_EPC_ROLE",
+    "value": "EPCRole"
+  },
+  {
+    "name": "SHAPE_TYPE_EPC_SYSTEM",
+    "value": "EPCSystem"
+  },
+  {
+    "name": "SHAPE_TYPE_ETL_TABLE",
+    "value": "ETLTable"
+  },
+  {
+    "name": "SHAPE_TYPE_EXCEPTION_HANDLER",
+    "value": "ExceptionHandler"
+  },
+  {
+    "name": "SHAPE_TYPE_EXECUTION_OCCURRENCE",
+    "value": "ExecutionOccurrence"
+  },
+  {
+    "name": "SHAPE_TYPE_EXIT_POINT",
+    "value": "ExitPoint"
+  },
+  {
+    "name": "SHAPE_TYPE_EXPANSION_NODE",
+    "value": "ExpansionNode"
+  },
+  {
+    "name": "SHAPE_TYPE_EXPANSION_REGION",
+    "value": "ExpansionRegion"
+  },
+  {
+    "name": "SHAPE_TYPE_EXTEND",
+    "value": "Extend"
+  },
+  {
+    "name": "SHAPE_TYPE_FACT_TYPE",
+    "value": "FactType"
+  },
+  {
+    "name": "SHAPE_TYPE_FACT_TYPE_ARROW",
+    "value": "FactTypeArrow"
+  },
+  {
+    "name": "SHAPE_TYPE_FINAL_STATE",
+    "value": "FinalState"
+  },
+  {
+    "name": "SHAPE_TYPE_FINAL_STATE2",
+    "value": "FinalState2"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_DATA",
+    "value": "FlowchartData"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_DATABASE",
+    "value": "FlowchartDatabase"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_DECISION",
+    "value": "FlowchartDecision"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_DELAY",
+    "value": "FlowchartDelay"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_DISPLAY",
+    "value": "FlowchartDisplay"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_DOCUMENT",
+    "value": "FlowchartDocument"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_FLOWLINE",
+    "value": "FlowchartFlowline"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_HARD_DISK",
+    "value": "FlowchartHardDisk"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_INTERNAL_STORAGE",
+    "value": "FlowchartInternalStorage"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_MANUAL_INPUT",
+    "value": "FlowchartManualInput"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_MANUAL_OPERATION",
+    "value": "FlowchartManualOperation"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_MERGE",
+    "value": "FlowchartMerge"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_MULTIPLE_DOCUMENTS",
+    "value": "FlowchartMultipleDocuments"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_OFF_PAGE_LINK",
+    "value": "FlowchartOffPageLink"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_ON_PAGE_REFERENCE",
+    "value": "FlowchartOnPageReference"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_OR",
+    "value": "FlowchartOr"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_PAPER_TAPE",
+    "value": "FlowchartPaperTape"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_PREDEFINED_PROCESS",
+    "value": "FlowchartPredefinedProcess"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_PREPARATION",
+    "value": "FlowchartPreparation"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_PROCESS",
+    "value": "FlowchartProcess"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_START_CIRCLE",
+    "value": "FlowchartStartCircle"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_START_OVAL",
+    "value": "FlowchartStartOval"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_STORED_DATA",
+    "value": "FlowchartStoredData"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_SUMMING_JUNCTION",
+    "value": "FlowchartSummingJunction"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOWCHART_TERMINATOR",
+    "value": "FlowchartTerminator"
+  },
+  {
+    "name": "SHAPE_TYPE_FLOW_FINAL_NODE",
+    "value": "FlowFinalNode"
+  },
+  {
+    "name": "SHAPE_TYPE_FORK",
+    "value": "Fork"
+  },
+  {
+    "name": "SHAPE_TYPE_FORK_NODE",
+    "value": "ForkNode"
+  },
+  {
+    "name": "SHAPE_TYPE_FRAME",
+    "value": "Frame"
+  },
+  {
+    "name": "SHAPE_TYPE_FREEHAND",
+    "value": "Freehand"
+  },
+  {
+    "name": "SHAPE_TYPE_GATE",
+    "value": "Gate"
+  },
+  {
+    "name": "SHAPE_TYPE_GENERALIZATION",
+    "value": "Generalization"
+  },
+  {
+    "name": "SHAPE_TYPE_GENERALIZATION_SET",
+    "value": "GeneralizationSet"
+  },
+  {
+    "name": "SHAPE_TYPE_GENERIC_CONNECTOR",
+    "value": "GenericConnector"
+  },
+  {
+    "name": "SHAPE_TYPE_GENERIC_RESOURCE_CONNECTOR",
+    "value": "GenericResourceConnector"
+  },
+  {
+    "name": "SHAPE_TYPE_GENERIC_RESOURCE_SHAPE",
+    "value": "GenericResourceShape"
+  },
+  {
+    "name": "SHAPE_TYPE_GENERIC_SHAPE",
+    "value": "GenericShape"
+  },
+  {
+    "name": "SHAPE_TYPE_GLOSSARY",
+    "value": "Glossary"
+  },
+  {
+    "name": "SHAPE_TYPE_GLOSSARY_FACT_CONNECTOR",
+    "value": "GlossaryFactConnector"
+  },
+  {
+    "name": "SHAPE_TYPE_GLOSSARY_FACT_TYPE_ASSOCIATION",
+    "value": "GlossaryFactTypeAssociation"
+  },
+  {
+    "name": "SHAPE_TYPE_GRAPHIC_SHAPE",
+    "value": "GraphicShape"
+  },
+  {
+    "name": "SHAPE_TYPE_GS_DFD_DATA_FLOW",
+    "value": "GsDfdDataFlow"
+  },
+  {
+    "name": "SHAPE_TYPE_GS_DFD_DATA_STORE",
+    "value": "GsDfdDataStore"
+  },
+  {
+    "name": "SHAPE_TYPE_GS_DFD_EXTERNAL_ENTITY",
+    "value": "GsDfdExternalEntity"
+  },
+  {
+    "name": "SHAPE_TYPE_GS_DFD_PROCESS",
+    "value": "GsDfdProcess"
+  },
+  {
+    "name": "SHAPE_TYPE_HISTORY_STATE",
+    "value": "HistoryState"
+  },
+  {
+    "name": "SHAPE_TYPE_HORIZONTAL_SYNCHRONIZATIONBAR",
+    "value": "HorizontalSynchronizationbar"
+  },
+  {
+    "name": "SHAPE_TYPE_HTML_NOTE",
+    "value": "HTMLNote"
+  },
+  {
+    "name": "SHAPE_TYPE_IF_REPRESENTED",
+    "value": "IFRepresented"
+  },
+  {
+    "name": "SHAPE_TYPE_IMAGE_SHAPE",
+    "value": "ImageShape"
+  },
+  {
+    "name": "SHAPE_TYPE_IMPORT",
+    "value": "Import"
+  },
+  {
+    "name": "SHAPE_TYPE_INCLUDE",
+    "value": "Include"
+  },
+  {
+    "name": "SHAPE_TYPE_INFORMATION_FLOW",
+    "value": "InformationFlow"
+  },
+  {
+    "name": "SHAPE_TYPE_INFORMATION_ITEM",
+    "value": "InformationItem"
+  },
+  {
+    "name": "SHAPE_TYPE_INITIAL_NODE",
+    "value": "InitialNode"
+  },
+  {
+    "name": "SHAPE_TYPE_INITIAL_PSEUDO_STATE",
+    "value": "InitialPseudoState"
+  },
+  {
+    "name": "SHAPE_TYPE_INITIAL_STATE",
+    "value": "InitialState"
+  },
+  {
+    "name": "SHAPE_TYPE_INPUT_PIN",
+    "value": "InputPin"
+  },
+  {
+    "name": "SHAPE_TYPE_INSTANCE_SPECIFICATION",
+    "value": "InstanceSpecification"
+  },
+  {
+    "name": "SHAPE_TYPE_INSTANTIATION",
+    "value": "Instantiation"
+  },
+  {
+    "name": "SHAPE_TYPE_INTERACTION",
+    "value": "Interaction"
+  },
+  {
+    "name": "SHAPE_TYPE_INTERACTION_ACTOR",
+    "value": "InteractionActor"
+  },
+  {
+    "name": "SHAPE_TYPE_INTERACTION_CONSTRAINT",
+    "value": "InteractionConstraint"
+  },
+  {
+    "name": "SHAPE_TYPE_INTERACTION_DIAGRAM_DURATION_CONSTRAINT_CONNECTOR",
+    "value": "InteractionDiagramDurationConstraintConnector"
+  },
+  {
+    "name": "SHAPE_TYPE_INTERACTION_LIFE_LINE",
+    "value": "InteractionLifeLine"
+  },
+  {
+    "name": "SHAPE_TYPE_INTERACTION_LIFE_LINE_LINK",
+    "value": "InteractionLifeLineLink"
+  },
+  {
+    "name": "SHAPE_TYPE_INTERACTION_OCCURRENCE",
+    "value": "InteractionOccurrence"
+  },
+  {
+    "name": "SHAPE_TYPE_INTERACTION_OPERAND",
+    "value": "InteractionOperand"
+  },
+  {
+    "name": "SHAPE_TYPE_INTERRUPTIBLE_ACTIVITY_REGION",
+    "value": "InterruptibleActivityRegion"
+  },
+  {
+    "name": "SHAPE_TYPE_JOIN",
+    "value": "Join"
+  },
+  {
+    "name": "SHAPE_TYPE_JOIN_NODE",
+    "value": "JoinNode"
+  },
+  {
+    "name": "SHAPE_TYPE_JUNCTION",
+    "value": "Junction"
+  },
+  {
+    "name": "SHAPE_TYPE_JUNCTION_POINT",
+    "value": "JunctionPoint"
+  },
+  {
+    "name": "SHAPE_TYPE_LABEL",
+    "value": "Label"
+  },
+  {
+    "name": "SHAPE_TYPE_LINK",
+    "value": "Link"
+  },
+  {
+    "name": "SHAPE_TYPE_LOOP_NODE",
+    "value": "LoopNode"
+  },
+  {
+    "name": "SHAPE_TYPE_LOOP_NODE_WITH_REGIONS",
+    "value": "LoopNodeWithRegions"
+  },
+  {
+    "name": "SHAPE_TYPE_LOST_FOUND_MESSAGE_END",
+    "value": "LostFoundMessageEnd"
+  },
+  {
+    "name": "SHAPE_TYPE_MERGE",
+    "value": "Merge"
+  },
+  {
+    "name": "SHAPE_TYPE_MERGE_NODE",
+    "value": "MergeNode"
+  },
+  {
+    "name": "SHAPE_TYPE_MESSAGE",
+    "value": "Message"
+  },
+  {
+    "name": "SHAPE_TYPE_MIND_CONNECTOR",
+    "value": "MindConnector"
+  },
+  {
+    "name": "SHAPE_TYPE_MIND_LINK",
+    "value": "MindLink"
+  },
+  {
+    "name": "SHAPE_TYPE_MIND_MAP_NODE",
+    "value": "MindMapNode"
+  },
+  {
+    "name": "SHAPE_TYPE_MODEL",
+    "value": "Model"
+  },
+  {
+    "name": "SHAPE_TYPE_NARY",
+    "value": "NARY"
+  },
+  {
+    "name": "SHAPE_TYPE_NODE",
+    "value": "Node"
+  },
+  {
+    "name": "SHAPE_TYPE_NODE_INSTANCE",
+    "value": "NodeInstance"
+  },
+  {
+    "name": "SHAPE_TYPE_NOTE",
+    "value": "NOTE"
+  },
+  {
+    "name": "SHAPE_TYPE_OBJECT_FLOW",
+    "value": "ObjectFlow"
+  },
+  {
+    "name": "SHAPE_TYPE_OBJECT_NODE",
+    "value": "ObjectNode"
+  },
+  {
+    "name": "SHAPE_TYPE_OCCURRENCE",
+    "value": "Occurrence"
+  },
+  {
+    "name": "SHAPE_TYPE_OC_LINE",
+    "value": "OCLine"
+  },
+  {
+    "name": "SHAPE_TYPE_OC_UNIT",
+    "value": "OCUnit"
+  },
+  {
+    "name": "SHAPE_TYPE_OPAQUE_ACTION",
+    "value": "OpaqueAction"
+  },
+  {
+    "name": "SHAPE_TYPE_OPPOSITE_FACT_TYPE",
+    "value": "OppositeFactType"
+  },
+  {
+    "name": "SHAPE_TYPE_ORM_CONTAINER",
+    "value": "ORMContainer"
+  },
+  {
+    "name": "SHAPE_TYPE_OUTPUT_PIN",
+    "value": "OutputPin"
+  },
+  {
+    "name": "SHAPE_TYPE_OVAL",
+    "value": "Oval"
+  },
+  {
+    "name": "SHAPE_TYPE_PACKAGE",
+    "value": "Package"
+  },
+  {
+    "name": "SHAPE_TYPE_PARAMETER_SET",
+    "value": "ParameterSet"
+  },
+  {
+    "name": "SHAPE_TYPE_PART",
+    "value": "Part"
+  },
+  {
+    "name": "SHAPE_TYPE_PERMISSION",
+    "value": "Permission"
+  },
+  {
+    "name": "SHAPE_TYPE_PERT_DEPENDENCY",
+    "value": "PERTDependency"
+  },
+  {
+    "name": "SHAPE_TYPE_PERT_LANE",
+    "value": "PERTLane"
+  },
+  {
+    "name": "SHAPE_TYPE_PERT_TASK",
+    "value": "PERTTask"
+  },
+  {
+    "name": "SHAPE_TYPE_PM_PROCESS",
+    "value": "PMProcess"
+  },
+  {
+    "name": "SHAPE_TYPE_PM_PROCESS_LINK",
+    "value": "PMProcessLink"
+  },
+  {
+    "name": "SHAPE_TYPE_PM_RECEIVE",
+    "value": "PMReceive"
+  },
+  {
+    "name": "SHAPE_TYPE_PM_SEND",
+    "value": "PMSend"
+  },
+  {
+    "name": "SHAPE_TYPE_POLYGON",
+    "value": "Polygon"
+  },
+  {
+    "name": "SHAPE_TYPE_PORT",
+    "value": "Port"
+  },
+  {
+    "name": "SHAPE_TYPE_PORT_BEHAVIOR",
+    "value": "PortBehavior"
+  },
+  {
+    "name": "SHAPE_TYPE_PROCEDURE_CONTAINER",
+    "value": "ProcedureContainer"
+  },
+  {
+    "name": "SHAPE_TYPE_PROCEDURE_RESULT_SET",
+    "value": "ProcedureResultSet"
+  },
+  {
+    "name": "SHAPE_TYPE_QUALIFIER",
+    "value": "Qualifier"
+  },
+  {
+    "name": "SHAPE_TYPE_REALIZATION",
+    "value": "Realization"
+  },
+  {
+    "name": "SHAPE_TYPE_RECTANGLE",
+    "value": "Rectangle"
+  },
+  {
+    "name": "SHAPE_TYPE_REFINE",
+    "value": "Refine"
+  },
+  {
+    "name": "SHAPE_TYPE_REGION",
+    "value": "Region"
+  },
+  {
+    "name": "SHAPE_TYPE_REPRESENTS",
+    "value": "Represents\\t"
+  },
+  {
+    "name": "SHAPE_TYPE_REQUIREMENT",
+    "value": "Requirement"
+  },
+  {
+    "name": "SHAPE_TYPE_REQUIREMENT_DERIVE",
+    "value": "RequirementDerive"
+  },
+  {
+    "name": "SHAPE_TYPE_REQUIREMENT_MODEL",
+    "value": "RequirementModel"
+  },
+  {
+    "name": "SHAPE_TYPE_REST_RESOURCE",
+    "value": "RestResource"
+  },
+  {
+    "name": "SHAPE_TYPE_REST_RESOURCE_REQUEST_BODY",
+    "value": "RestResourceRequestBody"
+  },
+  {
+    "name": "SHAPE_TYPE_REST_RESOURCE_RESPONSE_BODY",
+    "value": "RestResourceResponseBody"
+  },
+  {
+    "name": "SHAPE_TYPE_ROLE_BINDING",
+    "value": "RoleBinding"
+  },
+  {
+    "name": "SHAPE_TYPE_RQ_REFINE",
+    "value": "RQRefine"
+  },
+  {
+    "name": "SHAPE_TYPE_RQ_TRACE",
+    "value": "RQTrace"
+  },
+  {
+    "name": "SHAPE_TYPE_SATISFY",
+    "value": "Satisfy"
+  },
+  {
+    "name": "SHAPE_TYPE_SEND_SIGNAL_ACTION",
+    "value": "SendSignalAction"
+  },
+  {
+    "name": "SHAPE_TYPE_SEQUENCE_CONCURRENT",
+    "value": "SequenceConcurrent"
+  },
+  {
+    "name": "SHAPE_TYPE_SEQUENCE_CREATE_MESSAGE",
+    "value": "SequenceCreateMessage"
+  },
+  {
+    "name": "SHAPE_TYPE_SEQUENCE_DURATION_MESSAGE",
+    "value": "SequenceDurationMessage"
+  },
+  {
+    "name": "SHAPE_TYPE_SEQUENCE_NODE",
+    "value": "SequenceNode"
+  },
+  {
+    "name": "SHAPE_TYPE_SEQUENCE_RECURSIVE_MESSAGE",
+    "value": "SequenceRecursiveMessage"
+  },
+  {
+    "name": "SHAPE_TYPE_SEQUENCE_SELF_MESSAGE",
+    "value": "SequenceSelfMessage"
+  },
+  {
+    "name": "SHAPE_TYPE_SEVP_RECTANGLE",
+    "value": "SEVPRectangle"
+  },
+  {
+    "name": "SHAPE_TYPE_SE_ARC",
+    "value": "SEArc"
+  },
+  {
+    "name": "SHAPE_TYPE_SE_BEZIER_SURFACE_TEXT_SHAPE",
+    "value": "SEBezierSurfaceTextShape"
+  },
+  {
+    "name": "SHAPE_TYPE_SE_CHORD",
+    "value": "SEChord"
+  },
+  {
+    "name": "SHAPE_TYPE_SE_CURVE_SHAPE",
+    "value": "SECurveShape"
+  },
+  {
+    "name": "SHAPE_TYPE_SE_DIAMOND",
+    "value": "SEDiamond"
+  },
+  {
+    "name": "SHAPE_TYPE_SE_DOUBLE_ARROW_SHAPE",
+    "value": "SEDoubleArrowShape"
+  },
+  {
+    "name": "SHAPE_TYPE_SE_ELLIPSE",
+    "value": "SEEllipse"
+  },
+  {
+    "name": "SHAPE_TYPE_SE_HEXAGON",
+    "value": "SEHexagon"
+  },
+  {
+    "name": "SHAPE_TYPE_SE_ISOSCELES_TRAPEZOID",
+    "value": "SEIsoscelesTrapezoid"
+  },
+  {
+    "name": "SHAPE_TYPE_SE_ISOSCELES_TRIANGLE",
+    "value": "SEIsoscelesTriangle"
+  },
+  {
+    "name": "SHAPE_TYPE_SE_LABEL_LINE",
+    "value": "SELabelLine"
+  },
+  {
+    "name": "SHAPE_TYPE_SE_PARALLELOGRAM",
+    "value": "SEParallelogram"
+  },
+  {
+    "name": "SHAPE_TYPE_SE_PIE",
+    "value": "SEPie"
+  },
+  {
+    "name": "SHAPE_TYPE_SE_RECTANGLE_SHAPE",
+    "value": "SERectangleShape"
+  },
+  {
+    "name": "SHAPE_TYPE_SE_REGULAR_POLYGON_SHAPE",
+    "value": "SERegularPolygonShape"
+  },
+  {
+    "name": "SHAPE_TYPE_SE_ROUNDED_RECTANGLE",
+    "value": "SERoundedRectangle"
+  },
+  {
+    "name": "SHAPE_TYPE_SE_ROUND_RECTANGLE_SHAPE",
+    "value": "SERoundRectangleShape"
+  },
+  {
+    "name": "SHAPE_TYPE_SE_SINGLE_ARROW_SHAPE",
+    "value": "SESingleArrowShape"
+  },
+  {
+    "name": "SHAPE_TYPE_SE_SPIRAL_SHAPE",
+    "value": "SESpiralShape"
+  },
+  {
+    "name": "SHAPE_TYPE_SE_TEXT",
+    "value": "SEText"
+  },
+  {
+    "name": "SHAPE_TYPE_SE_TRAPEZOID",
+    "value": "SETrapezoid"
+  },
+  {
+    "name": "SHAPE_TYPE_SHALLOW_HISTORY",
+    "value": "ShallowHistory"
+  },
+  {
+    "name": "SHAPE_TYPE_SIGNAL_RECEIPT",
+    "value": "SignalReceipt"
+  },
+  {
+    "name": "SHAPE_TYPE_SIGNAL_SENDING",
+    "value": "SignalSending"
+  },
+  {
+    "name": "SHAPE_TYPE_STATE",
+    "value": "State"
+  },
+  {
+    "name": "SHAPE_TYPE_STATE2",
+    "value": "State2"
+  },
+  {
+    "name": "SHAPE_TYPE_STATE_INVARIANT",
+    "value": "StateInvariant"
+  },
+  {
+    "name": "SHAPE_TYPE_STEREOTYPE",
+    "value": "Stereotype"
+  },
+  {
+    "name": "SHAPE_TYPE_STRUCTURED_ACTIVITY_NODE",
+    "value": "StructuredActivityNode"
+  },
+  {
+    "name": "SHAPE_TYPE_STRUCTURED_ACTIVITY_REGION",
+    "value": "StructuredActivityRegion"
+  },
+  {
+    "name": "SHAPE_TYPE_STRUCTURED_CLASS",
+    "value": "StructuredClass"
+  },
+  {
+    "name": "SHAPE_TYPE_STRUCTURED_CONNECTOR",
+    "value": "StructuredConnector"
+  },
+  {
+    "name": "SHAPE_TYPE_STRUCTURED_INTERFACE",
+    "value": "StructuredInterface"
+  },
+  {
+    "name": "SHAPE_TYPE_STUB_STATE",
+    "value": "StubState"
+  },
+  {
+    "name": "SHAPE_TYPE_SUBMACHINE_STATE",
+    "value": "SubmachineState"
+  },
+  {
+    "name": "SHAPE_TYPE_SUBMACHINE_STATE2",
+    "value": "SubmachineState2"
+  },
+  {
+    "name": "SHAPE_TYPE_SUBSTITUTION",
+    "value": "Substitution"
+  },
+  {
+    "name": "SHAPE_TYPE_SUBSYSTEM",
+    "value": "Subsystem"
+  },
+  {
+    "name": "SHAPE_TYPE_SUB_ACTIVITY",
+    "value": "SubActivity"
+  },
+  {
+    "name": "SHAPE_TYPE_SUB_CONVERSATION",
+    "value": "SubConversation"
+  },
+  {
+    "name": "SHAPE_TYPE_SUB_LEVEL_IN_FLOW",
+    "value": "SubLevelInFlow"
+  },
+  {
+    "name": "SHAPE_TYPE_SUB_LEVEL_OUT_FLOW",
+    "value": "SubLevelOutFlow"
+  },
+  {
+    "name": "SHAPE_TYPE_SVG_SHAPE",
+    "value": "SVGShape"
+  },
+  {
+    "name": "SHAPE_TYPE_SYNCH_MESSAGE",
+    "value": "SynchMessage"
+  },
+  {
+    "name": "SHAPE_TYPE_SYNCH_STATE",
+    "value": "SynchState"
+  },
+  {
+    "name": "SHAPE_TYPE_SYSTEM",
+    "value": "System"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_ACTIVITY_BLOCK",
+    "value": "SysMLActivityBlock"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_ALLOCATE",
+    "value": "SysMLAllocate"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_ASSOCIATION_BLOCK",
+    "value": "SysMLAssociationBlock"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_BINDING_CONNECTOR",
+    "value": "SysMLBindingConnector"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_BLOCK",
+    "value": "SysMLBlock"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_BOUND_REFERENCE",
+    "value": "SysMLBoundReference"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_CONSTRAINT_BLOCK",
+    "value": "SysMLConstraintBlock"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_CONSTRAINT_PARAMETER",
+    "value": "SysMLConstraintParameter"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_CONSTRAINT_PROPERTY",
+    "value": "SysMLConstraintProperty"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_COPY",
+    "value": "SysMLCopy"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_ELEMENT_GROUP",
+    "value": "SysMLElementGroup"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_FLOW_PORT",
+    "value": "SysMLFlowPort"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_FLOW_SPECIFICATION",
+    "value": "SysMLFlowSpecification"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_INTERFACE_BLOCK",
+    "value": "SysMLInterfaceBlock"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_ITEM_FLOW",
+    "value": "SysMLItemFlow"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_NAMESPACE_COMPARTMENT",
+    "value": "SysMLNamespaceCompartment"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_PARTICIPANT_PROPERTY",
+    "value": "SysMLParticipantProperty"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_PART_PROPERTY",
+    "value": "SysMLPartProperty"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_PROPERTY",
+    "value": "SysMLProperty"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_QUANTITY_KIND",
+    "value": "SysMLQuantityKind"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_REFERENCE_PROPERTY",
+    "value": "SysMLReferenceProperty"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_SIGNAL",
+    "value": "SysMLSignal"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_STRUCTURE_COMPARTMENT",
+    "value": "SysMLStructureCompartment"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_UNIT",
+    "value": "SysMLUnit"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_VALUE_PROPERTY",
+    "value": "SysMLValueProperty"
+  },
+  {
+    "name": "SHAPE_TYPE_SYS_ML_VALUE_TYPE",
+    "value": "SysMLValueType"
+  },
+  {
+    "name": "SHAPE_TYPE_TERMINATE",
+    "value": "Terminate"
+  },
+  {
+    "name": "SHAPE_TYPE_TEST_CASE",
+    "value": "TestCase"
+  },
+  {
+    "name": "SHAPE_TYPE_TEXT_BOX",
+    "value": "TextBox"
+  },
+  {
+    "name": "SHAPE_TYPE_TIME_CONSTRAINT",
+    "value": "TimeConstraint"
+  },
+  {
+    "name": "SHAPE_TYPE_TIMING_FRAME",
+    "value": "TimingFrame"
+  },
+  {
+    "name": "SHAPE_TYPE_TRACE",
+    "value": "Trace"
+  },
+  {
+    "name": "SHAPE_TYPE_TRANSITION",
+    "value": "Transition"
+  },
+  {
+    "name": "SHAPE_TYPE_TRANSITION2",
+    "value": "Transition2"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_BUTTON",
+    "value": "UIButton"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_CHECK_BOX",
+    "value": "UICheckBox"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_COMBO_BOX",
+    "value": "UIComboBox"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_FRAME",
+    "value": "UIFrame"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_LABEL",
+    "value": "UILabel"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_LIST",
+    "value": "UIList"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_MENUBAR",
+    "value": "UIMenubar"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_PANEL",
+    "value": "UIPanel"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_PASSWORD_FIELD",
+    "value": "UIPasswordField"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_PROGRESS_BAR",
+    "value": "UIProgressBar"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_RADIO_BUTTON",
+    "value": "UIRadioButton"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_SCROLL_BAR",
+    "value": "UIScrollBar"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_SEPARATOR",
+    "value": "UISeparator"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_SLIDER",
+    "value": "UISlider"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_SPINNER",
+    "value": "UISpinner"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_TABBED_HEADER",
+    "value": "UITabbedHeader"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_TABLE",
+    "value": "UITable"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_TEXT_AREA",
+    "value": "UITextArea"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_TEXT_FIELD",
+    "value": "UITextField"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_TOGGLE_BUTTON",
+    "value": "UIToggleButton"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_TREE",
+    "value": "UITree"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_WEB_BUTTON_INPUT",
+    "value": "UIWebButtonInput"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_WEB_CHECK_BOX_INPUT",
+    "value": "UIWebCheckBoxInput"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_WEB_COMBO_BOX",
+    "value": "UIWebComboBox"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_WEB_FILE_INPUT",
+    "value": "UIWebFileInput"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_WEB_LABEL",
+    "value": "UIWebLabel"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_WEB_LIST",
+    "value": "UIWebList"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_WEB_PANEL",
+    "value": "UIWebPanel"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_WEB_PASSWORD_INPUT",
+    "value": "UIWebPasswordInput"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_WEB_RADIO_INPUT",
+    "value": "UIWebRadioInput"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_WEB_RESET_INPUT",
+    "value": "UIWebResetInput"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_WEB_SUBMIT_INPUT",
+    "value": "UIWebSubmitInput"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_WEB_TEXT_AREA",
+    "value": "UIWebTextArea"
+  },
+  {
+    "name": "SHAPE_TYPE_UI_WEB_TEXT_INPUT",
+    "value": "UIWebTextInput"
+  },
+  {
+    "name": "SHAPE_TYPE_USAGE",
+    "value": "Usage"
+  },
+  {
+    "name": "SHAPE_TYPE_USER_STORY",
+    "value": "UserStory"
+  },
+  {
+    "name": "SHAPE_TYPE_USE_CASE",
+    "value": "UseCase"
+  },
+  {
+    "name": "SHAPE_TYPE_VALUE_PIN",
+    "value": "ValuePin"
+  },
+  {
+    "name": "SHAPE_TYPE_VERIFY",
+    "value": "Verify"
+  },
+  {
+    "name": "SHAPE_TYPE_VERTICAL_SYNCHRONIZATIONBAR",
+    "value": "VerticalSynchronizationbar"
+  },
+  {
+    "name": "SHAPE_TYPE_VISIO_SHAPE",
+    "value": "VisioShape"
+  },
+  {
+    "name": "SHAPE_TYPE_WIREFLOW_CONNECTOR",
+    "value": "WireflowConnector"
+  },
+  {
+    "name": "SHAPE_TYPE_WIREFLOW_DECISION_NODE",
+    "value": "WireflowDecisionNode"
+  },
+  {
+    "name": "SHAPE_TYPE_WIREFLOW_NODE",
+    "value": "WireflowNode"
+  },
+  {
+    "name": "SHAPE_TYPE_YC_DFD_DATA_FLOW",
+    "value": "YcDfdDataFlow"
+  },
+  {
+    "name": "SHAPE_TYPE_YC_DFD_DATA_STORE",
+    "value": "YcDfdDataStore"
+  },
+  {
+    "name": "SHAPE_TYPE_YC_DFD_EXTERNAL_ENTITY",
+    "value": "YcDfdExternalEntity"
+  },
+  {
+    "name": "SHAPE_TYPE_YC_DFD_PROCESS",
+    "value": "YcDfdProcess"
+  },
+  {
+    "name": "SHAPE_TYPE_YD_DFD_DATA_FLOW",
+    "value": "YdDfdDataFlow"
+  },
+  {
+    "name": "SHAPE_TYPE_YD_DFD_DATA_STORE",
+    "value": "YdDfdDataStore"
+  },
+  {
+    "name": "SHAPE_TYPE_YD_DFD_EXTERNAL_ENTITY",
+    "value": "YdDfdExternalEntity"
+  },
+  {
+    "name": "SHAPE_TYPE_YD_DFD_PROCESS",
+    "value": "YdDfdProcess"
+  }
+]
