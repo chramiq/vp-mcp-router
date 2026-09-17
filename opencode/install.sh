@@ -94,18 +94,22 @@ if [ "$DRY_RUN" -eq 1 ]; then
   echo "would merge visual-paradigm MCP entry into $OPENCODE_JSON"
 else
   mkdir -p "$(dirname "$OPENCODE_JSON")"
-  ROUTER_URL="${ROUTER_URL:-http://127.0.0.1:8899/mcp}" python3 - "$OPENCODE_JSON" <<'EOF'
-import json, os, sys
+  ROUTER_URL="${ROUTER_URL:-http://127.0.0.1:8899/mcp}" VP_MCP_ENABLED="${VP_MCP_ENABLED:-true}" python3 - "$OPENCODE_JSON" <<'EOF'
+import json, os, re, sys
 path = sys.argv[1]
 url = os.environ["ROUTER_URL"]
+enabled = os.environ.get("VP_MCP_ENABLED", "true") == "true"
 cfg = {}
 if os.path.isfile(path):
     with open(path) as f:
-        cfg = json.load(f)
+        raw = f.read()
+    raw = re.sub(r"(?m)^\s*//.*$", "", raw)
+    raw = re.sub(r",\s*([}\]])", r"\1", raw)
+    cfg = json.loads(raw)
 cfg.setdefault("mcp", {})["visual-paradigm"] = {
     "type": "remote",
     "url": url,
-    "enabled": True,
+    "enabled": enabled,
 }
 with open(path, "w") as f:
     json.dump(cfg, f, indent=2)
