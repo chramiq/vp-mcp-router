@@ -84,6 +84,8 @@ public final class BatchApplier {
                 return connect(state, op, id, compensations);
             case "duplicate_diagram":
                 return duplicateDiagram(state, op, id, compensations);
+            case "add_member":
+                return addMember(state, op, id, compensations);
             case "delete_diagram":
                 return deleteDiagram(state, op, id);
             case "delete_element":
@@ -107,41 +109,76 @@ public final class BatchApplier {
     private static JsonObject createElement(State state, JsonObject op, String id,
             List<Compensation> compensations) {
         IDiagramUIModel diagram = requireDiagram(state, op.get("diagram"));
-        IModelElement model = newElement(state.factory, op.get("model_type").getAsString());
-        model.setName(op.get("name").getAsString().trim());
-        IDiagramElement view = state.diagrams.createDiagramElement(diagram, model);
+        String modelType = op.get("model_type").getAsString();
+        String name = op.get("name").getAsString().trim();
+        IModelElement model = newElement(state.factory, modelType);
+        model.setName(name);
+        IDiagramElement first = state.diagrams.createDiagramElement(diagram, model);
+        IModelElement placed = model;
+        IDiagramElement view = first;
+        if (view == null) {
+            // Some types (lifelines) refuse model-first placement; the diagram
+            // creates the view with its own model instead (probe-verified).
+            String shape = VIEW_FIRST_SHAPES.getOrDefault(modelType, modelType);
+            view = diagram.createDiagramElement(shape);
+            if (view == null) {
+                throw new IllegalStateException(
+                        "Cannot place \"" + modelType + "\" on this diagram.");
+            }
+            if (view.getModelElement() != null) {
+                placed = view.getModelElement();
+            }
+        }
+        if (!name.equals(placed.getName())) {
+            // Some types (DB tables) drop a pre-placement name; re-assert it.
+            placed.setName(name);
+        }
         int gx = number(op, "x", 10);
         int gy = number(op, "y", 10);
         int gw = number(op, "width", 80);
         int gh = number(op, "height", 40);
         view.setBounds(gx, gy, gw, gh);
-        if (op.get("model_type").getAsString().equals("Actor")) {
+        if (modelType.equals("Actor")) {
             int[] caption = actorCaptionBounds(gx, gy, gw, gh);
             view.getCaptionUIModel().setBounds(caption[0], caption[1], caption[2], caption[3]);
         }
         state.views.put(id, view);
-        state.models.put(id, model);
+        state.models.put(id, placed);
         state.owners.put(view.getId(), diagram);
-        compensations.add(new Compensation(id, () -> deleteView(diagram, view, model)));
+        final IDiagramElement target = view;
+        final IModelElement kept = placed;
+        compensations.add(new Compensation(id, () -> deleteView(diagram, target, kept)));
+        if (placed != model) {
+            dropOrphan(model);
+        }
         VpLog.info("APPLY create_element id=" + id + " vp_id=" + view.getId());
-        return appliedEntry(id, "element", view.getId(), model.getName());
+        return appliedEntry(id, "element", view.getId(), placed.getName());
+    }
+
+    private static void dropOrphan(IModelElement model) {
+        try {
+            model.delete();
+        } catch (RuntimeException leftover) {
+            VpLog.info("ORPHAN kept: " + leftover);
+        }
     }
 
     private static JsonObject connect(State state, JsonObject op, String id, List<Compensation> compensations) {
         IDiagramUIModel diagram = requireDiagram(state, op.get("diagram"));
         IModelElement relModel = newRelationship(state.factory, op.get("rel_type").getAsString());
-        if (!(relModel instanceof IRelationship)) {
-            throw new IllegalStateException("Relationship model has no ends.");
-        }
         Endpoint from = requireEndpoint(state, op.get("from"));
         Endpoint to = requireEndpoint(state, op.get("to"));
-        IRelationship rel = (IRelationship) relModel;
-        rel.setFrom(from.model);
-        rel.setTo(to.model);
+        if (relModel instanceof IRelationship) {
+            // Messages are not relationships; their views carry the endpoints.
+            IRelationship rel = (IRelationship) relModel;
+            rel.setFrom(from.model);
+            rel.setTo(to.model);
+        }
         if (op.has("name") && op.get("name").isJsonPrimitive()) {
             relModel.setName(op.get("name").getAsString());
         }
-        IDiagramElement connector = state.diagrams.createConnector(diagram, relModel, from.view, to.view, null);
+        IDiagramElement connector = state.diagrams.createConnector(diagram, relModel, from.view,
+                to.view, toPointArray(op.get("points")));
         pinMember(connector, op.get("from_member"), true);
         pinMember(connector, op.get("to_member"), false);
         state.views.put(id, connector);
@@ -259,6 +296,88 @@ public final class BatchApplier {
         }
     }
 
+    /** Waypoints for connect; null when the op carries no points. Pure JSON, no VP. */
+    public static java.awt.Point[] toPointArray(JsonElement points) {
+        if (points == null || points.isJsonNull()) {
+            return null;
+        }
+        JsonArray array = points.getAsJsonArray();
+        java.awt.Point[] out = new java.awt.Point[array.size()];
+        for (int index = 0; index < array.size(); index++) {
+            JsonObject point = array.get(index).getAsJsonObject();
+            out[index] = new java.awt.Point(point.get("x").getAsInt(), point.get("y").getAsInt());
+        }
+        return out;
+    }
+
+    /**
+     * Containment writes: attributes, operations, columns. The adder is
+     * resolved from the child's interface (addAttribute, addDBColumn…),
+     * so new member kinds need no new code — probe-verified.
+     */
+    private static JsonObject addMember(State state, JsonObject op, String id,
+            List<Compensation> compensations) {
+        Endpoint parent = requireEndpoint(state, op.get("parent"));
+        String memberType = op.get("member_type").getAsString();
+        IModelElement child = newElement(state.factory, memberType);
+        String name = op.get("name").getAsString().trim();
+        child.setName(name);
+        setMemberType(child, op.get("type"), id);
+        attachMember(parent.model, child, memberType, id);
+        compensations.add(new Compensation(id, () -> detachMember(parent.model, child, memberType)));
+        VpLog.info("APPLY add_member id=" + id + " child=" + child.getId());
+        return appliedEntry(id, "member", child.getId(), name);
+    }
+
+    private static void setMemberType(IModelElement child, JsonElement type, String id) {
+        if (type == null || type.isJsonNull()) {
+            return;
+        }
+        try {
+            child.getClass().getMethod("setType", String.class).invoke(child, type.getAsString());
+        } catch (NoSuchMethodException missing) {
+            throw new IllegalStateException(
+                    "Op \"" + id + "\" wants a type, but this member kind has no string type.");
+        } catch (Exception failure) {
+            throw new IllegalStateException("Op \"" + id + "\" could not set type: " + failure);
+        }
+    }
+
+    private static void attachMember(IModelElement parent, IModelElement child, String memberType,
+            String id) {
+        for (Class<?> iface : child.getClass().getInterfaces()) {
+            String simple = iface.getSimpleName();
+            String adder = "add" + (simple.startsWith("I") ? simple.substring(1) : simple);
+            try {
+                parent.getClass().getMethod(adder, iface).invoke(parent, child);
+                return;
+            } catch (NoSuchMethodException missing) {
+                continue;
+            } catch (Exception failure) {
+                throw new IllegalStateException("Op \"" + id + "\" failed to attach: " + failure);
+            }
+        }
+        throw new IllegalStateException("Op \"" + id + "\" has no adder for \"" + memberType
+                + "\" on " + parent.getClass().getSimpleName() + ".");
+    }
+
+    private static void detachMember(IModelElement parent, IModelElement child, String memberType) {
+        for (Class<?> iface : child.getClass().getInterfaces()) {
+            String simple = iface.getSimpleName();
+            String remover = "remove" + (simple.startsWith("I") ? simple.substring(1) : simple);
+            try {
+                parent.getClass().getMethod(remover, iface).invoke(parent, child);
+                return;
+            } catch (NoSuchMethodException missing) {
+                continue;
+            } catch (Exception failure) {
+                throw new IllegalStateException("Detach failed: " + failure);
+            }
+        }
+        throw new IllegalStateException(
+                "No remover for \"" + memberType + "\"; member survives compensation.");
+    }
+
     private static JsonObject deleteDiagram(State state, JsonObject op, String id) {
         IDiagramUIModel diagram = requireDiagram(state, op.get("diagram"));
         String vpId = diagram.getId();
@@ -343,33 +462,23 @@ public final class BatchApplier {
         return new int[] {x + (width - 50) / 2, y + height, 50, 15};
     }
 
+    /** View-first shapes for types that refuse model-first placement. */
+    private static final Map<String, String> VIEW_FIRST_SHAPES = Map.of("LifeLine", "InteractionLifeLine");
+
     private static IModelElement newElement(IModelElementFactory factory, String modelType) {
-        switch (modelType) {
-            case "Actor":
-                return factory.createActor();
-            case "UseCase":
-                return factory.createUseCase();
-            case "Class":
-                return factory.createClass();
-            default:
-                throw new IllegalStateException("Unvalidated model_type \"" + modelType + "\".");
+        try {
+            return (IModelElement) factory.getClass().getMethod("create" + modelType).invoke(factory);
+        } catch (Exception failure) {
+            throw new IllegalStateException(
+                    "Unvalidated model_type \"" + modelType + "\": " + failure);
         }
     }
 
     private static IModelElement newRelationship(IModelElementFactory factory, String relType) {
-        switch (relType) {
-            case "Association":
-                return factory.createAssociation();
-            case "Include":
-                return factory.createInclude();
-            case "Extend":
-                return factory.createExtend();
-            case "Generalization":
-                return factory.createGeneralization();
-            case "Dependency":
-                return factory.createDependency();
-            default:
-                throw new IllegalStateException("Unvalidated rel_type \"" + relType + "\".");
+        try {
+            return (IModelElement) factory.getClass().getMethod("create" + relType).invoke(factory);
+        } catch (Exception failure) {
+            throw new IllegalStateException("Unvalidated rel_type \"" + relType + "\": " + failure);
         }
     }
 

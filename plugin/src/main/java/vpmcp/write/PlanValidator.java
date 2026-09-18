@@ -18,15 +18,19 @@ import java.util.Set;
  */
 public final class PlanValidator {
 
-    private static final Set<String> DIAGRAMS =
-            new HashSet<>(Arrays.asList("ClassDiagram", "UseCaseDiagram"));
-    private static final Set<String> ELEMENTS =
-            new HashSet<>(Arrays.asList("Actor", "UseCase", "Class"));
-    private static final Set<String> RELATIONSHIPS = new HashSet<>(
-            Arrays.asList("Association", "Include", "Extend", "Generalization", "Dependency"));
+    private static final Set<String> DIAGRAMS = new HashSet<>(Arrays.asList("ClassDiagram",
+            "UseCaseDiagram", "ActivityDiagram", "StateDiagram", "ERDiagram", "InteractionDiagram",
+            "DeploymentDiagram"));
+    private static final Set<String> ELEMENTS = new HashSet<>(Arrays.asList("Actor", "UseCase",
+            "Class", "Activity", "InitialNode", "DecisionNode", "ActivityFinalNode", "State2",
+            "DBTable", "Component", "Node", "LifeLine"));
+    private static final Set<String> MEMBERS =
+            new HashSet<>(Arrays.asList("Attribute", "Operation", "DBColumn"));
+    private static final Set<String> RELATIONSHIPS = new HashSet<>(Arrays.asList("Association",
+            "Include", "Extend", "Generalization", "Dependency", "Message", "Transition2"));
     private static final Set<String> OPS =
             new HashSet<>(Arrays.asList("create_diagram", "create_element", "connect",
-                    "duplicate_diagram", "delete_diagram", "delete_element"));
+                    "duplicate_diagram", "add_member", "delete_diagram", "delete_element"));
 
     private PlanValidator() {
     }
@@ -81,6 +85,9 @@ public final class PlanValidator {
             case "duplicate_diagram":
                 validateDuplicateDiagram(project, op, id, symbols, plan, errors);
                 break;
+            case "add_member":
+                validateAddMember(project, op, id, symbols, plan, errors);
+                break;
             case "delete_diagram":
                 validateDeleteDiagram(project, op, id, symbols, plan, errors);
                 break;
@@ -118,6 +125,11 @@ public final class PlanValidator {
             return;
         }
         String modelType = text(op, "model_type");
+        if (modelType != null && MEMBERS.contains(modelType)) {
+            errors.add(error(id,
+                    "Members are not placeable; use add_member with a parent element."));
+            return;
+        }
         if (modelType == null || !ELEMENTS.contains(modelType)) {
             errors.add(error(id, "Unsupported model_type; allowed: " + ELEMENTS + "."));
             return;
@@ -155,7 +167,10 @@ public final class PlanValidator {
             errors.add(error(id, "Unknown endpoint; use an existing element id or a plan ref."));
             return;
         }
-        String problem = memberProblem(op.get("from_member"), "from_member");
+        String problem = pointsProblem(op.get("points"));
+        if (problem == null) {
+            problem = memberProblem(op.get("from_member"), "from_member");
+        }
         if (problem == null) {
             problem = memberProblem(op.get("to_member"), "to_member");
         }
@@ -184,6 +199,56 @@ public final class PlanValidator {
         plan.add(entry(id, "duplicate_diagram",
                 "copy of diagram '" + diagram + "' as '" + name.trim() + "'",
                 "delete diagram '" + name.trim() + "' (shared models are kept)"));
+    }
+
+    private static void validateAddMember(IProject project, JsonObject op, String id,
+            Map<String, String> symbols, JsonArray plan, JsonArray errors) {
+        String parent = resolveElement(project, op.get("parent"), symbols);
+        if (parent == null) {
+            errors.add(error(id, "Unknown parent; use an existing element id or a plan ref."));
+            return;
+        }
+        String memberType = text(op, "member_type");
+        if (memberType == null || !MEMBERS.contains(memberType)) {
+            errors.add(error(id, "Unsupported member_type; allowed: " + MEMBERS + "."));
+            return;
+        }
+        String name = text(op, "name");
+        if (name == null || name.trim().isEmpty()) {
+            errors.add(error(id, "Member \"name\" is required."));
+            return;
+        }
+        JsonElement type = op.get("type");
+        if (type != null && !type.isJsonNull()
+                && (!type.isJsonPrimitive() || type.getAsString().trim().isEmpty())) {
+            errors.add(error(id, "Member \"type\" must be a non-blank string."));
+            return;
+        }
+        symbols.put(id, "member");
+        plan.add(entry(id, "add_member",
+                memberType + " '" + name.trim() + "' on '" + parent + "'",
+                "remove '" + name.trim() + "' from its parent"));
+    }
+
+    private static String pointsProblem(JsonElement points) {
+        if (points == null || points.isJsonNull()) {
+            return null;
+        }
+        if (!points.isJsonArray() || points.getAsJsonArray().size() < 2) {
+            return "\"points\" must be an array of at least two {x, y} waypoints.";
+        }
+        for (JsonElement item : points.getAsJsonArray()) {
+            if (item == null || !item.isJsonObject() || !isNumber(item.getAsJsonObject(), "x")
+                    || !isNumber(item.getAsJsonObject(), "y")) {
+                return "\"points\" entries must be {x, y} numbers.";
+            }
+        }
+        return null;
+    }
+
+    private static boolean isNumber(JsonObject holder, String name) {
+        JsonElement value = holder.get(name);
+        return value != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber();
     }
 
     private static void validateDeleteDiagram(IProject project, JsonObject op, String id,

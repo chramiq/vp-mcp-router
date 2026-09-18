@@ -227,6 +227,70 @@ class PlanValidatorTest {
         assertFalse(result.get("valid").getAsBoolean());
     }
 
+    @Test
+    void newDiagramFamiliesValidate() {
+        JsonArray ops = parse("["
+                + "{\"id\":\"a\",\"op\":\"create_diagram\",\"diagram_type\":\"ActivityDiagram\",\"name\":\"A\"},"
+                + "{\"id\":\"s\",\"op\":\"create_diagram\",\"diagram_type\":\"StateDiagram\",\"name\":\"S\"},"
+                + "{\"id\":\"e\",\"op\":\"create_diagram\",\"diagram_type\":\"ERDiagram\",\"name\":\"E\"},"
+                + "{\"id\":\"q\",\"op\":\"create_diagram\",\"diagram_type\":\"InteractionDiagram\",\"name\":\"Q\"},"
+                + "{\"id\":\"p\",\"op\":\"create_diagram\",\"diagram_type\":\"DeploymentDiagram\",\"name\":\"P\"}]");
+
+        JsonObject result = PlanValidator.validate(project, ops);
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+    }
+
+    @Test
+    void addMemberValidates() {
+        JsonArray ops = parse("[{\"id\":\"m\",\"op\":\"add_member\",\"parent\":\"v9\","
+                + " \"member_type\":\"Attribute\",\"name\":\"total\",\"type\":\"int\"}]");
+
+        JsonObject result = PlanValidator.validate(project, ops);
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+    }
+
+    @Test
+    void addMemberUnknownParentRejected() {
+        JsonObject result = PlanValidator.validate(project,
+                parse("[{\"id\":\"m\",\"op\":\"add_member\",\"parent\":\"nope\","
+                        + " \"member_type\":\"Attribute\",\"name\":\"total\"}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+    }
+
+    @Test
+    void memberAsTopLevelRejected() {
+        JsonObject result = PlanValidator.validate(project,
+                parse("[{\"id\":\"u\",\"op\":\"create_element\",\"diagram\":\"d1\","
+                        + " \"model_type\":\"DBColumn\",\"name\":\"c\"}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+        assertTrue(result.toString().contains("add_member"));
+    }
+
+    @Test
+    void pointsValid() {
+        JsonArray ops = parse("[{\"id\":\"r\",\"op\":\"connect\",\"diagram\":\"d1\","
+                + " \"rel_type\":\"Message\",\"from\":\"v9\",\"to\":\"v9\","
+                + " \"points\":[{\"x\":1,\"y\":2},{\"x\":3,\"y\":4}]}]");
+
+        JsonObject result = PlanValidator.validate(project, ops);
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+    }
+
+    @Test
+    void pointsRejected() {
+        JsonObject result = PlanValidator.validate(project,
+                parse("[{\"id\":\"r\",\"op\":\"connect\",\"diagram\":\"d1\","
+                        + " \"rel_type\":\"Association\",\"from\":\"v9\",\"to\":\"v9\","
+                        + " \"points\":[{\"x\":1}]}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+    }
+
     private IProject projectWith(String diagramId, String elementId) {
         Map<String, Object> values = new HashMap<>();
         values.put("toDiagramArray", new com.vp.plugin.diagram.IDiagramUIModel[] {
