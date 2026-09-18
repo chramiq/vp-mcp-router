@@ -8,6 +8,7 @@ import com.vp.plugin.model.IProject;
 import vpmcp.core.McpTool;
 import vpmcp.core.McpToolException;
 import vpmcp.core.ToolDefinition;
+import vpmcp.vp.GuardStatus;
 
 /** Live handshake: versions plus the currently open project, if any. */
 public final class CapabilitiesTool implements McpTool {
@@ -49,6 +50,10 @@ public final class CapabilitiesTool implements McpTool {
         }
         IProject project = ApplicationManager.instance().getProjectManager().getProject();
         result.addProperty("open_project", project == null ? null : project.getName());
+        JsonObject guard = GuardStatus.latest();
+        if (guard != null) {
+            result.add("schema_guard", guard);
+        }
         return result;
     }
 }

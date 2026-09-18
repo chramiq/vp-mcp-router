@@ -16,7 +16,9 @@ import vpmcp.tools.PreviewBatchTool;
 import vpmcp.tools.ListDiagramsTool;
 import vpmcp.vp.EdtToolInvoker;
 import vpmcp.vp.FileResourceProvider;
+import vpmcp.vp.GuardStatus;
 import vpmcp.vp.McpServerHandle;
+import vpmcp.vp.SchemaGuard;
 import vpmcp.vp.ServerConfig;
 import vpmcp.vp.VpLog;
 
@@ -26,7 +28,7 @@ import vpmcp.vp.VpLog;
  */
 public final class RouterPlugin implements VPPlugin {
 
-    private static final String VERSION = "0.6.0";
+    private static final String VERSION = "0.7.0";
     private static final String SCHEMA_VERSION = "v18.1";
 
     private McpServer server;
@@ -39,6 +41,15 @@ public final class RouterPlugin implements VPPlugin {
 
         try {
             ServerConfig config = ServerConfig.load(pluginDir);
+            JsonObject capabilities = capabilitiesSnapshot();
+            JsonObject guard = SchemaGuard.check(pluginDir, SCHEMA_VERSION,
+                    capabilities.has("vp_version") && !capabilities.get("vp_version").isJsonNull()
+                            ? capabilities.get("vp_version").getAsString() : null);
+            GuardStatus.publish(guard);
+            capabilities.add("schema_guard", guard);
+            if (guard.has("warning")) {
+                VpLog.info("Schema guard: " + guard.get("warning").getAsString());
+            }
             McpToolRegistry registry = new McpToolRegistry()
                     .register(new CapabilitiesTool(VERSION, SCHEMA_VERSION))
                     .register(new ListDiagramsTool())
@@ -48,7 +59,7 @@ public final class RouterPlugin implements VPPlugin {
                     .register(new GetDiagramByUrlTool());
             server = new McpServer(config.getBindAddress(), config.getPort(), registry,
                     new EdtToolInvoker(), VERSION, VpLog::error,
-                    new FileResourceProvider(pluginDir, SCHEMA_VERSION, capabilitiesSnapshot()));
+                    new FileResourceProvider(pluginDir, SCHEMA_VERSION, capabilities));
             server.start();
             McpServerHandle.started(server, registry, pluginDir);
             VpLog.info("MCP server listening on " + server.getEndpointUrl());

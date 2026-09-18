@@ -167,6 +167,9 @@ public final class McpProtocolHandler {
             if (output.has("image_data")) {
                 return JsonRpc.result(id, imageResult(output));
             }
+            if (output.has("document_text")) {
+                return JsonRpc.result(id, documentResult(output));
+            }
             return JsonRpc.result(id, toolResult(gson.toJson(output), false));
         } catch (Throwable failure) {
             // Includes NoClassDefFoundError when the Open API is absent, which is what
@@ -189,6 +192,25 @@ public final class McpProtocolHandler {
         JsonArray contents = new JsonArray();
         contents.add(text);
         contents.add(image);
+
+        JsonObject result = new JsonObject();
+        result.add("content", contents);
+        result.addProperty("isError", false);
+        return result;
+    }
+
+    private JsonObject documentResult(JsonObject output) {
+        JsonObject summary = new JsonObject();
+        summary.addProperty("type", "text");
+        summary.addProperty("text", output.has("summary") ? output.get("summary").getAsString() : "");
+
+        JsonObject document = new JsonObject();
+        document.addProperty("type", "text");
+        document.addProperty("text", output.get("document_text").getAsString());
+
+        JsonArray contents = new JsonArray();
+        contents.add(summary);
+        contents.add(document);
 
         JsonObject result = new JsonObject();
         result.add("content", contents);
