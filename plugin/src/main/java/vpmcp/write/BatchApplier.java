@@ -112,6 +112,7 @@ public final class BatchApplier {
         String modelType = op.get("model_type").getAsString();
         String name = op.get("name").getAsString().trim();
         IModelElement model = newElement(state.factory, modelType);
+        unsyncTable(model);
         model.setName(name);
         IDiagramElement first = state.diagrams.createDiagramElement(diagram, model);
         IModelElement placed = model;
@@ -141,6 +142,9 @@ public final class BatchApplier {
         if (modelType.equals("Actor")) {
             int[] caption = actorCaptionBounds(gx, gy, gw, gh);
             view.getCaptionUIModel().setBounds(caption[0], caption[1], caption[2], caption[3]);
+        } else if ("State2".equals(modelType) || "DecisionNode".equals(modelType)) {
+            int[] caption = insideCaptionBounds(gx, gy, gw, gh);
+            view.getCaptionUIModel().setBounds(caption[0], caption[1], caption[2], caption[3]);
         }
         state.views.put(id, view);
         state.models.put(id, placed);
@@ -152,7 +156,21 @@ public final class BatchApplier {
             dropOrphan(model);
         }
         VpLog.info("APPLY create_element id=" + id + " vp_id=" + view.getId());
-        return appliedEntry(id, "element", view.getId(), placed.getName());
+        JsonObject placedEntry = appliedEntry(id, "element", view.getId(), placed.getName());
+        if (!name.equals(placed.getName())) {
+            placedEntry.addProperty("name_warning",
+                    "VP kept \"" + placed.getName() + "\" instead of \"" + name + "\".");
+        }
+        return placedEntry;
+    }
+
+    /** Fresh tables follow entity naming by default; opt out so setName sticks. */
+    private static void unsyncTable(IModelElement model) {
+        if (model instanceof com.vp.plugin.model.IDBTable) {
+            com.vp.plugin.model.IDBTable table = (com.vp.plugin.model.IDBTable) model;
+            table.setSyncType(com.vp.plugin.model.IDBTable.SYNC_TYPE_NOT_SYNC);
+            table.setOrmSyncState(com.vp.plugin.model.IDBTable.ORM_SYNC_STATE_NOT_SYNC);
+        }
     }
 
     private static void dropOrphan(IModelElement model) {
@@ -333,14 +351,19 @@ public final class BatchApplier {
         if (type == null || type.isJsonNull()) {
             return;
         }
-        try {
-            child.getClass().getMethod("setType", String.class).invoke(child, type.getAsString());
-        } catch (NoSuchMethodException missing) {
-            throw new IllegalStateException(
-                    "Op \"" + id + "\" wants a type, but this member kind has no string type.");
-        } catch (Exception failure) {
-            throw new IllegalStateException("Op \"" + id + "\" could not set type: " + failure);
+        String want = type.getAsString();
+        for (String setter : new String[] {"setType", "setTypeName"}) {
+            try {
+                child.getClass().getMethod(setter, String.class).invoke(child, want);
+                return;
+            } catch (NoSuchMethodException missing) {
+                continue;
+            } catch (Exception failure) {
+                throw new IllegalStateException("Op \"" + id + "\" could not set type: " + failure);
+            }
         }
+        throw new IllegalStateException(
+                "Op \"" + id + "\" wants a type, but this member kind takes none as a string.");
     }
 
     private static void attachMember(IModelElement parent, IModelElement child, String memberType,
@@ -460,6 +483,11 @@ public final class BatchApplier {
     /** Caption box under an actor shape; pure geometry, no VP. */
     public static int[] actorCaptionBounds(int x, int y, int width, int height) {
         return new int[] {x + (width - 50) / 2, y + height, 50, 15};
+    }
+
+    /** Caption box centered inside a state/decision shape; pure geometry, no VP. */
+    public static int[] insideCaptionBounds(int x, int y, int width, int height) {
+        return new int[] {x + width / 2 - 40, y + height / 2 - 8, 80, 16};
     }
 
     /** View-first shapes for types that refuse model-first placement. */

@@ -19,4 +19,10 @@ class CaptionBoundsTest {
 
         assertArrayEquals(new int[] {120, 160, 50, 15}, bounds);
     }
+
+    @Test
+    void insideCaptionCentersInShape() {
+        assertArrayEquals(new int[] {120, 122, 80, 16},
+                BatchApplier.insideCaptionBounds(100, 100, 120, 60));
+    }
 }

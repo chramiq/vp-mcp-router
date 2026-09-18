@@ -88,6 +88,8 @@ public final class ModelPropertiesReader {
                 describeAttribute((IAttribute) child, member);
             } else if (child instanceof IOperation) {
                 describeOperation((IOperation) child, member);
+            } else if (child instanceof com.vp.plugin.model.IDBColumn) {
+                describeColumn((com.vp.plugin.model.IDBColumn) child, member);
             }
             members.add(member);
         }
@@ -99,6 +101,12 @@ public final class ModelPropertiesReader {
         member.addProperty("visibility", attribute.getVisibility());
         member.addProperty("multiplicity", attribute.getMultiplicity());
         member.addProperty("initial_value", attribute.getInitialValueAsString());
+    }
+
+    private void describeColumn(com.vp.plugin.model.IDBColumn column, JsonObject member) {
+        member.addProperty("type_name", column.getTypeName());
+        member.addProperty("length", column.getLength());
+        member.addProperty("nullable", column.isNullable());
     }
 
     private void describeOperation(IOperation operation, JsonObject member) {

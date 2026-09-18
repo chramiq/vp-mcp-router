@@ -16,3 +16,4 @@
 | [0012](0012-save.md) | Explicit save tool, safe restarts | accepted |
 | [0013](0013-duplicate-dynamic.md) | Duplicate diagram + dynamic-mode probes | accepted |
 | [0014](0014-families.md) | Homework families (curated-generic writes) | accepted |
+| [0015](0015-quirks.md) | Quirk fixes (names, columns, captions) | accepted |
