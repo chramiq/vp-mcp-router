@@ -46,6 +46,17 @@ report it with file/line evidence and a proposed correction.
 - v1 is read-only: mutating ops are absent from the binary, not just disabled.
 - Never mutate the open project (create, update, delete, save) without explicit user approval per action.
 
+### VP restarts (development and testing only)
+
+- During development and testing you may kill and restart Visual
+  Paradigm yourself without asking: `pkill -f install4j.RV`, then
+  launch `/usr/bin/visual-paradigm` in the background and poll the
+  MCP endpoint until it answers.
+- Preconditions: the open project is saved (confirm once per session
+  if unsure — an unsaved restart loses work); announce each restart
+  in chat; never restart outside dev/test or while the user is
+  actively modeling.
+
 ### Code
 
 - New decisions get an ADR in `docs/`, appended to `docs/INDEX.md`.

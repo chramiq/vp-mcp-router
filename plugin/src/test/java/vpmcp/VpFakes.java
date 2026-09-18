@@ -28,6 +28,12 @@ public final class VpFakes {
 
     @SuppressWarnings("unchecked")
     public static <T> T of(Class<T> iface, Map<String, Object> values) {
+        return of(iface, values, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static <T> T of(Class<T> iface, Map<String, Object> values,
+            java.util.function.BiFunction<Method, Object[], Object> fallback) {
         Map<String, Object> canned = new HashMap<>(values);
         InvocationHandler handler = (proxy, method, args) -> {
             if (method.getDeclaringClass() == Object.class) {
@@ -45,9 +51,20 @@ public final class VpFakes {
             if (canned.containsKey(method.getName())) {
                 return canned.get(method.getName());
             }
+            if (fallback != null) {
+                Object computed = fallback.apply(method, args);
+                if (computed != null || !hasDefault(method.getReturnType())) {
+                    return computed;
+                }
+            }
             return defaultFor(method.getReturnType());
         };
         return (T) Proxy.newProxyInstance(VpFakes.class.getClassLoader(), new Class<?>[] {iface}, handler);
+    }
+
+    private static boolean hasDefault(Class<?> returns) {
+        return returns.isPrimitive() || returns.isArray() || returns == java.util.List.class
+                || returns == java.util.Collection.class || returns == java.util.Iterator.class;
     }
 
     private static Object defaultFor(Class<?> returns) {
