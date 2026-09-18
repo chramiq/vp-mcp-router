@@ -116,8 +116,25 @@ class DiagramExtractorTest {
     }
 
     @Test
-    void brokenConnectorWarnsAndExtractionContinues() {
-        IModelElement model = VpFakes.model("m1", "Solo", "Class");
+    void memberPinnedEndsPassThrough() {
+        IModelElement from = VpFakes.model("mA", "A", "Class");
+        IModelElement to = VpFakes.model("mB", "B", "Class");
+        IModelElement link = VpFakes.relationship("mR", "rel", "Association", from, to);
+        com.vp.plugin.diagram.IShapeUIModel viewA = VpFakes.shape("vA", from, "Class", 0, 0, 10, 10);
+        com.vp.plugin.diagram.IShapeUIModel viewB = VpFakes.shape("vB", to, "Class", 50, 0, 10, 10);
+        IDiagramUIModel diagram = VpFakes.diagram("d", "D", "ClassDiagram", viewA, viewB,
+                VpFakes.connector("vR", link, viewA, viewB, null, "attrFrom", "attrTo"));
+
+        JsonObject edge = extract(diagram, false).getAsJsonArray("edges").get(0).getAsJsonObject();
+
+        assertEquals("vA", edge.get("from").getAsString());
+        assertEquals("vB", edge.get("to").getAsString());
+        assertEquals("attrFrom", edge.get("from_member_id").getAsString());
+        assertEquals("attrTo", edge.get("to_member_id").getAsString());
+    }
+
+    @Test
+    void brokenConnectorWarnsAndExtractionContinues() {        IModelElement model = VpFakes.model("m1", "Solo", "Class");
         IDiagramUIModel diagram = VpFakes.diagram("d", "D", "ClassDiagram",
                 VpFakes.shape("v1", model, "Class", 0, 0, 10, 10),
                 VpFakes.connector("vBroken", null, null, null, null));

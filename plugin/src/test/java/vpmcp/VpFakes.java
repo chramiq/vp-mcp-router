@@ -134,6 +134,11 @@ public final class VpFakes {
 
     public static IConnectorUIModel connector(String id, IModelElement model, IShapeUIModel from,
             IShapeUIModel to, java.awt.Point[] points) {
+        return connector(id, model, from, to, points, null, null);
+    }
+
+    public static IConnectorUIModel connector(String id, IModelElement model, IShapeUIModel from,
+            IShapeUIModel to, java.awt.Point[] points, String fromMemberId, String toMemberId) {
         Map<String, Object> values = new HashMap<>();
         values.put("getId", id);
         values.put("getModelElement", model);
@@ -141,6 +146,8 @@ public final class VpFakes {
         values.put("getFromShape", from);
         values.put("getToShape", to);
         values.put("getPoints", points);
+        values.put("getFromMemberId", fromMemberId);
+        values.put("getToMemberId", toMemberId);
         return of(IConnectorUIModel.class, values);
     }
 
