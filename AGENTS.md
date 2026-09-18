@@ -51,3 +51,18 @@ report it with file/line evidence and a proposed correction.
 - New decisions get an ADR in `docs/`, appended to `docs/INDEX.md`.
 - MCP tool descriptions are the single source of truth for tool use; the skill never duplicates them.
 - Tool failures return explicit structured errors: never silent empties, never raw stack traces as the answer.
+
+### Tests
+
+- Tests assert behavior, never literals: structural invariants (counts
+  derived from fixture builders, referential integrity, ordering,
+  error contracts), never golden JSON blobs or hardcoded VP ids.
+- No fake coverage: a test must fail if the code under it breaks. No
+  tautologies (asserting the fixture back to itself), no mocks of the
+  unit under test, no `assertTrue(true)` padding.
+- Brittle-by-construction is banned: tests must survive irrelevant
+  changes (new optional fields, reordered keys, extra warnings) and
+  break only on contract changes.
+- Two layers: unit tests on plain JDK (`mvn test`, proxy fakes, no VP)
+  for logic; live runs over HTTP against VP for integration. Neither
+  replaces the other.
