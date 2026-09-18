@@ -86,6 +86,12 @@ public final class BatchApplier {
                 return duplicateDiagram(state, op, id, compensations);
             case "add_member":
                 return addMember(state, op, id, compensations);
+            case "move_element":
+                return moveElement(state, op, id, compensations);
+            case "show_element":
+                return showElement(state, op, id, compensations);
+            case "delete_model":
+                return deleteModel(state, op, id);
             case "delete_diagram":
                 return deleteDiagram(state, op, id);
             case "delete_element":
@@ -399,6 +405,109 @@ public final class BatchApplier {
         }
         throw new IllegalStateException(
                 "No remover for \"" + memberType + "\"; member survives compensation.");
+    }
+
+    /**
+     * View-only move. Model untouched, previous bounds restore on
+     * compensation. Connectors are refused: they move via waypoints.
+     */
+    private static JsonObject moveElement(State state, JsonObject op, String id,
+            List<Compensation> compensations) {
+        Endpoint endpoint = requireEndpoint(state, op.get("element"));
+        IDiagramElement view = endpoint.view;
+        if (view instanceof IConnectorUIModel) {
+            throw new IllegalStateException("Connectors cannot move; delete and reconnect.");
+        }
+        int ox = view.getX();
+        int oy = view.getY();
+        int ow = view.getWidth();
+        int oh = view.getHeight();
+        view.setBounds(number(op, "x", ox), number(op, "y", oy), number(op, "width", ow),
+                number(op, "height", oh));
+        compensations.add(new Compensation(id, () -> view.setBounds(ox, oy, ow, oh)));
+        state.views.put(id, view);
+        state.models.put(id, endpoint.model);
+        VpLog.info("APPLY move_element id=" + id + " vp_id=" + view.getId());
+        return appliedEntry(id, "move", view.getId(), endpoint.model.getName());
+    }
+
+    /**
+     * Fresh view of an existing model on another diagram. The model is
+     * shared; compensation removes the view only.
+     */
+    private static JsonObject showElement(State state, JsonObject op, String id,
+            List<Compensation> compensations) {
+        IDiagramUIModel diagram = requireDiagram(state, op.get("diagram"));
+        IModelElement model = requireModel(state, op.get("model"));
+        IDiagramElement view = state.diagrams.createDiagramElement(diagram, model);
+        if (view == null) {
+            throw new IllegalStateException("This model cannot be shown on this diagram.");
+        }
+        if (op.has("x") || op.has("y") || op.has("width") || op.has("height")) {
+            view.setBounds(number(op, "x", view.getX()), number(op, "y", view.getY()),
+                    number(op, "width", view.getWidth()), number(op, "height", view.getHeight()));
+        }
+        state.views.put(id, view);
+        state.models.put(id, model);
+        state.owners.put(view.getId(), diagram);
+        compensations.add(new Compensation(id, () -> removeViewOnly(diagram, view)));
+        VpLog.info("APPLY show_element id=" + id + " vp_id=" + view.getId());
+        return appliedEntry(id, "element", view.getId(), model.getName());
+    }
+
+    private static void removeViewOnly(IDiagramUIModel owner, IDiagramElement view) {
+        if (owner != null) {
+            owner.removeDiagramElement(view);
+        }
+    }
+
+    /**
+     * Model deletion: every view across every diagram goes first, then the
+     * model. Final like other deletions; reports how many views went.
+     */
+    private static JsonObject deleteModel(State state, JsonObject op, String id) {
+        IModelElement model = requireModel(state, op.get("model"));
+        String modelId = model.getId();
+        String name = model.getName();
+        int removed = 0;
+        IDiagramUIModel[] diagrams = state.project.toDiagramArray();
+        if (diagrams != null) {
+            for (IDiagramUIModel diagram : diagrams) {
+                if (diagram == null || diagram.toDiagramElementArray() == null) {
+                    continue;
+                }
+                for (IDiagramElement view : diagram.toDiagramElementArray()) {
+                    if (view != null && view.getModelElement() != null
+                            && modelId.equals(view.getModelElement().getId())) {
+                        diagram.removeDiagramElement(view);
+                        removed++;
+                    }
+                }
+            }
+        }
+        model.delete();
+        VpLog.info("APPLY delete_model id=" + id + " model=" + modelId + " views=" + removed);
+        JsonObject entry = appliedEntry(id, "deletion", modelId, name);
+        entry.addProperty("views_removed", removed);
+        return entry;
+    }
+
+    private static IModelElement requireModel(State state, JsonElement reference) {
+        if (reference != null) {
+            if (reference.isJsonObject()) {
+                IModelElement planned = state.models.get(reference.getAsJsonObject().get("ref")
+                        .getAsString());
+                if (planned != null) {
+                    return planned;
+                }
+            } else if (reference.isJsonPrimitive()) {
+                IModelElement found = state.project.getModelElementById(reference.getAsString());
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        throw new IllegalStateException("Model reference no longer resolves; re-run preview.");
     }
 
     private static JsonObject deleteDiagram(State state, JsonObject op, String id) {

@@ -291,6 +291,54 @@ class PlanValidatorTest {
         assertFalse(result.get("valid").getAsBoolean());
     }
 
+    @Test
+    void moveElementValidates() {
+        JsonObject result = PlanValidator.validate(project,
+                parse("[{\"id\":\"m\",\"op\":\"move_element\",\"element\":\"v9\",\"x\":50}]"));
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+    }
+
+    @Test
+    void moveElementNeedsGeometry() {
+        JsonObject result = PlanValidator.validate(project,
+                parse("[{\"id\":\"m\",\"op\":\"move_element\",\"element\":\"v9\"}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+    }
+
+    @Test
+    void showElementValidates() {
+        IProject withModel = VpFakes.of(IProject.class, Map.of(), (method, args) -> {
+            if ("toDiagramArray".equals(method.getName())) {
+                return new com.vp.plugin.diagram.IDiagramUIModel[] {
+                        VpFakes.diagram("d1", "Existing", "ClassDiagram")};
+            }
+            if ("getDiagramElementById".equals(method.getName()) && args.length == 1
+                    && "v9".equals(args[0])) {
+                return VpFakes.shape("v9", VpFakes.model("m", "E", "Class"), "Class", 0, 0, 10, 10);
+            }
+            if ("getModelElementById".equals(method.getName()) && args.length == 1
+                    && "mx".equals(args[0])) {
+                return VpFakes.model("mx", "Shared", "Class");
+            }
+            return null;
+        });
+
+        JsonObject result = PlanValidator.validate(withModel,
+                parse("[{\"id\":\"s\",\"op\":\"show_element\",\"diagram\":\"d1\",\"model\":\"mx\"}]"));
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+    }
+
+    @Test
+    void deleteModelUnknownRejected() {
+        JsonObject result = PlanValidator.validate(project,
+                parse("[{\"id\":\"k\",\"op\":\"delete_model\",\"model\":\"mx\"}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+    }
+
     private IProject projectWith(String diagramId, String elementId) {
         Map<String, Object> values = new HashMap<>();
         values.put("toDiagramArray", new com.vp.plugin.diagram.IDiagramUIModel[] {

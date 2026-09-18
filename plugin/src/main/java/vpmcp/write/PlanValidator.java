@@ -30,7 +30,8 @@ public final class PlanValidator {
             "Include", "Extend", "Generalization", "Dependency", "Message", "Transition2"));
     private static final Set<String> OPS =
             new HashSet<>(Arrays.asList("create_diagram", "create_element", "connect",
-                    "duplicate_diagram", "add_member", "delete_diagram", "delete_element"));
+                    "duplicate_diagram", "add_member", "move_element", "show_element",
+                    "delete_model", "delete_diagram", "delete_element"));
 
     private PlanValidator() {
     }
@@ -87,6 +88,15 @@ public final class PlanValidator {
                 break;
             case "add_member":
                 validateAddMember(project, op, id, symbols, plan, errors);
+                break;
+            case "move_element":
+                validateMoveElement(project, op, id, symbols, plan, errors);
+                break;
+            case "show_element":
+                validateShowElement(project, op, id, symbols, plan, errors);
+                break;
+            case "delete_model":
+                validateDeleteModel(project, op, id, symbols, plan, errors);
                 break;
             case "delete_diagram":
                 validateDeleteDiagram(project, op, id, symbols, plan, errors);
@@ -249,6 +259,89 @@ public final class PlanValidator {
     private static boolean isNumber(JsonObject holder, String name) {
         JsonElement value = holder.get(name);
         return value != null && value.isJsonPrimitive() && value.getAsJsonPrimitive().isNumber();
+    }
+
+    private static void validateMoveElement(IProject project, JsonObject op, String id,
+            Map<String, String> symbols, JsonArray plan, JsonArray errors) {
+        String element = resolveElement(project, op.get("element"), symbols);
+        if (element == null) {
+            errors.add(error(id, "Unknown element reference; use an existing element id or a plan ref."));
+            return;
+        }
+        boolean any = false;
+        for (String field : new String[] {"x", "y", "width", "height"}) {
+            JsonElement value = op.get(field);
+            if (value == null || value.isJsonNull()) {
+                continue;
+            }
+            if (!value.isJsonPrimitive() || !value.getAsJsonPrimitive().isNumber()) {
+                errors.add(error(id, "Geometry fields x/y/width/height must be numbers."));
+                return;
+            }
+            any = true;
+        }
+        if (!any) {
+            errors.add(error(id, "Move needs at least one of x/y/width/height."));
+            return;
+        }
+        symbols.put(id, "element");
+        plan.add(entry(id, "move_element", "move '" + element + "'",
+                "restore its previous bounds"));
+    }
+
+    private static void validateShowElement(IProject project, JsonObject op, String id,
+            Map<String, String> symbols, JsonArray plan, JsonArray errors) {
+        String diagram = resolveDiagram(project, op.get("diagram"), symbols);
+        if (diagram == null) {
+            errors.add(error(id, "Unknown diagram reference; use an existing diagram id or a plan ref."));
+            return;
+        }
+        String model = resolveModel(project, op.get("model"), symbols);
+        if (model == null) {
+            errors.add(error(id, "Unknown model; use an existing model id or a plan ref."));
+            return;
+        }
+        if (!optionalNumbers(op, "x", "y", "width", "height")) {
+            errors.add(error(id, "Geometry fields x/y/width/height must be numbers."));
+            return;
+        }
+        symbols.put(id, "element");
+        plan.add(entry(id, "show_element",
+                "show model '" + model + "' on diagram '" + diagram + "' (model is shared)",
+                "remove the view; the shared model is kept"));
+    }
+
+    private static void validateDeleteModel(IProject project, JsonObject op, String id,
+            Map<String, String> symbols, JsonArray plan, JsonArray errors) {
+        String model = resolveModel(project, op.get("model"), symbols);
+        if (model == null) {
+            errors.add(error(id, "Unknown model; use an existing model id or a plan ref."));
+            return;
+        }
+        symbols.put(id, "deletion");
+        plan.add(entry(id, "delete_model", "delete model '" + model + "' and all its views",
+                "none; deletion is final (project is not auto-saved)"));
+    }
+
+    private static String resolveModel(IProject project, JsonElement reference,
+            Map<String, String> symbols) {
+        for (String kind : new String[] {"element", "member", "relationship"}) {
+            String id = resolveRef(reference, symbols, kind);
+            if (id != null) {
+                return id;
+            }
+        }
+        if (reference != null && reference.isJsonPrimitive()) {
+            String candidate = reference.getAsString();
+            try {
+                if (project != null && project.getModelElementById(candidate) != null) {
+                    return candidate;
+                }
+            } catch (RuntimeException unknown) {
+                return null;
+            }
+        }
+        return null;
     }
 
     private static void validateDeleteDiagram(IProject project, JsonObject op, String id,
