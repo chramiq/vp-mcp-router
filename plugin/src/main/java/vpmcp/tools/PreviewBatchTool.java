@@ -18,6 +18,7 @@ public final class PreviewBatchTool implements McpTool {
 
     private static final String DESCRIPTION =
             "Validate a batch of diagram writes without applying anything. "
+            + "Every op carries its discriminator, e.g. {\"op\": \"create_element\", ...}. "
             + "Ops: create_diagram {id, diagram_type, name}, "
             + "create_element {id, diagram, model_type, name, x, y, width, height}, "
             + "connect {id, diagram, rel_type, from, to, name, points?}, "

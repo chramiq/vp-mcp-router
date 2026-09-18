@@ -21,7 +21,7 @@ public final class ApplyBatchTool implements McpTool {
             "Apply a batch of diagram writes to the open project. Same op "
             + "shapes as vp_preview_batch; dry-run there first. Requires "
             + "{\"confirm\": true} alongside \"ops\". The project is NOT "
-            + "saved; save it in Visual Paradigm.";
+            + "saved; persist it with vp_save_project {\"confirm\": true}.";
 
     private static final String INPUT_SCHEMA =
             "{\"type\":\"object\","

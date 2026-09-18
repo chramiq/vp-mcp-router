@@ -25,7 +25,7 @@ public final class NeighborhoodTool implements McpTool {
             "Read the neighborhood around one element of a diagram: the element "
             + "itself plus everything within depth edges. Use it to traverse "
             + "large diagrams without reading them whole. Element is a view id "
-            + "as listed by vp_list_diagrams graph reads.";
+            + "as listed by get_diagram_by_url node reads.";
 
     private static final String INPUT_SCHEMA =
             "{"
