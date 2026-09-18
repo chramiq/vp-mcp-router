@@ -38,6 +38,9 @@ report it with file/line evidence and a proposed correction.
 - Small increments: never land large untested code. If it doesn't work it just pollutes the repo.
 - Stop after each phase and wait for review before starting the next.
 - One scoped commit per phase, message documents what changed.
+- Versions change only through `opencode/release.sh <v>` (refuses
+  dirty trees, tests, builds, packages `dist/`). Never hand-edit
+  the VERSION string.
 - Order: research → probe → implement → test → review → live run → docs.
 - Probe-first for anything touching `openapi.jar` or live VP.
 

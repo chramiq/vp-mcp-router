@@ -6,11 +6,19 @@
 #   opencode/install.sh [--dry-run]
 #
 # Env: VP_PLUGINS_DIR OPENCODE_JSON SKILL_DIR ROUTER_JAR SCHEMA_VERSION
+#   or: opencode/install.sh --release <dist-zip> [--dry-run] (no Maven needed)
 set -euo pipefail
 
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 DRY_RUN=0
-if [ "${1:-}" = "--dry-run" ]; then DRY_RUN=1; fi
+RELEASE_ZIP="${RELEASE_ZIP:-}"
+for arg in "$@"; do
+  case "$arg" in
+    --dry-run) DRY_RUN=1 ;;
+    --release) WANT_RELEASE=1 ;;
+    *) if [ "${WANT_RELEASE:-0}" = 1 ] && [ -z "$RELEASE_ZIP" ]; then RELEASE_ZIP="$arg"; fi ;;
+  esac
+done
 
 run() {
   if [ "$DRY_RUN" -eq 1 ]; then
@@ -48,7 +56,15 @@ fi
 if [ -z "$VP_PLUGINS_DIR" ]; then echo "no directory given, aborting" >&2; exit 1; fi
 
 ROUTER_JAR="${ROUTER_JAR:-$REPO/plugin/target/router.jar}"
-if [ ! -f "$ROUTER_JAR" ]; then
+if [ -n "$RELEASE_ZIP" ]; then
+  if [ ! -f "$RELEASE_ZIP" ]; then echo "missing release zip: $RELEASE_ZIP" >&2; exit 1; fi
+  UNPACK="$(mktemp -d)"
+  unzip -q "$RELEASE_ZIP" -d "$UNPACK"
+  INNER="$(echo "$UNPACK"/vp-router-*)"
+  ROUTER_JAR="$INNER/router.jar"
+  RELEASE_SCHEMAS="$INNER/schemas"
+  RELEASE_SKILL="$INNER/skills/vp-router"
+elif [ ! -f "$ROUTER_JAR" ]; then
   echo "building router.jar..."
   if [ "$DRY_RUN" -eq 1 ]; then
     echo "would run: mvn -q -f $REPO/plugin/pom.xml package"
@@ -58,8 +74,9 @@ if [ ! -f "$ROUTER_JAR" ]; then
 fi
 
 SCHEMA_VERSION="${SCHEMA_VERSION:-}"
+SCHEMA_SRC="${RELEASE_SCHEMAS:-$REPO/schemas}"
 if [ -z "$SCHEMA_VERSION" ]; then
-  options=$(ls "$REPO/schemas" | grep -v autovendor || true)
+  options=$(ls "$SCHEMA_SRC" | grep -v autovendor || true)
   if [ "$(echo "$options" | wc -l)" -eq 1 ]; then
     SCHEMA_VERSION="$options"
     echo "single schema pack: $SCHEMA_VERSION"
@@ -68,15 +85,17 @@ if [ -z "$SCHEMA_VERSION" ]; then
     SCHEMA_VERSION="$(prompt "schema version")"
   fi
 fi
-if [ ! -d "$REPO/schemas/$SCHEMA_VERSION" ]; then echo "unknown schema: $SCHEMA_VERSION" >&2; exit 1; fi
+if [ ! -d "$SCHEMA_SRC/$SCHEMA_VERSION" ]; then echo "unknown schema: $SCHEMA_VERSION" >&2; exit 1; fi
 
 DEST="$VP_PLUGINS_DIR/vp.router"
+PLUGIN_XML="${INNER:-$REPO/plugin/src/main/resources/vp.router}/plugin.xml"
+if [ ! -f "$PLUGIN_XML" ]; then PLUGIN_XML="$REPO/plugin/src/main/resources/vp.router/plugin.xml"; fi
 run mkdir -p "$DEST/lib"
-run cp "$REPO/plugin/src/main/resources/vp.router/plugin.xml" "$DEST/plugin.xml"
+run cp "$PLUGIN_XML" "$DEST/plugin.xml"
 run cp "$ROUTER_JAR" "$DEST/lib/router.jar"
 run rm -rf "$DEST/schemas"
 run mkdir -p "$DEST/schemas"
-run cp -r "$REPO/schemas/$SCHEMA_VERSION" "$DEST/schemas/$SCHEMA_VERSION"
+run cp -r "$SCHEMA_SRC/$SCHEMA_VERSION" "$DEST/schemas/$SCHEMA_VERSION"
 echo "VP plugin installed to $DEST"
 
 # --- 2. opencode MCP entry ----------------------------------------------
@@ -130,7 +149,8 @@ if [ -z "$SKILL_DIR" ]; then
   fi
 fi
 run mkdir -p "$SKILL_DIR"
-run cp -r "$REPO/opencode/skills/vp-router" "$SKILL_DIR/vp-router"
+SKILL_SRC="${RELEASE_SKILL:-$REPO/opencode/skills/vp-router}"
+run cp -r "$SKILL_SRC" "$SKILL_DIR/vp-router"
 echo "skill installed to $SKILL_DIR/vp-router"
 
 echo "done. Restart Visual Paradigm, then verify:"
