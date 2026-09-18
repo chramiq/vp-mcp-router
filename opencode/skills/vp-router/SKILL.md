@@ -20,7 +20,9 @@ instead of retrying. Start every session with `vp_capabilities`.
 
 `vp_list_diagrams`, `get_diagram_by_url` (full graph + visuals),
 `vp_get_neighborhood` (N-hop slice), `vp_export_image` (png/svg/pdf,
-crop or `crop_to_element`). Reads cover all diagram types;
+crop or `crop_to_element`). Prefer SVG for captioned diagrams: the PNG
+rasterizer clips captions at shape bounds, vector markup keeps them.
+Reads cover all diagram types;
 `vp://diagram-types` lists them.
 
 ## Writes (fixed schemas — check, don't invent)
@@ -41,6 +43,12 @@ in reverse; report applied/compensated/errors. Supported families:
   (class), DBColumn (table). Optional string `type`.
 - `duplicate_diagram` is a shallow copy (fresh views, shared
   models): safe for additive trials, model edits leak to source.
+- `move_element` repositions/resizes a view (model untouched,
+  connectors refused). `show_element` places another view of an
+  existing model — the fix for duplicate-name renames. `delete_model`
+  removes a model plus all its views (final); use it after
+  `delete_diagram` so no orphan models linger and names stay
+  reusable.
 
 Outside these lists the validator rejects — don't retry variants,
 say what's unsupported. `name_warning` on an applied entry means VP
