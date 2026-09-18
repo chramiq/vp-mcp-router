@@ -54,3 +54,26 @@ project open before the agent calls any tool.
 ## Uninstall
 
 Delete `plugins/vp.router/` and restart Visual Paradigm.
+
+## HotSwap: code changes without VP restart
+
+Method-body edits can go live in the running VP via the Attach API
+(proven in `var/probes/pd/PROBE.md`). New classes, methods, fields, or
+signatures still need a restart.
+
+```bash
+J11=/usr/lib/jvm/java-11-openjdk/bin
+PID=$($J11/jps -l | grep -i install4j | awk '{print $1}')
+$J11/javac --release 11 -cp <deps> -d /tmp/hs <ChangedFile>.java
+# agentmain: scan getAllLoadedClasses for the name (NOT Class.forName;
+# plugin classes live in VP's custom loader), then redefineClasses.
+$J11/java --add-modules jdk.attach -cp agent-classes HsAttach $PID hsagent.jar \
+  "com.example.ChangedClass=/tmp/hs/com/example/ChangedClass.class"
+```
+
+Verify over HTTP, not via the attacher exit code: HotSpot reports
+`AgentInitializationException` (and target-side `Agent failed to
+start!` with no stack) even on success. A `tools/call` showing the
+new behavior is the real signal. Optional: launch VP with
+`JAVA_TOOL_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=127.0.0.1:5005"`
+for classic debugger attach alongside.
