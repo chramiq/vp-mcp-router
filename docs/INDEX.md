@@ -13,3 +13,4 @@
 | [0009](0009-compensation.md) | Saga compensation for write batches | accepted |
 | [0010](0010-export-guard.md) | Export formats, runtime-jar guard, region cut | accepted |
 | [0011](0011-zoom.md) | Zoom loop (neighborhood, server-side crop) | accepted |
+| [0012](0012-save.md) | Explicit save tool, safe restarts | accepted |

@@ -152,6 +152,14 @@ public final class PlanValidator {
             errors.add(error(id, "Unknown endpoint; use an existing element id or a plan ref."));
             return;
         }
+        String problem = memberProblem(op.get("from_member"), "from_member");
+        if (problem == null) {
+            problem = memberProblem(op.get("to_member"), "to_member");
+        }
+        if (problem != null) {
+            errors.add(error(id, problem));
+            return;
+        }
         symbols.put(id, "relationship");
         plan.add(entry(id, "connect", relType + " from '" + from + "' to '" + to + "'",
                 "remove the " + relType + " connector and delete its model"));
@@ -187,6 +195,16 @@ public final class PlanValidator {
     private static boolean isRefTo(JsonElement reference, Map<String, String> symbols, String wantKind) {
         return reference != null && reference.isJsonObject()
                 && wantKind.equals(symbols.get(text(reference.getAsJsonObject(), "ref")));
+    }
+
+    private static String memberProblem(JsonElement member, String name) {
+        if (member == null || member.isJsonNull()) {
+            return null;
+        }
+        if (!member.isJsonPrimitive() || member.getAsString().trim().isEmpty()) {
+            return "\"" + name + "\" must be a member model id.";
+        }
+        return null;
     }
 
     private static String resolveDiagram(IProject project, JsonElement reference, Map<String, String> symbols) {

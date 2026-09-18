@@ -152,8 +152,27 @@ class PlanValidatorTest {
     }
 
     @Test
-    void deleteByPlanRefValidates() {
-        JsonArray ops = parse("["
+    void memberPinningAccepted() {
+        JsonArray ops = parse("[{\"id\":\"r\",\"op\":\"connect\",\"diagram\":\"d1\",\"rel_type\":\"Association\","
+                + " \"from\":\"v9\",\"to\":\"v9\",\"from_member\":\"m1\",\"to_member\":\"m2\"}]");
+
+        JsonObject result = PlanValidator.validate(project, ops);
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+    }
+
+    @Test
+    void blankMemberIdRejected() {
+        JsonArray ops = parse("[{\"id\":\"r\",\"op\":\"connect\",\"diagram\":\"d1\",\"rel_type\":\"Association\","
+                + " \"from\":\"v9\",\"to\":\"v9\",\"to_member\":\"  \"}]");
+
+        JsonObject result = PlanValidator.validate(project, ops);
+
+        assertFalse(result.get("valid").getAsBoolean());
+    }
+
+    @Test
+    void deleteByPlanRefValidates() {        JsonArray ops = parse("["
                 + "{\"id\":\"d\",\"op\":\"create_diagram\",\"diagram_type\":\"ClassDiagram\",\"name\":\"Temp\"},"
                 + "{\"id\":\"e\",\"op\":\"create_element\",\"diagram\":{\"ref\":\"d\"},"
                 + " \"model_type\":\"Class\",\"name\":\"Temp\"},"

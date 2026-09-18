@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.vp.plugin.ApplicationManager;
 import com.vp.plugin.DiagramManager;
+import com.vp.plugin.diagram.IConnectorUIModel;
 import com.vp.plugin.diagram.IDiagramElement;
 import com.vp.plugin.diagram.IDiagramUIModel;
 import com.vp.plugin.model.IModelElement;
@@ -129,6 +130,8 @@ public final class BatchApplier {
             relModel.setName(op.get("name").getAsString());
         }
         IDiagramElement connector = state.diagrams.createConnector(diagram, relModel, from.view, to.view, null);
+        pinMember(connector, op.get("from_member"), true);
+        pinMember(connector, op.get("to_member"), false);
         state.views.put(id, connector);
         state.models.put(id, relModel);
         state.owners.put(connector.getId(), diagram);
@@ -202,6 +205,18 @@ public final class BatchApplier {
             }
         }
         return null;
+    }
+
+    private static void pinMember(IDiagramElement connector, JsonElement member, boolean from) {
+        if (member == null || member.isJsonNull() || !(connector instanceof IConnectorUIModel)) {
+            return;
+        }
+        IConnectorUIModel link = (IConnectorUIModel) connector;
+        if (from) {
+            link.setFromMemberId(member.getAsString());
+        } else {
+            link.setToMemberId(member.getAsString());
+        }
     }
 
     private static IModelElement newElement(IModelElementFactory factory, String modelType) {

@@ -36,6 +36,12 @@ Delete ops (`delete_diagram`, `delete_element`) are first-class and
 final — deletion has no undo, so name the target explicitly when
 confirming with the operator.
 
+## Saving
+
+The project is never auto-saved. After a write batch lands cleanly,
+offer `vp_save_project` (explicit `confirm:true`); save when the
+operator agrees, and report the file path back.
+
 ## Zooming: focus, then screenshot
 
 For large diagrams read `vp_list_diagrams`, then narrow with
