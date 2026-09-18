@@ -105,8 +105,15 @@ public final class BatchApplier {
         IModelElement model = newElement(state.factory, op.get("model_type").getAsString());
         model.setName(op.get("name").getAsString().trim());
         IDiagramElement view = state.diagrams.createDiagramElement(diagram, model);
-        view.setBounds(number(op, "x", 10), number(op, "y", 10), number(op, "width", 80),
-                number(op, "height", 40));
+        int gx = number(op, "x", 10);
+        int gy = number(op, "y", 10);
+        int gw = number(op, "width", 80);
+        int gh = number(op, "height", 40);
+        view.setBounds(gx, gy, gw, gh);
+        if (op.get("model_type").getAsString().equals("Actor")) {
+            int[] caption = actorCaptionBounds(gx, gy, gw, gh);
+            view.getCaptionUIModel().setBounds(caption[0], caption[1], caption[2], caption[3]);
+        }
         state.views.put(id, view);
         state.models.put(id, model);
         state.owners.put(view.getId(), diagram);
@@ -217,6 +224,11 @@ public final class BatchApplier {
         } else {
             link.setToMemberId(member.getAsString());
         }
+    }
+
+    /** Caption box under an actor shape; pure geometry, no VP. */
+    public static int[] actorCaptionBounds(int x, int y, int width, int height) {
+        return new int[] {x + (width - 50) / 2, y + height, 50, 15};
     }
 
     private static IModelElement newElement(IModelElementFactory factory, String modelType) {
