@@ -131,6 +131,55 @@ class PlanValidatorTest {
         assertFalse(result.get("valid").getAsBoolean());
     }
 
+    @Test
+    void deleteExistingDiagramAndElementValidate() {
+        JsonArray ops = parse("["
+                + "{\"id\":\"x\",\"op\":\"delete_element\",\"element\":\"v9\"},"
+                + "{\"id\":\"y\",\"op\":\"delete_diagram\",\"diagram\":\"d1\"}]");
+
+        JsonObject result = PlanValidator.validate(project, ops);
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+        assertEquals(2, result.getAsJsonArray("plan").size());
+    }
+
+    @Test
+    void deleteUnknownTargetRejected() {
+        JsonObject result = PlanValidator.validate(project,
+                parse("[{\"id\":\"x\",\"op\":\"delete_element\",\"element\":\"ghost\"}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+    }
+
+    @Test
+    void deleteByPlanRefValidates() {
+        JsonArray ops = parse("["
+                + "{\"id\":\"d\",\"op\":\"create_diagram\",\"diagram_type\":\"ClassDiagram\",\"name\":\"Temp\"},"
+                + "{\"id\":\"e\",\"op\":\"create_element\",\"diagram\":{\"ref\":\"d\"},"
+                + " \"model_type\":\"Class\",\"name\":\"Temp\"},"
+                + "{\"id\":\"k\",\"op\":\"delete_element\",\"element\":{\"ref\":\"e\"}}]");
+
+        JsonObject result = PlanValidator.validate(project, ops);
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+    }
+
+    @Test
+    void everyPlanEntryNamesItsUndo() {
+        JsonArray ops = parse("["
+                + "{\"id\":\"d\",\"op\":\"create_diagram\",\"diagram_type\":\"ClassDiagram\",\"name\":\"Temp\"},"
+                + "{\"id\":\"x\",\"op\":\"delete_diagram\",\"diagram\":\"d1\"}]");
+
+        JsonObject result = PlanValidator.validate(project, ops);
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+        result.getAsJsonArray("plan").forEach(entry -> {
+            JsonObject planEntry = entry.getAsJsonObject();
+            assertTrue(planEntry.has("undo"), "plan entry without undo: " + planEntry);
+            assertFalse(planEntry.get("undo").getAsString().isEmpty());
+        });
+    }
+
     private IProject projectWith(String diagramId, String elementId) {
         Map<String, Object> values = new HashMap<>();
         values.put("toDiagramArray", new com.vp.plugin.diagram.IDiagramUIModel[] {

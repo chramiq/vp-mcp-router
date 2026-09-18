@@ -2,18 +2,17 @@
 
 ## Done
 
-- Probes P0–P3, phases A–D.
+- Probes P0–P3 + PD (HotSwap) + PE (proxy harness), phases A–D.
+- Reads: list/get/export-image, schema packs, resources, installer, skill.
+- Writes: preview/apply, first-class deletes, saga compensation
+  (live-verified with fault injection), agent write nudging in skill.
 
-## Next: reads++
+## Next
 
-- `vp_export_image` first (diagram PNG/SVG for the agent's visual
-  channel; documented `exportDiagramAsImage`, read-only).
-- Connector coverage in tests (current fixture diagram has no edges).
-- Schema-vs-runtime version guard (compare `meta.json` sha at startup,
-  warn on mismatch).
-
-## Later: writes (confirm + dry-run posture)
-
-- `preview_batch` (dry-run diff artifact) / `apply_batch` (explicit
-  confirm token), allowlisted ops only; no auto-save, no delete,
-  no teamwork in v1 of writes.
+- SVG export through enumerated option types, one live render.
+- Connector edge cases: member-pinned ends, connector-to-connector
+  (warning-pathed, never observed).
+- Schema-vs-runtime version guard (compare `meta.json` sha at
+  startup, warn on mismatch).
+- Actor caption bounds on create (name renders in model, caption
+  placement needs explicit bounds per know-how recipe).

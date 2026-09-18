@@ -20,9 +20,10 @@ public final class PreviewBatchTool implements McpTool {
             "Validate a batch of diagram writes without applying anything. "
             + "Ops: create_diagram {id, diagram_type, name}, "
             + "create_element {id, diagram, model_type, name, x, y, width, height}, "
-            + "connect {id, diagram, rel_type, from, to, name}. "
+            + "connect {id, diagram, rel_type, from, to, name}, "
+            + "delete_diagram {id, diagram}, delete_element {id, element}. "
             + "Ids and diagram/endpoint slots accept plan refs as {\"ref\": \"<op id>\"}. "
-            + "Returns {valid, plan[], errors[]}; valid plans are applied with apply_batch.";
+            + "Returns {valid, plan[] (each with its undo), errors[]}; valid plans are applied with apply_batch.";
 
     private static final String INPUT_SCHEMA =
             "{\"type\":\"object\","

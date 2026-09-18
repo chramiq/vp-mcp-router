@@ -24,6 +24,9 @@ public final class PlanValidator {
             new HashSet<>(Arrays.asList("Actor", "UseCase", "Class"));
     private static final Set<String> RELATIONSHIPS = new HashSet<>(
             Arrays.asList("Association", "Include", "Extend", "Generalization", "Dependency"));
+    private static final Set<String> OPS =
+            new HashSet<>(Arrays.asList("create_diagram", "create_element", "connect",
+                    "delete_diagram", "delete_element"));
 
     private PlanValidator() {
     }
@@ -75,8 +78,14 @@ public final class PlanValidator {
             case "connect":
                 validateConnect(project, op, id, symbols, plan, errors);
                 break;
+            case "delete_diagram":
+                validateDeleteDiagram(project, op, id, symbols, plan, errors);
+                break;
+            case "delete_element":
+                validateDeleteElement(project, op, id, symbols, plan, errors);
+                break;
             default:
-                errors.add(error(id, "Unknown op \"" + kind + "\"."));
+                errors.add(error(id, "Unknown op \"" + kind + "\"; allowed: " + OPS + "."));
                 break;
         }
     }
@@ -94,7 +103,8 @@ public final class PlanValidator {
             return;
         }
         symbols.put(id, "diagram");
-        plan.add(entry(id, "create_diagram", diagramType + " '" + name.trim() + "'"));
+        plan.add(entry(id, "create_diagram", diagramType + " '" + name.trim() + "'",
+                "delete diagram '" + name.trim() + "'"));
     }
 
     private static void validateCreateElement(IProject project, JsonObject op, String id,
@@ -120,7 +130,8 @@ public final class PlanValidator {
         }
         symbols.put(id, "element");
         plan.add(entry(id, "create_element",
-                modelType + " '" + name.trim() + "' on diagram '" + diagram + "'"));
+                modelType + " '" + name.trim() + "' on diagram '" + diagram + "'",
+                "remove '" + name.trim() + "' from its diagram and delete its model"));
     }
 
     private static void validateConnect(IProject project, JsonObject op, String id, Map<String, String> symbols,
@@ -142,7 +153,40 @@ public final class PlanValidator {
             return;
         }
         symbols.put(id, "relationship");
-        plan.add(entry(id, "connect", relType + " from '" + from + "' to '" + to + "'"));
+        plan.add(entry(id, "connect", relType + " from '" + from + "' to '" + to + "'",
+                "remove the " + relType + " connector and delete its model"));
+    }
+
+    private static void validateDeleteDiagram(IProject project, JsonObject op, String id,
+            Map<String, String> symbols, JsonArray plan, JsonArray errors) {
+        String diagram = resolveDiagram(project, op.get("diagram"), symbols);
+        if (diagram == null) {
+            errors.add(error(id, "Unknown diagram reference; use an existing diagram id or a plan ref."));
+            return;
+        }
+        symbols.put(id, "deletion");
+        plan.add(entry(id, "delete_diagram", "delete diagram '" + diagram + "'",
+                "none; deletion is final (project is not auto-saved)"));
+    }
+
+    private static void validateDeleteElement(IProject project, JsonObject op, String id,
+            Map<String, String> symbols, JsonArray plan, JsonArray errors) {
+        String element = resolveElement(project, op.get("element"), symbols);
+        if (element == null && isRefTo(op.get("element"), symbols, "relationship")) {
+            element = text(op.getAsJsonObject("element"), "ref");
+        }
+        if (element == null) {
+            errors.add(error(id, "Unknown element reference; use an existing element id or a plan ref."));
+            return;
+        }
+        symbols.put(id, "deletion");
+        plan.add(entry(id, "delete_element", "delete element '" + element + "'",
+                "none; deletion is final (project is not auto-saved)"));
+    }
+
+    private static boolean isRefTo(JsonElement reference, Map<String, String> symbols, String wantKind) {
+        return reference != null && reference.isJsonObject()
+                && wantKind.equals(symbols.get(text(reference.getAsJsonObject(), "ref")));
     }
 
     private static String resolveDiagram(IProject project, JsonElement reference, Map<String, String> symbols) {
@@ -213,12 +257,17 @@ public final class PlanValidator {
         return value.getAsString();
     }
 
-    private static JsonObject entry(String id, String op, String summary) {
+    private static JsonObject entry(String id, String op, String summary, String undo) {
         JsonObject entry = new JsonObject();
         entry.addProperty("id", id);
         entry.addProperty("op", op);
         entry.addProperty("summary", summary);
+        entry.addProperty("undo", undo);
         return entry;
+    }
+
+    private static JsonObject entry(String id, String op, String summary) {
+        return entry(id, op, summary, "none");
     }
 
     private static JsonObject error(String id, String message) {

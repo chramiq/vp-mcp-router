@@ -9,3 +9,5 @@
 | [0005](0005-opencode.md) | opencode over remote HTTP, minimal skill | accepted |
 | [0006](0006-installer.md) | Installer script, always ask directories | accepted |
 | [0007](0007-export-image.md) | Image results as MCP image blocks | accepted |
+| [0008](0008-write-path.md) | Writes as preview/apply split with plan refs | accepted |
+| [0009](0009-compensation.md) | Saga compensation for write batches | accepted |
