@@ -6,11 +6,12 @@ import com.google.gson.JsonParser;
 import com.vp.plugin.ApplicationManager;
 import com.vp.plugin.ExportDiagramAsImageOption;
 import com.vp.plugin.ModelConvertionManager;
+import com.vp.plugin.diagram.IDiagramElement;
 import com.vp.plugin.diagram.IDiagramUIModel;
 import com.vp.plugin.model.IProject;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -22,6 +23,7 @@ import javax.imageio.ImageIO;
 import vpmcp.core.McpTool;
 import vpmcp.core.McpToolException;
 import vpmcp.core.ToolDefinition;
+import vpmcp.graph.CropBox;
 import vpmcp.vp.DiagramLocator;
 import vpmcp.vp.VppUrl;
 
@@ -49,12 +51,21 @@ public final class ExportImageTool implements McpTool {
             + "A bare diagram id such as \\\"YRvbHuaFYFAEMEOa\\\" is accepted too.\""
             + "},"
             + "\"format\":{\"type\":\"string\",\"enum\":[\"png\",\"svg\",\"pdf\"],\"default\":\"png\"},"
+            + "\"crop\":{\"type\":\"object\","
+            + "\"description\":\"PNG only: crop to {x, y, width, height} in diagram coordinates.\","
+            + "\"properties\":{\"x\":{\"type\":\"number\"},\"y\":{\"type\":\"number\"},"
+            + "\"width\":{\"type\":\"number\"},\"height\":{\"type\":\"number\"}},"
+            + "\"required\":[\"x\",\"y\",\"width\",\"height\"],\"additionalProperties\":false},"
+            + "\"crop_to_element\":{\"type\":\"string\","
+            + "\"description\":\"PNG only: crop around this view id with padding.\"},"
             + "\"out_dir\":{\"type\":\"string\","
             + "\"description\":\"Directory for the file; defaults to the temp directory.\"}"
             + "},"
             + "\"required\":[\"vpp_url\"],"
             + "\"additionalProperties\":false"
             + "}";
+
+    private static final int RENDER_MARGIN = 2;
 
     private final ToolDefinition definition = new ToolDefinition("vp_export_image", DESCRIPTION,
             JsonParser.parseString(INPUT_SCHEMA).getAsJsonObject());
@@ -67,6 +78,14 @@ public final class ExportImageTool implements McpTool {
     @Override
     public JsonObject execute(JsonObject params) throws McpToolException {
         String format = validatedFormat(params);
+        int[] cropNumbers = validatedCropNumbers(params);
+        String cropElement = validatedCropElement(params);
+        if (cropNumbers != null && cropElement != null) {
+            throw new McpToolException("Pass only one of \"crop\", \"crop_to_element\".");
+        }
+        if ((cropNumbers != null || cropElement != null) && !format.equals("png")) {
+            throw new McpToolException("Cropping applies to format png only.");
+        }
         File outDir = validatedOutDir(params);
         VppUrl url = VppUrl.parse(requireString(params, "vpp_url"));
 
@@ -83,7 +102,7 @@ public final class ExportImageTool implements McpTool {
                     return fileOnly(diagram, outDir,
                             ExportDiagramAsImageOption.IMAGE_TYPE_PDF, "pdf", "application/pdf");
                 default:
-                    return png(diagram);
+                    return png(diagram, cropBox(diagram, cropNumbers, cropElement));
             }
         } catch (McpToolException failure) {
             throw failure;
@@ -94,7 +113,7 @@ public final class ExportImageTool implements McpTool {
         }
     }
 
-    private JsonObject png(IDiagramUIModel diagram) throws Exception {
+    private JsonObject png(IDiagramUIModel diagram, Rectangle crop) throws Exception {
         ModelConvertionManager convert = ApplicationManager.instance().getModelConvertionManager();
         ExportDiagramAsImageOption option =
                 new ExportDiagramAsImageOption(ExportDiagramAsImageOption.IMAGE_TYPE_PNG);
@@ -102,10 +121,13 @@ public final class ExportImageTool implements McpTool {
         if (image == null) {
             throw new McpToolException("Export returned no image for diagram " + diagram.getId() + ".");
         }
-        byte[] png = toPng(image);
+        byte[] png = toPng(image, crop, diagram);
         JsonObject result = identity(diagram);
-        result.addProperty("summary",
-                "PNG render of diagram '" + diagram.getName() + "' (" + png.length + " bytes).");
+        String summary = "PNG render of diagram '" + diagram.getName() + "' (" + png.length + " bytes).";
+        if (crop != null) {
+            summary += " Cropped to " + crop.width + "x" + crop.height + " at (" + crop.x + "," + crop.y + ").";
+        }
+        result.addProperty("summary", summary);
         result.addProperty("image_mime", "image/png");
         result.addProperty("image_data", Base64.getEncoder().encodeToString(png));
         return result;
@@ -152,6 +174,25 @@ public final class ExportImageTool implements McpTool {
         return file;
     }
 
+    private int[] contentOrigin(IDiagramUIModel diagram) {
+        int minX = Integer.MAX_VALUE;
+        int minY = Integer.MAX_VALUE;
+        IDiagramElement[] elements = diagram.toDiagramElementArray();
+        if (elements != null) {
+            for (IDiagramElement element : elements) {
+                if (element == null) {
+                    continue;
+                }
+                minX = Math.min(minX, element.getX());
+                minY = Math.min(minY, element.getY());
+            }
+        }
+        if (minX == Integer.MAX_VALUE) {
+            return new int[] {0, 0};
+        }
+        return new int[] {minX, minY};
+    }
+
     private JsonObject identity(IDiagramUIModel diagram) {
         JsonObject identity = new JsonObject();
         identity.addProperty("id", diagram.getId());
@@ -162,22 +203,53 @@ public final class ExportImageTool implements McpTool {
         return result;
     }
 
-    private byte[] toPng(Image image) throws Exception {
-        RenderedImage rendered;
-        if (image instanceof RenderedImage) {
-            rendered = (RenderedImage) image;
+    private byte[] toPng(Image image, Rectangle cropVp, IDiagramUIModel diagram) throws Exception {
+        BufferedImage full = toBuffered(image);
+        Rectangle view;
+        if (cropVp == null) {
+            view = new Rectangle(0, 0, full.getWidth(), full.getHeight());
         } else {
-            int width = image.getWidth(null);
-            int height = image.getHeight(null);
-            BufferedImage buffered = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
-            buffered.getGraphics().drawImage(image, 0, 0, null);
-            rendered = buffered;
+            int[] origin = contentOrigin(diagram);
+            Rectangle pixels = CropBox.shift(cropVp, -origin[0] + RENDER_MARGIN, -origin[1] + RENDER_MARGIN);
+            view = CropBox.clamp(pixels, full.getWidth(), full.getHeight());
         }
+        BufferedImage part = full.getSubimage(view.x, view.y, view.width, view.height);
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        if (!ImageIO.write(rendered, "png", bytes)) {
+        if (!ImageIO.write(part, "png", bytes)) {
             throw new IllegalStateException("No PNG writer available.");
         }
         return bytes.toByteArray();
+    }
+
+    private BufferedImage toBuffered(Image image) {
+        if (image instanceof BufferedImage) {
+            return (BufferedImage) image;
+        }
+        int width = image.getWidth(null);
+        int height = image.getHeight(null);
+        BufferedImage buffered = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        buffered.getGraphics().drawImage(image, 0, 0, null);
+        return buffered;
+    }
+
+    private Rectangle cropBox(IDiagramUIModel diagram, int[] numbers, String elementId)
+            throws McpToolException {
+        if (numbers != null) {
+            return CropBox.of(numbers[0], numbers[1], numbers[2], numbers[3]);
+        }
+        if (elementId == null) {
+            return null;
+        }
+        IDiagramElement[] elements = diagram.toDiagramElementArray();
+        if (elements != null) {
+            for (IDiagramElement element : elements) {
+                if (element != null && elementId.equals(element.getId())) {
+                    return CropBox.around(element.getX(), element.getY(), element.getWidth(),
+                            element.getHeight(), 20);
+                }
+            }
+        }
+        throw new McpToolException("Unknown element \"" + elementId + "\" on this diagram.");
     }
 
     private String validatedFormat(JsonObject params) throws McpToolException {
@@ -193,6 +265,41 @@ public final class ExportImageTool implements McpTool {
             throw new McpToolException("\"format\" must be one of png, svg, pdf.");
         }
         return value;
+    }
+
+    private int[] validatedCropNumbers(JsonObject params) throws McpToolException {
+        JsonElement crop = params.get("crop");
+        if (crop == null || crop.isJsonNull()) {
+            return null;
+        }
+        if (!crop.isJsonObject()) {
+            throw new McpToolException("\"crop\" must be {x, y, width, height}.");
+        }
+        JsonObject box = crop.getAsJsonObject();
+        int[] numbers = new int[4];
+        String[] names = {"x", "y", "width", "height"};
+        for (int index = 0; index < names.length; index++) {
+            JsonElement value = box.get(names[index]);
+            if (value == null || !value.isJsonPrimitive() || !value.getAsJsonPrimitive().isNumber()) {
+                throw new McpToolException("\"crop." + names[index] + "\" must be a number.");
+            }
+            numbers[index] = value.getAsInt();
+        }
+        if (numbers[2] <= 0 || numbers[3] <= 0) {
+            throw new McpToolException("\"crop\" needs positive width and height.");
+        }
+        return numbers;
+    }
+
+    private String validatedCropElement(JsonObject params) throws McpToolException {
+        JsonElement element = params.get("crop_to_element");
+        if (element == null || element.isJsonNull()) {
+            return null;
+        }
+        if (!element.isJsonPrimitive()) {
+            throw new McpToolException("\"crop_to_element\" must be a view id.");
+        }
+        return element.getAsString();
     }
 
     private File validatedOutDir(JsonObject params) throws McpToolException {

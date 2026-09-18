@@ -33,4 +33,33 @@ class ExportValidationTest {
         McpToolException refused = assertThrows(McpToolException.class, () -> tool.execute(params));
         assertTrue(refused.getMessage().contains("vpp_url"));
     }
+
+    @Test
+    void cropAndElementTogetherRejected() {
+        JsonObject params = JsonParser.parseString("{\"vpp_url\":\"x\","
+                + "\"crop\":{\"x\":0,\"y\":0,\"width\":10,\"height\":10},"
+                + "\"crop_to_element\":\"v1\"}").getAsJsonObject();
+
+        McpToolException refused = assertThrows(McpToolException.class, () -> tool.execute(params));
+        assertTrue(refused.getMessage().contains("only one"));
+    }
+
+    @Test
+    void cropOnVectorRejected() {
+        JsonObject params = JsonParser.parseString(
+                "{\"vpp_url\":\"x\",\"format\":\"svg\",\"crop\":{\"x\":0,\"y\":0,\"width\":10,\"height\":10}}")
+                .getAsJsonObject();
+
+        McpToolException refused = assertThrows(McpToolException.class, () -> tool.execute(params));
+        assertTrue(refused.getMessage().contains("png"));
+    }
+
+    @Test
+    void malformedCropRejected() {
+        JsonObject params = JsonParser
+                .parseString("{\"vpp_url\":\"x\",\"crop\":{\"x\":\"left\"}}").getAsJsonObject();
+
+        McpToolException refused = assertThrows(McpToolException.class, () -> tool.execute(params));
+        assertTrue(refused.getMessage().contains("crop"));
+    }
 }

@@ -35,3 +35,14 @@ The project is never auto-saved: remind the operator to save in VP.
 Delete ops (`delete_diagram`, `delete_element`) are first-class and
 final — deletion has no undo, so name the target explicitly when
 confirming with the operator.
+
+## Zooming: focus, then screenshot
+
+For large diagrams read `vp_list_diagrams`, then narrow with
+`vp_get_neighborhood {vpp_url, element, depth}` instead of the whole
+graph. To look closely, screenshot a part: `vp_export_image` with
+`crop {x, y, width, height}` in diagram coordinates (the same numbers
+as node `bounds`) or `crop_to_element: <view id>` for a padded framing.
+The crop comes back as an image block — ingest it directly. SVG
+(`format: svg`) returns vector markup as text; slice its `viewBox` for
+resolution-free zoom.
