@@ -52,6 +52,10 @@ report it with file/line evidence and a proposed correction.
   Paradigm yourself without asking: `pkill -f install4j.RV`, then
   launch `/usr/bin/visual-paradigm` in the background and poll the
   MCP endpoint until it answers.
+- Always pass the project path on launch
+  (`visual-paradigm /home/v/Documents/VPProjects/untitled.vpp`): it
+  skips the startup dialog, which otherwise blocks project load
+  (verified: diagrams visible with zero clicks).
 - Preconditions: the open project is saved (confirm once per session
   if unsure — an unsaved restart loses work); announce each restart
   in chat; never restart outside dev/test or while the user is
