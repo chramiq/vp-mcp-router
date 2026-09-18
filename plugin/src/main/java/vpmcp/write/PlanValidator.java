@@ -26,7 +26,7 @@ public final class PlanValidator {
             Arrays.asList("Association", "Include", "Extend", "Generalization", "Dependency"));
     private static final Set<String> OPS =
             new HashSet<>(Arrays.asList("create_diagram", "create_element", "connect",
-                    "delete_diagram", "delete_element"));
+                    "duplicate_diagram", "delete_diagram", "delete_element"));
 
     private PlanValidator() {
     }
@@ -77,6 +77,9 @@ public final class PlanValidator {
                 break;
             case "connect":
                 validateConnect(project, op, id, symbols, plan, errors);
+                break;
+            case "duplicate_diagram":
+                validateDuplicateDiagram(project, op, id, symbols, plan, errors);
                 break;
             case "delete_diagram":
                 validateDeleteDiagram(project, op, id, symbols, plan, errors);
@@ -163,6 +166,24 @@ public final class PlanValidator {
         symbols.put(id, "relationship");
         plan.add(entry(id, "connect", relType + " from '" + from + "' to '" + to + "'",
                 "remove the " + relType + " connector and delete its model"));
+    }
+
+    private static void validateDuplicateDiagram(IProject project, JsonObject op, String id,
+            Map<String, String> symbols, JsonArray plan, JsonArray errors) {
+        String diagram = resolveDiagram(project, op.get("diagram"), symbols);
+        if (diagram == null) {
+            errors.add(error(id, "Unknown diagram reference; use an existing diagram id or a plan ref."));
+            return;
+        }
+        String name = text(op, "name");
+        if (name == null || name.trim().isEmpty()) {
+            errors.add(error(id, "Duplicate \"name\" is required."));
+            return;
+        }
+        symbols.put(id, "diagram");
+        plan.add(entry(id, "duplicate_diagram",
+                "copy of diagram '" + diagram + "' as '" + name.trim() + "'",
+                "delete diagram '" + name.trim() + "' (shared models are kept)"));
     }
 
     private static void validateDeleteDiagram(IProject project, JsonObject op, String id,

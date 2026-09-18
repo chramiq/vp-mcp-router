@@ -6,7 +6,10 @@ import com.google.gson.JsonObject;
 import com.vp.plugin.ApplicationManager;
 import com.vp.plugin.DiagramManager;
 import com.vp.plugin.diagram.IConnectorUIModel;
+import com.vp.plugin.diagram.ICaptionUIModel;
 import com.vp.plugin.diagram.IDiagramElement;
+import com.vp.plugin.diagram.IDiagramUIModel;
+import com.vp.plugin.diagram.IShapeUIModel;
 import com.vp.plugin.diagram.IDiagramUIModel;
 import com.vp.plugin.model.IModelElement;
 import com.vp.plugin.model.IRelationship;
@@ -79,6 +82,8 @@ public final class BatchApplier {
                 return createElement(state, op, id, compensations);
             case "connect":
                 return connect(state, op, id, compensations);
+            case "duplicate_diagram":
+                return duplicateDiagram(state, op, id, compensations);
             case "delete_diagram":
                 return deleteDiagram(state, op, id);
             case "delete_element":
@@ -145,6 +150,113 @@ public final class BatchApplier {
         compensations.add(new Compensation(id, () -> deleteView(diagram, connector, relModel)));
         VpLog.info("APPLY connect id=" + id + " vp_id=" + connector.getId());
         return appliedEntry(id, "relationship", connector.getId(), relModel.getName());
+    }
+
+    /**
+     * Shallow copy: fresh views on the same-type diagram, shared models.
+     * Additive trials on the copy are safe; edits to shared model properties
+     * leak to the source, and deleting the copy never deletes models.
+     */
+    private static JsonObject duplicateDiagram(State state, JsonObject op, String id,
+            List<Compensation> compensations) {
+        IDiagramUIModel src = requireDiagram(state, op.get("diagram"));
+        String name = op.get("name").getAsString().trim();
+        IDiagramUIModel copy = state.diagrams.createDiagram(src.getType());
+        copy.setName(name);
+        state.diagrams.openDiagram(copy);
+        state.diagramsByPlanId.put(id, copy);
+        Map<String, IDiagramElement> clones = new HashMap<>();
+        int shapes = 0;
+        int connectors = 0;
+        int skipped = 0;
+        IDiagramElement[] elements = src.toDiagramElementArray();
+        if (elements != null) {
+            for (IDiagramElement view : elements) {
+                if (view == null || view instanceof IConnectorUIModel) {
+                    continue;
+                }
+                IModelElement model = view.getModelElement();
+                if (model == null) {
+                    skipped++;
+                    continue;
+                }
+                IDiagramElement clone = state.diagrams.createDiagramElement(copy, model);
+                clone.setBounds(view.getX(), view.getY(), view.getWidth(), view.getHeight());
+                copyCaption(view, clone);
+                clones.put(view.getId(), clone);
+                shapes++;
+            }
+            List<IConnectorUIModel> pending = new ArrayList<>();
+            for (IDiagramElement view : elements) {
+                if (view instanceof IConnectorUIModel) {
+                    pending.add((IConnectorUIModel) view);
+                }
+            }
+            while (!pending.isEmpty()) {
+                int progressed = 0;
+                java.util.Iterator<IConnectorUIModel> it = pending.iterator();
+                while (it.hasNext()) {
+                    IConnectorUIModel link = it.next();
+                    IDiagramElement from = remapEnd(link.getFromShape(), link.getFromConnector(), clones);
+                    IDiagramElement to = remapEnd(link.getToShape(), link.getToConnector(), clones);
+                    IModelElement relModel = link.getModelElement();
+                    if (from == null || to == null || relModel == null) {
+                        continue;
+                    }
+                    IDiagramElement clone =
+                            state.diagrams.createConnector(copy, relModel, from, to, link.getPoints());
+                    if (clone instanceof IConnectorUIModel) {
+                        IConnectorUIModel cloneLink = (IConnectorUIModel) clone;
+                        if (link.getFromMemberId() != null) {
+                            cloneLink.setFromMemberId(link.getFromMemberId());
+                        }
+                        if (link.getToMemberId() != null) {
+                            cloneLink.setToMemberId(link.getToMemberId());
+                        }
+                    }
+                    copyCaption(link, clone);
+                    clones.put(link.getId(), clone);
+                    it.remove();
+                    connectors++;
+                    progressed++;
+                }
+                if (progressed == 0) {
+                    skipped += pending.size();
+                    break;
+                }
+            }
+        }
+        compensations.add(new Compensation(id, () -> copy.delete()));
+        VpLog.info("APPLY duplicate_diagram id=" + id + " vp_id=" + copy.getId()
+                + " shapes=" + shapes + " connectors=" + connectors + " skipped=" + skipped);
+        JsonObject entry = appliedEntry(id, "diagram", copy.getId(), name);
+        entry.addProperty("copied_shapes", shapes);
+        entry.addProperty("copied_connectors", connectors);
+        entry.addProperty("skipped", skipped);
+        return entry;
+    }
+
+    private static IDiagramElement remapEnd(IShapeUIModel shape, IConnectorUIModel connector,
+            Map<String, IDiagramElement> clones) {
+        if (shape != null) {
+            return clones.get(shape.getId());
+        }
+        if (connector != null) {
+            return clones.get(connector.getId());
+        }
+        return null;
+    }
+
+    private static void copyCaption(IDiagramElement src, IDiagramElement dst) {
+        try {
+            ICaptionUIModel from = src.getCaptionUIModel();
+            ICaptionUIModel to = dst.getCaptionUIModel();
+            if (from != null && to != null) {
+                to.setBounds(from.getX(), from.getY(), from.getWidth(), from.getHeight());
+            }
+        } catch (RuntimeException cosmetic) {
+            VpLog.info("CAPTION copy skipped: " + cosmetic);
+        }
     }
 
     private static JsonObject deleteDiagram(State state, JsonObject op, String id) {

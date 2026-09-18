@@ -199,6 +199,34 @@ class PlanValidatorTest {
         });
     }
 
+    @Test
+    void duplicateDiagramValidates() {
+        JsonArray ops = parse("[{\"id\":\"c\",\"op\":\"duplicate_diagram\",\"diagram\":\"d1\",\"name\":\"Copy\"}]");
+
+        JsonObject result = PlanValidator.validate(project, ops);
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+        assertEquals(1, result.getAsJsonArray("plan").size());
+        assertTrue(result.getAsJsonArray("plan").get(0).getAsJsonObject().get("undo").getAsString()
+                .contains("shared models"));
+    }
+
+    @Test
+    void duplicateDiagramRequiresName() {
+        JsonObject result = PlanValidator.validate(project,
+                parse("[{\"id\":\"c\",\"op\":\"duplicate_diagram\",\"diagram\":\"d1\",\"name\":\"  \"}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+    }
+
+    @Test
+    void duplicateDiagramUnknownSourceRejected() {
+        JsonObject result = PlanValidator.validate(project,
+                parse("[{\"id\":\"c\",\"op\":\"duplicate_diagram\",\"diagram\":\"nope\",\"name\":\"Copy\"}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+    }
+
     private IProject projectWith(String diagramId, String elementId) {
         Map<String, Object> values = new HashMap<>();
         values.put("toDiagramArray", new com.vp.plugin.diagram.IDiagramUIModel[] {

@@ -60,9 +60,10 @@ report it with file/line evidence and a proposed correction.
   if unsure — an unsaved restart loses work); announce each restart
   in chat; never restart outside dev/test or while the user is
   actively modeling.
-- Before killing, save via `vp_save_project` with confirm and verify
-  the `.vpp` mtime moved; if the save fails or the file predates the
-  last mutation, do not kill — ask the user to save first.
+- Before killing, save via `vp_save_project` with confirm and poll
+  the `.vpp` mtime until it moves past the pre-save value (writes land
+  async, 5-20s observed — a single stat proves nothing); if the mtime
+  never moves, do not kill — ask the user to save first.
 
 ### Code
 

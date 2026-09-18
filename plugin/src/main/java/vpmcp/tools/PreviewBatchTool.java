@@ -21,6 +21,7 @@ public final class PreviewBatchTool implements McpTool {
             + "Ops: create_diagram {id, diagram_type, name}, "
             + "create_element {id, diagram, model_type, name, x, y, width, height}, "
             + "connect {id, diagram, rel_type, from, to, name}, "
+            + "duplicate_diagram {id, diagram, name} (shallow copy: fresh views, shared models), "
             + "delete_diagram {id, diagram}, delete_element {id, element}. "
             + "Ids and diagram/endpoint slots accept plan refs as {\"ref\": \"<op id>\"}. "
             + "Returns {valid, plan[] (each with its undo), errors[]}; valid plans are applied with apply_batch.";
