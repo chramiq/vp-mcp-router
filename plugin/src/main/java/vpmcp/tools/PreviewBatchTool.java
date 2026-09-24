@@ -23,6 +23,8 @@ public final class PreviewBatchTool implements McpTool {
             + "create_element {id, diagram, model_type, name, x, y, width, height}, "
             + "connect {id, diagram, rel_type, from, to, name, points?}, "
             + "add_member {id, parent, member_type, name, type?}, "
+            + "update_element {id, model, name?, documentation?, stereotypes?} "
+            + "(stereotypes replace all; empty documentation clears it), "
             + "duplicate_diagram {id, diagram, name} (shallow copy: fresh views, shared models), "
             + "move_element {id, element, x?, y?, width?, height?}, "
             + "show_element {id, diagram, model, x?, y?, width?, height?} (view of an existing model), "

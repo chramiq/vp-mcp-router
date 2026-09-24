@@ -339,6 +339,80 @@ class PlanValidatorTest {
         assertFalse(result.get("valid").getAsBoolean());
     }
 
+    @Test
+    void updateElementValidatesWithUndo() {
+        IProject withModel = VpFakes.project("p",
+                new com.vp.plugin.model.IModelElement[] {VpFakes.model("mx", "Shared", "Class")},
+                new com.vp.plugin.diagram.IDiagramUIModel[0]);
+
+        JsonObject result = PlanValidator.validate(withModel, parse("[{\"id\":\"u\","
+                + "\"op\":\"update_element\",\"model\":\"mx\",\"name\":\"Renamed\","
+                + "\"documentation\":\"docs\",\"stereotypes\":[\"entity\"]}]"));
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+        JsonObject planEntry = result.getAsJsonArray("plan").get(0).getAsJsonObject();
+        assertTrue(planEntry.get("undo").getAsString().contains("restore"));
+    }
+
+    @Test
+    void updateElementUnknownModelRejected() {
+        JsonObject result = PlanValidator.validate(project,
+                parse("[{\"id\":\"u\",\"op\":\"update_element\",\"model\":\"ghost\",\"name\":\"N\"}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+    }
+
+    @Test
+    void updateElementNeedsAField() {
+        IProject withModel = VpFakes.project("p",
+                new com.vp.plugin.model.IModelElement[] {VpFakes.model("mx", "Shared", "Class")},
+                new com.vp.plugin.diagram.IDiagramUIModel[0]);
+
+        JsonObject result = PlanValidator.validate(withModel,
+                parse("[{\"id\":\"u\",\"op\":\"update_element\",\"model\":\"mx\"}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+        assertTrue(result.toString().contains("at least one"));
+    }
+
+    @Test
+    void updateElementBlankNameRejected() {
+        IProject withModel = VpFakes.project("p",
+                new com.vp.plugin.model.IModelElement[] {VpFakes.model("mx", "Shared", "Class")},
+                new com.vp.plugin.diagram.IDiagramUIModel[0]);
+
+        JsonObject result = PlanValidator.validate(withModel,
+                parse("[{\"id\":\"u\",\"op\":\"update_element\",\"model\":\"mx\",\"name\":\"  \"}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+    }
+
+    @Test
+    void updateElementStereotypesMustBeNonBlankStrings() {
+        IProject withModel = VpFakes.project("p",
+                new com.vp.plugin.model.IModelElement[] {VpFakes.model("mx", "Shared", "Class")},
+                new com.vp.plugin.diagram.IDiagramUIModel[0]);
+
+        JsonObject result = PlanValidator.validate(withModel, parse("[{\"id\":\"u\","
+                + "\"op\":\"update_element\",\"model\":\"mx\",\"stereotypes\":[\"ok\",\"\"]}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+        assertTrue(result.toString().contains("stereotypes"));
+    }
+
+    @Test
+    void updateElementByMemberPlanRefValidates() {
+        JsonArray ops = parse("["
+                + "{\"id\":\"m\",\"op\":\"add_member\",\"parent\":\"v9\","
+                + " \"member_type\":\"Attribute\",\"name\":\"total\"},"
+                + "{\"id\":\"u\",\"op\":\"update_element\",\"model\":{\"ref\":\"m\"},"
+                + " \"documentation\":\"changed\"}]");
+
+        JsonObject result = PlanValidator.validate(project, ops);
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+    }
+
     private IProject projectWith(String diagramId, String elementId) {
         Map<String, Object> values = new HashMap<>();
         values.put("toDiagramArray", new com.vp.plugin.diagram.IDiagramUIModel[] {

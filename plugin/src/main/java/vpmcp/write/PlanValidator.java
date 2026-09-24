@@ -30,8 +30,8 @@ public final class PlanValidator {
             "Include", "Extend", "Generalization", "Dependency", "Message", "Transition2"));
     private static final Set<String> OPS =
             new HashSet<>(Arrays.asList("create_diagram", "create_element", "connect",
-                    "duplicate_diagram", "add_member", "move_element", "show_element",
-                    "delete_model", "delete_diagram", "delete_element"));
+                    "duplicate_diagram", "add_member", "update_element", "move_element",
+                    "show_element", "delete_model", "delete_diagram", "delete_element"));
 
     private PlanValidator() {
     }
@@ -88,6 +88,9 @@ public final class PlanValidator {
                 break;
             case "add_member":
                 validateAddMember(project, op, id, symbols, plan, errors);
+                break;
+            case "update_element":
+                validateUpdateElement(project, op, id, symbols, plan, errors);
                 break;
             case "move_element":
                 validateMoveElement(project, op, id, symbols, plan, errors);
@@ -238,6 +241,53 @@ public final class PlanValidator {
         plan.add(entry(id, "add_member",
                 memberType + " '" + name.trim() + "' on '" + parent + "'",
                 "remove '" + name.trim() + "' from its parent"));
+    }
+
+    private static void validateUpdateElement(IProject project, JsonObject op, String id,
+            Map<String, String> symbols, JsonArray plan, JsonArray errors) {
+        String model = resolveModel(project, op.get("model"), symbols);
+        if (model == null) {
+            errors.add(error(id, "Unknown model; use an existing model id or a plan ref."));
+            return;
+        }
+        JsonElement name = op.get("name");
+        if (name != null && !name.isJsonNull()
+                && (!name.isJsonPrimitive() || name.getAsString().trim().isEmpty())) {
+            errors.add(error(id, "Updated \"name\" must be a non-blank string."));
+            return;
+        }
+        JsonElement documentation = op.get("documentation");
+        if (documentation != null && !documentation.isJsonNull()
+                && !documentation.isJsonPrimitive()) {
+            errors.add(error(id, "Updated \"documentation\" must be a string; empty clears it."));
+            return;
+        }
+        JsonElement stereotypes = op.get("stereotypes");
+        if (stereotypes != null && !stereotypes.isJsonNull()) {
+            if (!stereotypes.isJsonArray()) {
+                errors.add(error(id,
+                        "Updated \"stereotypes\" must be an array of strings; it replaces all."));
+                return;
+            }
+            for (JsonElement item : stereotypes.getAsJsonArray()) {
+                if (item == null || !item.isJsonPrimitive()
+                        || item.getAsString().trim().isEmpty()) {
+                    errors.add(error(id,
+                            "Updated \"stereotypes\" must be an array of non-blank strings."));
+                    return;
+                }
+            }
+        }
+        if ((name == null || name.isJsonNull())
+                && (documentation == null || documentation.isJsonNull())
+                && (stereotypes == null || stereotypes.isJsonNull())) {
+            errors.add(error(id,
+                    "Update needs at least one of name/documentation/stereotypes."));
+            return;
+        }
+        symbols.put(id, "element");
+        plan.add(entry(id, "update_element", "update model '" + model + "'",
+                "restore its previous name, documentation and stereotypes"));
     }
 
     private static String pointsProblem(JsonElement points) {

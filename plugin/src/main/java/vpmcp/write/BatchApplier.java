@@ -86,6 +86,8 @@ public final class BatchApplier {
                 return duplicateDiagram(state, op, id, compensations);
             case "add_member":
                 return addMember(state, op, id, compensations);
+            case "update_element":
+                return updateElement(state, op, id, compensations);
             case "move_element":
                 return moveElement(state, op, id, compensations);
             case "show_element":
@@ -351,6 +353,90 @@ public final class BatchApplier {
         compensations.add(new Compensation(id, () -> detachMember(parent.model, child, memberType)));
         VpLog.info("APPLY add_member id=" + id + " child=" + child.getId());
         return appliedEntry(id, "member", child.getId(), name);
+    }
+
+    /**
+     * Property mutation with an old-value snapshot: name, documentation and
+     * stereotypes are restorable, unlike deletions. Stereotypes replace all:
+     * current ones not kept are removed, new ones added. VP's silent name
+     * vetoes (ADR-0015) surface as a name_warning on the applied entry.
+     */
+    private static JsonObject updateElement(State state, JsonObject op, String id,
+            List<Compensation> compensations) {
+        IModelElement model = requireModel(state, op.get("model"));
+        String oldName = model.getName();
+        String oldDocumentation = model.getDocumentation();
+        List<String> oldStereotypes = stereotypeNames(model);
+        compensations.add(new Compensation(id, () -> restoreSnapshot(
+                model, oldName, oldDocumentation, oldStereotypes)));
+
+        JsonObject entry = appliedEntry(id, "model", model.getId(), model.getName());
+        JsonElement name = op.get("name");
+        if (name != null && !name.isJsonNull()) {
+            String want = name.getAsString().trim();
+            model.setName(want);
+            if (!want.equals(model.getName())) {
+                entry.addProperty("name_warning",
+                        "VP kept \"" + model.getName() + "\" instead of \"" + want + "\".");
+            }
+            entry.addProperty("name", model.getName());
+        }
+        JsonElement documentation = op.get("documentation");
+        if (documentation != null && !documentation.isJsonNull()) {
+            model.setDocumentation(documentation.getAsString());
+            entry.addProperty("documentation", model.getDocumentation());
+        }
+        JsonElement stereotypes = op.get("stereotypes");
+        if (stereotypes != null && !stereotypes.isJsonNull()) {
+            List<String> keep = new ArrayList<>();
+            for (JsonElement item : stereotypes.getAsJsonArray()) {
+                keep.add(item.getAsString().trim());
+            }
+            for (String current : stereotypeNames(model)) {
+                if (!keep.contains(current)) {
+                    model.removeStereotype(current);
+                }
+            }
+            for (String wanted : keep) {
+                if (!stereotypeNames(model).contains(wanted)) {
+                    model.addStereotype(wanted);
+                }
+            }
+            JsonArray applied = new JsonArray();
+            stereotypeNames(model).forEach(applied::add);
+            entry.add("stereotypes", applied);
+        }
+        VpLog.info("APPLY update_element id=" + id + " model=" + model.getId());
+        return entry;
+    }
+
+    private static List<String> stereotypeNames(IModelElement model) {
+        List<String> names = new ArrayList<>();
+        com.vp.plugin.model.IStereotype[] applied = model.toStereotypeModelArray();
+        if (applied != null) {
+            for (com.vp.plugin.model.IStereotype stereotype : applied) {
+                if (stereotype != null) {
+                    names.add(stereotype.getName());
+                }
+            }
+        }
+        return names;
+    }
+
+    private static void restoreSnapshot(IModelElement model, String name, String documentation,
+            List<String> stereotypes) {
+        model.setName(name);
+        model.setDocumentation(documentation);
+        for (String current : stereotypeNames(model)) {
+            if (!stereotypes.contains(current)) {
+                model.removeStereotype(current);
+            }
+        }
+        for (String wanted : stereotypes) {
+            if (!stereotypeNames(model).contains(wanted)) {
+                model.addStereotype(wanted);
+            }
+        }
     }
 
     private static void setMemberType(IModelElement child, JsonElement type, String id) {
