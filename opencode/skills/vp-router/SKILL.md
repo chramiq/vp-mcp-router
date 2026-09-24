@@ -7,8 +7,9 @@ description: Read and model UML/ERD diagrams in the locally running Visual Parad
 
 Read the open Visual Paradigm project as JSON graphs and modify it
 through validated write batches: create diagrams and elements,
-connect them, add members, duplicate diagrams for trials, delete,
-save. Tool descriptions are the contract; this file is the workflow.
+connect them, edit properties, members and styling, duplicate
+diagrams for trials, delete, save. Tool descriptions are the
+contract; this file is the workflow.
 
 ## Prerequisites
 
@@ -18,41 +19,44 @@ instead of retrying. Start every session with `vp_capabilities`.
 
 ## Reads
 
-`vp_list_diagrams`, `get_diagram_by_url` (full graph + visuals),
-`vp_get_neighborhood` (N-hop slice), `vp_export_image` (png/svg/pdf,
-crop or `crop_to_element`). Prefer SVG for captioned diagrams: the PNG
+`vp_list_diagrams`, `vp_list_models` (every model incl. members and
+orphans), `vp_get_model` (one model by id, with the diagrams it is
+shown on), `get_diagram_by_url` (full graph + visuals),
+`vp_get_neighborhood` (N-hop slice; the center accepts a view id or a
+model id), `vp_export_image` (png/svg/pdf, crop or
+`crop_to_element`). Prefer SVG for captioned diagrams: the PNG
 rasterizer clips captions at shape bounds, vector markup keeps them.
-Reads cover all diagram types;
-`vp://diagram-types` lists them.
 
-## Writes (fixed schemas — check, don't invent)
+## Writes (tiers, not walls)
 
 Dry-run with `vp_preview_batch`, show the plan with undos, then
 `vp_apply_batch` with `confirm: true`. Partial failure compensates
-in reverse; report applied/compensated/errors. Supported families:
+in reverse; report applied/compensated/errors.
 
-- diagrams: Class, UseCase, Activity, State, ER, Interaction
-  (sequence), Deployment. Nothing else validates.
-- elements: Actor, UseCase, Class, Activity, InitialNode,
-  DecisionNode, ActivityFinalNode, State2, DBTable, Component,
-  Node, LifeLine.
-- relationships: Association, Include, Extend, Generalization,
-  Dependency, Message, Transition2. `points[]` waypoints for
-  messages; `from_member`/`to_member` pins where known.
-- members via `add_member`, never top-level: Attribute, Operation
-  (class), DBColumn (table). Optional string `type`.
-- `duplicate_diagram` is a shallow copy (fresh views, shared
-  models): safe for additive trials, model edits leak to source.
-- `move_element` repositions/resizes a view (model untouched,
-  connectors refused). `show_element` places another view of an
-  existing model — the fix for duplicate-name renames. `delete_model`
-  removes a model plus all its views (final); use it after
-  `delete_diagram` so no orphan models linger and names stay
-  reusable.
-
-Outside these lists the validator rejects — don't retry variants,
-say what's unsupported. `name_warning` on an applied entry means VP
-overrode the name (reserved words, table naming); use the kept name.
+- Types are tiered. Verified families (Class/UseCase/Activity/State/
+  ER/Interaction/Deployment diagrams; Actor/UseCase/Class/Activity/
+  InitialNode/DecisionNode/ActivityFinalNode/State2/DBTable/Component/
+  Node/LifeLine elements; Association/Include/Extend/Generalization/
+  Dependency/Message/Transition2 relationships; Attribute/Operation/
+  DBColumn members) behave exactly as documented.
+- Anything else from the schema pack validates but is flagged
+  `unverified` in the plan — VP may veto silently or misplace, so
+  read the result back after applying. Check `vp://schemas` resources
+  for the type universes (diagram-types, factory-creates).
+- `create_raw` invokes any no-arg factory method directly; placement
+  refusals and VP's transient kinds (never saved, never listed) are
+  reported as notes.
+- Edits: `update_element` (name, documentation, stereotypes — replaces
+  all), `update_member` (attribute/operation/column fields; parameters
+  replace all), `style_element` (colours, fill, line, font, hex like
+  reads report).
+- `move_element` repositions a view. `show_element` places another
+  view of an existing model — the fix for duplicate-name renames.
+  `delete_model` removes a model plus all its views (final); use it
+  after `delete_diagram` so no orphan models linger.
+- `name_warning` on an applied entry means VP overrode the name
+  (reserved words, table naming); use the kept name. `vp_id` in an
+  applied entry is the model id; `view_id` is the view.
 
 ## Trial loop
 

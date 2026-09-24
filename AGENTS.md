@@ -1,17 +1,21 @@
 # AGENTS.md
 
-Read-only Visual Paradigm MCP router: an in-process VP plugin serving the
-open project as JSON over Streamable HTTP, with versioned schema packs so
-VP updates don't force plugin rebuilds.
+Visual Paradigm MCP router: an in-process VP plugin that serves the
+open project as JSON over Streamable HTTP and writes back through
+previewed, compensable batches. Writes are tiered — probe-verified
+families behave exactly as documented, schema-pack types are accepted
+but flagged unverified. Schema packs are versioned per VP minor so VP
+updates ship as data, not rebuilds.
 
 ## Repo layout
 
 | Path | What lives there |
 |---|---|
-| `plugin/` | Java plugin source (planned): zero-dep MCP core, EDT invoker, extractor |
-| `schemas/` | versioned JSON schema packs per VP minor, e.g. `schemas/v18.1/` (planned) |
-| `opencode/` | `mcp.json` snippet + `SKILL.md` (planned) |
-| `docs/` | architecture decision records (`INDEX.md` + one file per ADR) |
+| `plugin/` | Java plugin source: zero-dep MCP core, EDT invoker, extractor, write path |
+| `schemas/` | versioned JSON schema packs per VP minor (`v18.1/`); `autovendor.py` regenerates from `openapi.jar` |
+| `opencode/` | `install.sh`, `release.sh`, `mcp.json` snippet, `skills/vp-router/` |
+| `docs/` | architecture decision records (`INDEX.md` + one file per ADR), `INSTALL.md` |
+| `dist/` | release zips built by `opencode/release.sh` |
 | `var/` | runtime state and probe captures (gitignored) |
 | `TODO.md` | deferred ideas and tasks |
 
@@ -26,10 +30,13 @@ report it with file/line evidence and a proposed correction.
 | open project | The `.vpp` currently open in the running VP instance. The only project the plugin can see. |
 | diagram view | A shape or connector on a diagram (`IDiagramElement`): bounds, z-order, visual properties. |
 | model element | The logical element behind a view (`IModelElement`): name, type, documentation, stereotypes. |
+| member | A child model element (attribute, operation, column). Not in VP's project id index — reachable only through its parent (`ModelLookup`). |
 | extractor | The VP-to-JSON transform producing `{diagram, nodes[], edges[], warnings[]}`. |
 | schema pack | Versioned JSON schemas for one VP minor under `schemas/<version>/`. |
+| tier | Write-type gate: verified (probe-tested, exact behavior), pack (schema-pack member, accepted but flagged `unverified`), or impossible (VP cannot create it, hard error). |
+| applied entry | Per-op apply result: `vp_id` is the model id, `view_id` is added when a view exists. Both ids are needed downstream — move/style/delete_element take views, update/delete_model take models. |
 | probe | A throwaway script capturing real `openapi.jar`/VP output. Code is written against captures, never from docs alone. |
-| capabilities | The `vp_capabilities` response: VP version, plugin version, supported families, schema version. |
+| capabilities | The `vp_capabilities` response: VP version, plugin version, schema version, schema guard report. |
 
 ## Rules
 
@@ -46,19 +53,30 @@ report it with file/line evidence and a proposed correction.
 
 ### VP safety
 
-- v1 is read-only: mutating ops are absent from the binary, not just disabled.
 - Never mutate the open project (create, update, delete, save) without explicit user approval per action.
+- All writes go through `vp_apply_batch` with `confirm: true`, re-validated
+  immediately before the first mutation; creations and updates compensate
+  in reverse order on failure, deletions are final. Apply never saves —
+  `vp_save_project` (also confirm-gated) is the only path to disk.
+- Unverified-tier writes may hit VP's silent vetoes (names that don't
+  stick, refused placement). The applied entry carries the effective
+  values and `name_warning`; always read back what actually landed.
 
 ### VP restarts (development and testing only)
 
 - During development and testing you may kill and restart Visual
-  Paradigm yourself without asking: `pkill -f install4j.RV`, then
-  launch `/usr/bin/visual-paradigm` in the background and poll the
-  MCP endpoint until it answers.
+  Paradigm yourself without asking: `pkill -f '[i]nstall4j.RV'` (the
+  bracket matters: a plain pattern matches the wrapping shell's own
+  command line and kills your own command), then launch
+  `/usr/bin/visual-paradigm` in the background and poll the MCP
+  endpoint until it answers.
 - Always pass the project path on launch
   (`visual-paradigm /home/v/Documents/VPProjects/untitled.vpp`): it
   skips the startup dialog, which otherwise blocks project load
   (verified: diagrams visible with zero clicks).
+- The endpoint answers before the project finishes loading — early
+  answers can show a transient empty project. Poll until the diagram
+  count is stable before trusting reads.
 - Preconditions: the open project is saved (confirm once per session
   if unsure — an unsaved restart loses work); announce each restart
   in chat; never restart outside dev/test or while the user is
