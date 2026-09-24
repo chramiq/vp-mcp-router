@@ -196,4 +196,26 @@ public final class VpFakes {
         values.put("getParent", parent);
         return of(IModelElement.class, values);
     }
+
+    /** A model owning children, for member fixtures; getChildById resolves them. */
+    public static IModelElement modelWithChildren(String id, String name, String type,
+            IModelElement[] children) {
+        Map<String, Object> values = new HashMap<>();
+        values.put("getId", id);
+        values.put("getName", name);
+        values.put("getModelType", type);
+        values.put("toChildArray", children);
+        Map<String, IModelElement> byId = new HashMap<>();
+        for (IModelElement child : children) {
+            if (child != null) {
+                byId.put(child.getId(), child);
+            }
+        }
+        return of(IModelElement.class, values, (method, args) -> {
+            if ("getChildById".equals(method.getName())) {
+                return byId.get(args[0]);
+            }
+            return null;
+        });
+    }
 }

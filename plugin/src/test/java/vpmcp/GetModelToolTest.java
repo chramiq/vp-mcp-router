@@ -62,4 +62,18 @@ class GetModelToolTest {
                 () -> GetModelTool.read(project, "nope", false));
         assertTrue(missing.getMessage().contains("nope"));
     }
+
+    @Test
+    void memberResolvesThroughItsParent() throws McpToolException {
+        IModelElement attribute = VpFakes.model("attr", "size", "Attribute");
+        IProject project = VpFakes.project("p",
+                new IModelElement[] {VpFakes.modelWithChildren("cls", "Probe", "Class",
+                        new IModelElement[] {attribute})},
+                new IDiagramUIModel[0]);
+
+        JsonObject result = GetModelTool.read(project, "attr", false);
+
+        assertEquals("size", result.get("name").getAsString());
+        assertEquals("Attribute", result.get("model_type").getAsString());
+    }
 }

@@ -4,12 +4,14 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.vp.plugin.diagram.IDiagramUIModel;
+import com.vp.plugin.model.IModelElement;
 import com.vp.plugin.model.IProject;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import vpmcp.vp.ModelLookup;
 
 /**
  * Validates a write batch without mutating anything. Reads the open project
@@ -30,8 +32,9 @@ public final class PlanValidator {
             "Include", "Extend", "Generalization", "Dependency", "Message", "Transition2"));
     private static final Set<String> OPS =
             new HashSet<>(Arrays.asList("create_diagram", "create_element", "connect",
-                    "duplicate_diagram", "add_member", "update_element", "move_element",
-                    "show_element", "delete_model", "delete_diagram", "delete_element"));
+                    "duplicate_diagram", "add_member", "update_element", "update_member",
+                    "move_element", "show_element", "delete_model", "delete_diagram",
+                    "delete_element"));
 
     private PlanValidator() {
     }
@@ -91,6 +94,9 @@ public final class PlanValidator {
                 break;
             case "update_element":
                 validateUpdateElement(project, op, id, symbols, plan, errors);
+                break;
+            case "update_member":
+                validateUpdateMember(project, op, id, symbols, plan, errors);
                 break;
             case "move_element":
                 validateMoveElement(project, op, id, symbols, plan, errors);
@@ -288,6 +294,113 @@ public final class PlanValidator {
         symbols.put(id, "element");
         plan.add(entry(id, "update_element", "update model '" + model + "'",
                 "restore its previous name, documentation and stereotypes"));
+    }
+
+    private static void validateUpdateMember(IProject project, JsonObject op, String id,
+            Map<String, String> symbols, JsonArray plan, JsonArray errors) {
+        String member = resolveMember(project, op.get("member"), symbols);
+        if (member == null) {
+            errors.add(error(id,
+                    "Unknown member; use a member model id, or a plan ref to add_member."));
+            return;
+        }
+        JsonElement name = op.get("name");
+        if (name != null && !name.isJsonNull()
+                && (!name.isJsonPrimitive() || name.getAsString().trim().isEmpty())) {
+            errors.add(error(id, "Updated \"name\" must be a non-blank string."));
+            return;
+        }
+        JsonElement parameters = op.get("parameters");
+        if (parameters != null && !parameters.isJsonNull()) {
+            String problem = parametersProblem(parameters);
+            if (problem != null) {
+                errors.add(error(id, problem));
+                return;
+            }
+        }
+        JsonElement length = op.get("length");
+        if (length != null && !length.isJsonNull()
+                && (!length.isJsonPrimitive() || !length.getAsJsonPrimitive().isNumber())) {
+            errors.add(error(id, "Updated \"length\" must be a number."));
+            return;
+        }
+        JsonElement nullable = op.get("nullable");
+        if (nullable != null && !nullable.isJsonNull()
+                && (!nullable.isJsonPrimitive() || !nullable.getAsJsonPrimitive().isBoolean())) {
+            errors.add(error(id, "Updated \"nullable\" must be a boolean."));
+            return;
+        }
+        for (String field : new String[] {"type", "visibility", "multiplicity",
+                "initial_value", "return_type"}) {
+            JsonElement value = op.get(field);
+            if (value != null && !value.isJsonNull() && !value.isJsonPrimitive()) {
+                errors.add(error(id, "Updated \"" + field + "\" must be a string."));
+                return;
+            }
+        }
+        boolean any = false;
+        for (String field : new String[] {"name", "type", "visibility", "multiplicity",
+                "initial_value", "return_type", "parameters", "length", "nullable"}) {
+            JsonElement value = op.get(field);
+            if (value != null && !value.isJsonNull()) {
+                any = true;
+                break;
+            }
+        }
+        if (!any) {
+            errors.add(error(id,
+                    "Update needs at least one of name/type/visibility/multiplicity/"
+                            + "initial_value/return_type/parameters/length/nullable."));
+            return;
+        }
+        symbols.put(id, "member");
+        plan.add(entry(id, "update_member", "update member '" + member + "'",
+                "restore its previous fields"));
+    }
+
+    private static String parametersProblem(JsonElement parameters) {
+        if (!parameters.isJsonArray()) {
+            return "\"parameters\" must be an array of {name, type?, direction?}; it replaces all.";
+        }
+        for (JsonElement item : parameters.getAsJsonArray()) {
+            if (item == null || !item.isJsonObject()) {
+                return "\"parameters\" entries must be objects.";
+            }
+            JsonObject parameter = item.getAsJsonObject();
+            JsonElement name = parameter.get("name");
+            if (name == null || !name.isJsonPrimitive()
+                    || name.getAsString().trim().isEmpty()) {
+                return "\"parameters\" entries need a non-blank \"name\".";
+            }
+            for (String field : new String[] {"type", "direction"}) {
+                JsonElement value = parameter.get(field);
+                if (value != null && !value.isJsonNull() && !value.isJsonPrimitive()) {
+                    return "\"parameters\" " + field + " must be a string.";
+                }
+            }
+        }
+        return null;
+    }
+
+    /** Members resolve by plan ref or by id, but only real member kinds. */
+    private static String resolveMember(IProject project, JsonElement reference,
+            Map<String, String> symbols) {
+        String id = resolveRef(reference, symbols, "member");
+        if (id != null) {
+            return id;
+        }
+        if (reference != null && reference.isJsonPrimitive()) {
+            String candidate = reference.getAsString();
+            try {
+                IModelElement model = ModelLookup.byId(project, candidate);
+                if (model != null && MEMBERS.contains(model.getModelType())) {
+                    return candidate;
+                }
+            } catch (RuntimeException unknown) {
+                return null;
+            }
+        }
+        return null;
     }
 
     private static String pointsProblem(JsonElement points) {

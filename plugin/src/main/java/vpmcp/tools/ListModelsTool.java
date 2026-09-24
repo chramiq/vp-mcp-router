@@ -58,16 +58,17 @@ public final class ListModelsTool implements McpTool {
                 if (model == null) {
                     continue;
                 }
-                String modelType = model.getModelType();
-                if (filter != null && !filter.equals(modelType)) {
-                    continue;
+                addEntry(list, model, filter);
+                // Members (attributes, operations, columns) are not in the
+                // project arrays; they hang off their parent's child index.
+                IModelElement[] children = model.toChildArray();
+                if (children != null) {
+                    for (IModelElement child : children) {
+                        if (child != null) {
+                            addEntry(list, child, filter);
+                        }
+                    }
                 }
-                JsonObject entry = new JsonObject();
-                entry.addProperty("id", model.getId());
-                entry.addProperty("name", model.getName());
-                entry.addProperty("model_type", modelType);
-                entry.addProperty("parent_id", model.getParent() == null ? null : model.getParent().getId());
-                list.add(entry);
             }
         }
 
@@ -76,6 +77,19 @@ public final class ListModelsTool implements McpTool {
         result.addProperty("count", list.size());
         result.add("models", list);
         return result;
+    }
+
+    private static void addEntry(JsonArray list, IModelElement model, String filter) {
+        String modelType = model.getModelType();
+        if (filter != null && !filter.equals(modelType)) {
+            return;
+        }
+        JsonObject entry = new JsonObject();
+        entry.addProperty("id", model.getId());
+        entry.addProperty("name", model.getName());
+        entry.addProperty("model_type", modelType);
+        entry.addProperty("parent_id", model.getParent() == null ? null : model.getParent().getId());
+        list.add(entry);
     }
 
     private String optionalString(JsonObject params, String name) {

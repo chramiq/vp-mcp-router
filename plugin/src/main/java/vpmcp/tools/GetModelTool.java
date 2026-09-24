@@ -12,6 +12,7 @@ import vpmcp.core.McpTool;
 import vpmcp.core.McpToolException;
 import vpmcp.core.ToolDefinition;
 import vpmcp.vp.DiagramLocator;
+import vpmcp.vp.ModelLookup;
 import vpmcp.vp.ModelPropertiesReader;
 
 /**
@@ -57,7 +58,7 @@ public final class GetModelTool implements McpTool {
 
     /** The read core, separated from the live-project lookup for unit tests. */
     public static JsonObject read(IProject project, String id, boolean fullDetail) throws McpToolException {
-        IModelElement model = project.getModelElementById(id);
+        IModelElement model = ModelLookup.byId(project, id);
         if (model == null) {
             throw new McpToolException("No model element with id \"" + id
                     + "\" exists in project \"" + project.getName() + "\".");

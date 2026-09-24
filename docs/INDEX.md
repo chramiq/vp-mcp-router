@@ -20,3 +20,4 @@
 | [0016](0016-production.md) | Production footing (skill, releases, versions) | accepted |
 | [0017](0017-model-tree.md) | Model tree access (list, read, model-id neighborhoods) | accepted |
 | [0018](0018-update-element.md) | update_element with old-value snapshots | accepted |
+| [0019](0019-update-member.md) | update_member and member-aware lookups | accepted |

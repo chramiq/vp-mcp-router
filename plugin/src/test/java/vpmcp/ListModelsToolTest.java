@@ -48,6 +48,26 @@ class ListModelsToolTest {
                 assertEquals("Class", entry.getAsJsonObject().get("model_type").getAsString()));
     }
 
+    @Test
+    void membersAreIndexedBesideTheirParents() {
+        IModelElement parent = VpFakes.modelWithChildren("cls", "Probe", "Class",
+                new IModelElement[] {VpFakes.model("attr", "size", "Attribute", null)});
+        // Members hang off a parent; give the child that parent for linkage.
+        IModelElement linkedParent = VpFakes.modelWithChildren("cls", "Probe", "Class",
+                new IModelElement[] {VpFakes.model("attr", "size", "Attribute", parent)});
+        IProject project = VpFakes.project("p", new IModelElement[] {linkedParent},
+                new com.vp.plugin.diagram.IDiagramUIModel[0]);
+
+        JsonObject result = ListModelsTool.index(project, null);
+
+        assertEquals(2, result.get("count").getAsInt());
+        JsonObject indexedMember = result.getAsJsonArray("models").asList().stream()
+                .map(entry -> entry.getAsJsonObject())
+                .filter(entry -> "attr".equals(entry.get("id").getAsString()))
+                .findFirst().orElseThrow();
+        assertEquals("cls", indexedMember.get("parent_id").getAsString());
+    }
+
     private JsonObject entryById(JsonObject result, String id) {
         return result.getAsJsonArray("models").asList().stream()
                 .map(entry -> entry.getAsJsonObject())

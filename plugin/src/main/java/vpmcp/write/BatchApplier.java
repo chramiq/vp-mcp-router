@@ -88,6 +88,8 @@ public final class BatchApplier {
                 return addMember(state, op, id, compensations);
             case "update_element":
                 return updateElement(state, op, id, compensations);
+            case "update_member":
+                return updateMember(state, op, id, compensations);
             case "move_element":
                 return moveElement(state, op, id, compensations);
             case "show_element":
@@ -439,6 +441,252 @@ public final class BatchApplier {
         }
     }
 
+    /**
+     * Member mutation with an old-value snapshot: fields apply by member kind
+     * (Attribute: type/visibility/multiplicity/initial_value; Operation:
+     * return_type/visibility/parameters-as-full-replacement; DBColumn:
+     * type/length/nullable). Kind-inapplicable fields are ignored with a
+     * skipped_fields note rather than failing the batch.
+     */
+    private static JsonObject updateMember(State state, JsonObject op, String id,
+            List<Compensation> compensations) {
+        IModelElement member = requireModel(state, op.get("member"));
+        List<String> skipped = new ArrayList<>();
+
+        JsonObject entry = appliedEntry(id, "member", member.getId(), member.getName());
+        JsonObject snapshot = new JsonObject();
+        compensations.add(new Compensation(id, () -> restoreMember(member, snapshot)));
+
+        applyCommonFields(member, op, entry, snapshot);
+        if (member instanceof com.vp.plugin.model.IAttribute) {
+            applyAttribute((com.vp.plugin.model.IAttribute) member, op, entry, snapshot);
+        } else if (member instanceof com.vp.plugin.model.IOperation) {
+            applyOperation((com.vp.plugin.model.IOperation) member, op, entry, snapshot);
+        } else if (member instanceof com.vp.plugin.model.IDBColumn) {
+            applyColumn((com.vp.plugin.model.IDBColumn) member, op, entry, snapshot);
+        }
+        for (String field : new String[] {"type", "visibility", "multiplicity",
+                "initial_value", "return_type", "parameters", "length", "nullable"}) {
+            if (op.get(field) != null && !op.get(field).isJsonNull()
+                    && !entry.has(field)) {
+                skipped.add(field);
+            }
+        }
+        if (!skipped.isEmpty()) {
+            JsonArray skippedFields = new JsonArray();
+            skipped.forEach(skippedFields::add);
+            entry.add("skipped_fields", skippedFields);
+        }
+        VpLog.info("APPLY update_member id=" + id + " member=" + member.getId());
+        return entry;
+    }
+
+    private static void applyCommonFields(IModelElement member, JsonObject op, JsonObject entry,
+            JsonObject snapshot) {
+        JsonElement name = op.get("name");
+        if (name != null && !name.isJsonNull()) {
+            snapshot.addProperty("name", member.getName());
+            String want = name.getAsString().trim();
+            member.setName(want);
+            entry.addProperty("name", member.getName());
+            if (!want.equals(member.getName())) {
+                entry.addProperty("name_warning",
+                        "VP kept \"" + member.getName() + "\" instead of \"" + want + "\".");
+            }
+        }
+    }
+
+    private static void applyAttribute(com.vp.plugin.model.IAttribute attribute, JsonObject op,
+            JsonObject entry, JsonObject snapshot) {
+        JsonElement type = op.get("type");
+        if (type != null && !type.isJsonNull()) {
+            snapshot.addProperty("type", attribute.getTypeAsString());
+            attribute.setType(type.getAsString());
+            entry.addProperty("type", attribute.getTypeAsString());
+        }
+        JsonElement visibility = op.get("visibility");
+        if (visibility != null && !visibility.isJsonNull()) {
+            snapshot.addProperty("visibility", attribute.getVisibility());
+            attribute.setVisibility(visibility.getAsString());
+            entry.addProperty("visibility", attribute.getVisibility());
+        }
+        JsonElement multiplicity = op.get("multiplicity");
+        if (multiplicity != null && !multiplicity.isJsonNull()) {
+            snapshot.addProperty("multiplicity", attribute.getMultiplicity());
+            attribute.setMultiplicity(multiplicity.getAsString());
+            entry.addProperty("multiplicity", attribute.getMultiplicity());
+        }
+        JsonElement initialValue = op.get("initial_value");
+        if (initialValue != null && !initialValue.isJsonNull()) {
+            snapshot.addProperty("initial_value", attribute.getInitialValueAsString());
+            attribute.setInitialValue(initialValue.getAsString());
+            entry.addProperty("initial_value", attribute.getInitialValueAsString());
+        }
+    }
+
+    private static void applyOperation(com.vp.plugin.model.IOperation operation, JsonObject op,
+            JsonObject entry, JsonObject snapshot) {
+        JsonElement returnType = op.get("return_type");
+        if (returnType != null && !returnType.isJsonNull()) {
+            snapshot.addProperty("return_type", operation.getReturnTypeAsString());
+            operation.setReturnType(returnType.getAsString());
+            entry.addProperty("return_type", operation.getReturnTypeAsString());
+        }
+        JsonElement visibility = op.get("visibility");
+        if (visibility != null && !visibility.isJsonNull()) {
+            snapshot.addProperty("visibility", operation.getVisibility());
+            operation.setVisibility(visibility.getAsString());
+            entry.addProperty("visibility", operation.getVisibility());
+        }
+        JsonElement parameters = op.get("parameters");
+        if (parameters != null && !parameters.isJsonNull()) {
+            JsonArray before = new JsonArray();
+            com.vp.plugin.model.IParameter[] existing = operation.toParameterArray();
+            if (existing != null) {
+                for (com.vp.plugin.model.IParameter parameter : existing) {
+                    before.add(parameterSnapshot(parameter));
+                }
+            }
+            snapshot.add("parameters", before);
+
+            JsonArray wanted = parameters.getAsJsonArray();
+            com.vp.plugin.model.IParameter[] slots =
+                    existing == null ? new com.vp.plugin.model.IParameter[0] : existing;
+            for (int index = 0; index < wanted.size(); index++) {
+                com.vp.plugin.model.IParameter parameter;
+                if (index < slots.length) {
+                    parameter = slots[index];
+                } else {
+                    parameter = operation.createParameter();
+                }
+                applyParameterFields(parameter, wanted.get(index).getAsJsonObject());
+            }
+            for (int index = wanted.size(); index < slots.length; index++) {
+                operation.removeParameter(slots[index]);
+            }
+            JsonArray after = new JsonArray();
+            com.vp.plugin.model.IParameter[] applied = operation.toParameterArray();
+            if (applied != null) {
+                for (com.vp.plugin.model.IParameter parameter : applied) {
+                    after.add(parameterSnapshot(parameter));
+                }
+            }
+            entry.add("parameters", after);
+        }
+    }
+
+    private static JsonObject parameterSnapshot(com.vp.plugin.model.IParameter parameter) {
+        JsonObject json = new JsonObject();
+        json.addProperty("name", parameter.getName());
+        json.addProperty("type", parameter.getTypeAsString());
+        json.addProperty("direction", parameter.getDirection());
+        return json;
+    }
+
+    private static void applyParameterFields(com.vp.plugin.model.IParameter parameter,
+            JsonObject want) {
+        JsonElement name = want.get("name");
+        if (name != null && !name.isJsonNull()) {
+            parameter.setName(name.getAsString().trim());
+        }
+        JsonElement type = want.get("type");
+        if (type != null && !type.isJsonNull()) {
+            parameter.setType(type.getAsString());
+        }
+        JsonElement direction = want.get("direction");
+        if (direction != null && !direction.isJsonNull()) {
+            parameter.setDirection(direction.getAsString());
+        }
+    }
+
+    private static void applyColumn(com.vp.plugin.model.IDBColumn column, JsonObject op,
+            JsonObject entry, JsonObject snapshot) {
+        JsonElement type = op.get("type");
+        if (type != null && !type.isJsonNull()) {
+            snapshot.addProperty("type", column.getTypeName());
+            column.setTypeName(type.getAsString());
+            entry.addProperty("type", column.getTypeName());
+        }
+        JsonElement length = op.get("length");
+        if (length != null && !length.isJsonNull()) {
+            snapshot.addProperty("length", column.getLength());
+            column.setLength(length.getAsInt());
+            entry.addProperty("length", column.getLength());
+        }
+        JsonElement nullable = op.get("nullable");
+        if (nullable != null && !nullable.isJsonNull()) {
+            snapshot.addProperty("nullable", column.isNullable());
+            column.setNullable(nullable.getAsBoolean());
+            entry.addProperty("nullable", column.isNullable());
+        }
+    }
+
+    /** Best-effort restore of every snapshotted member field, in reverse. */
+    private static void restoreMember(IModelElement member, JsonObject snapshot) {
+        if (snapshot.has("name")) {
+            member.setName(snapshot.get("name").getAsString());
+        }
+        if (member instanceof com.vp.plugin.model.IAttribute) {
+            com.vp.plugin.model.IAttribute attribute = (com.vp.plugin.model.IAttribute) member;
+            if (snapshot.has("type")) {
+                attribute.setType(snapshot.get("type").getAsString());
+            }
+            if (snapshot.has("visibility")) {
+                attribute.setVisibility(snapshot.get("visibility").getAsString());
+            }
+            if (snapshot.has("multiplicity")) {
+                attribute.setMultiplicity(snapshot.get("multiplicity").getAsString());
+            }
+            if (snapshot.has("initial_value")) {
+                attribute.setInitialValue(snapshot.get("initial_value").getAsString());
+            }
+        } else if (member instanceof com.vp.plugin.model.IOperation) {
+            com.vp.plugin.model.IOperation operation =
+                    (com.vp.plugin.model.IOperation) member;
+            if (snapshot.has("return_type")) {
+                operation.setReturnType(snapshot.get("return_type").getAsString());
+            }
+            if (snapshot.has("visibility")) {
+                operation.setVisibility(snapshot.get("visibility").getAsString());
+            }
+            if (snapshot.has("parameters")) {
+                restoreParameters(operation, snapshot.getAsJsonArray("parameters"));
+            }
+        } else if (member instanceof com.vp.plugin.model.IDBColumn) {
+            com.vp.plugin.model.IDBColumn column = (com.vp.plugin.model.IDBColumn) member;
+            if (snapshot.has("type")) {
+                column.setTypeName(snapshot.get("type").getAsString());
+            }
+            if (snapshot.has("length")) {
+                column.setLength(snapshot.get("length").getAsInt());
+            }
+            if (snapshot.has("nullable")) {
+                column.setNullable(snapshot.get("nullable").getAsBoolean());
+            }
+        }
+    }
+
+    private static void restoreParameters(com.vp.plugin.model.IOperation operation,
+            JsonArray snapshot) {
+        com.vp.plugin.model.IParameter[] current = operation.toParameterArray();
+        int currentCount = current == null ? 0 : current.length;
+        for (int index = 0; index < snapshot.size(); index++) {
+            JsonObject want = snapshot.get(index).getAsJsonObject();
+            com.vp.plugin.model.IParameter parameter;
+            if (index < currentCount) {
+                parameter = current[index];
+            } else {
+                parameter = operation.createParameter();
+            }
+            applyParameterFields(parameter, want);
+        }
+        if (current != null) {
+            for (int index = snapshot.size(); index < current.length; index++) {
+                operation.removeParameter(current[index]);
+            }
+        }
+    }
+
     private static void setMemberType(IModelElement child, JsonElement type, String id) {
         if (type == null || type.isJsonNull()) {
             return;
@@ -587,7 +835,8 @@ public final class BatchApplier {
                     return planned;
                 }
             } else if (reference.isJsonPrimitive()) {
-                IModelElement found = state.project.getModelElementById(reference.getAsString());
+                IModelElement found = vpmcp.vp.ModelLookup.byId(state.project,
+                        reference.getAsString());
                 if (found != null) {
                     return found;
                 }

@@ -413,6 +413,101 @@ class PlanValidatorTest {
         assertTrue(result.get("valid").getAsBoolean(), result.toString());
     }
 
+    @Test
+    void updateMemberValidatesWithUndo() {
+        IProject withMember = VpFakes.project("p",
+                new com.vp.plugin.model.IModelElement[] {VpFakes.model("mem", "size", "Attribute")},
+                new com.vp.plugin.diagram.IDiagramUIModel[0]);
+
+        JsonObject result = PlanValidator.validate(withMember, parse("[{\"id\":\"u\","
+                + "\"op\":\"update_member\",\"member\":\"mem\",\"type\":\"int\","
+                + "\"visibility\":\"private\",\"multiplicity\":\"1\"}]"));
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+        JsonObject planEntry = result.getAsJsonArray("plan").get(0).getAsJsonObject();
+        assertTrue(planEntry.get("undo").getAsString().contains("restore"));
+    }
+
+    @Test
+    void updateMemberByPlanRefValidates() {
+        JsonArray ops = parse("["
+                + "{\"id\":\"m\",\"op\":\"add_member\",\"parent\":\"v9\","
+                + " \"member_type\":\"Attribute\",\"name\":\"total\"},"
+                + "{\"id\":\"u\",\"op\":\"update_member\",\"member\":{\"ref\":\"m\"},"
+                + " \"type\":\"int\"}]");
+
+        JsonObject result = PlanValidator.validate(project, ops);
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+    }
+
+    @Test
+    void updateMemberOnlyAcceptsMemberKinds() {
+        IProject withModel = VpFakes.project("p",
+                new com.vp.plugin.model.IModelElement[] {VpFakes.model("cls", "Thing", "Class")},
+                new com.vp.plugin.diagram.IDiagramUIModel[0]);
+
+        JsonObject result = PlanValidator.validate(withModel,
+                parse("[{\"id\":\"u\",\"op\":\"update_member\",\"member\":\"cls\",\"type\":\"int\"}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+        assertTrue(result.toString().contains("member"));
+    }
+
+    @Test
+    void updateMemberNeedsAField() {
+        IProject withMember = VpFakes.project("p",
+                new com.vp.plugin.model.IModelElement[] {VpFakes.model("mem", "size", "Attribute")},
+                new com.vp.plugin.diagram.IDiagramUIModel[0]);
+
+        JsonObject result = PlanValidator.validate(withMember,
+                parse("[{\"id\":\"u\",\"op\":\"update_member\",\"member\":\"mem\"}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+    }
+
+    @Test
+    void updateMemberParametersMustBeNamedObjects() {
+        IProject withMember = VpFakes.project("p",
+                new com.vp.plugin.model.IModelElement[] {VpFakes.model("op", "run", "Operation")},
+                new com.vp.plugin.diagram.IDiagramUIModel[0]);
+
+        JsonObject result = PlanValidator.validate(withMember, parse("[{\"id\":\"u\","
+                + "\"op\":\"update_member\",\"member\":\"op\","
+                + "\"parameters\":[{\"type\":\"int\"}]}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+        assertTrue(result.toString().contains("name"));
+    }
+
+    @Test
+    void updateMemberLengthMustBeNumber() {
+        IProject withMember = VpFakes.project("p",
+                new com.vp.plugin.model.IModelElement[] {VpFakes.model("col", "id", "DBColumn")},
+                new com.vp.plugin.diagram.IDiagramUIModel[0]);
+
+        JsonObject result = PlanValidator.validate(withMember, parse("[{\"id\":\"u\","
+                + "\"op\":\"update_member\",\"member\":\"col\",\"length\":\"long\"}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+    }
+
+    @Test
+    void updateMemberResolvesThroughParentScan() {
+        // VP's id index skips members; resolution must walk the parents.
+        IProject withMember = VpFakes.project("p",
+                new com.vp.plugin.model.IModelElement[] {VpFakes.modelWithChildren(
+                        "cls", "Probe", "Class",
+                        new com.vp.plugin.model.IModelElement[] {
+                                VpFakes.model("attr", "size", "Attribute")})},
+                new com.vp.plugin.diagram.IDiagramUIModel[0]);
+
+        JsonObject result = PlanValidator.validate(withMember, parse("[{\"id\":\"u\","
+                + "\"op\":\"update_member\",\"member\":\"attr\",\"type\":\"int\"}]"));
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+    }
+
     private IProject projectWith(String diagramId, String elementId) {
         Map<String, Object> values = new HashMap<>();
         values.put("toDiagramArray", new com.vp.plugin.diagram.IDiagramUIModel[] {
