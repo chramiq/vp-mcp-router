@@ -165,4 +165,35 @@ public final class VpFakes {
         values.put("getName", name);
         return of(IProject.class, values);
     }
+
+    /** A project whose model index, diagrams and id lookups come from fixtures. */
+    public static IProject project(String name, IModelElement[] models, IDiagramUIModel[] diagrams) {
+        Map<String, IModelElement> byId = new HashMap<>();
+        for (IModelElement model : models) {
+            if (model != null) {
+                byId.put(model.getId(), model);
+            }
+        }
+        Map<String, Object> values = new HashMap<>();
+        values.put("getName", name);
+        values.put("toAllLevelModelElementArray", models);
+        values.put("toModelElementArray", models);
+        values.put("toDiagramArray", diagrams);
+        return of(IProject.class, values, (method, args) -> {
+            if ("getModelElementById".equals(method.getName())) {
+                return byId.get(args[0]);
+            }
+            return null;
+        });
+    }
+
+    /** A model with a parent, for tree-shape fixtures. */
+    public static IModelElement model(String id, String name, String type, IModelElement parent) {
+        Map<String, Object> values = new HashMap<>();
+        values.put("getId", id);
+        values.put("getName", name);
+        values.put("getModelType", type);
+        values.put("getParent", parent);
+        return of(IModelElement.class, values);
+    }
 }

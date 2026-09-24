@@ -12,10 +12,12 @@ import vpmcp.tools.ApplyBatchTool;
 import vpmcp.tools.CapabilitiesTool;
 import vpmcp.tools.ExportImageTool;
 import vpmcp.tools.GetDiagramByUrlTool;
+import vpmcp.tools.GetModelTool;
 import vpmcp.tools.NeighborhoodTool;
 import vpmcp.tools.PreviewBatchTool;
 import vpmcp.tools.SaveProjectTool;
 import vpmcp.tools.ListDiagramsTool;
+import vpmcp.tools.ListModelsTool;
 import vpmcp.vp.EdtToolInvoker;
 import vpmcp.vp.FileResourceProvider;
 import vpmcp.vp.GuardStatus;
@@ -55,6 +57,8 @@ public final class RouterPlugin implements VPPlugin {
             McpToolRegistry registry = new McpToolRegistry()
                     .register(new CapabilitiesTool(VERSION, SCHEMA_VERSION))
                     .register(new ListDiagramsTool())
+                    .register(new ListModelsTool())
+                    .register(new GetModelTool())
                     .register(new ExportImageTool())
                     .register(new PreviewBatchTool())
                     .register(new ApplyBatchTool())

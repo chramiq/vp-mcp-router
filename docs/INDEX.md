@@ -18,3 +18,4 @@
 | [0014](0014-families.md) | Homework families (curated-generic writes) | accepted |
 | [0015](0015-quirks.md) | Quirk fixes (names, columns, captions) | accepted |
 | [0016](0016-production.md) | Production footing (skill, releases, versions) | accepted |
+| [0017](0017-model-tree.md) | Model tree access (list, read, model-id neighborhoods) | accepted |
