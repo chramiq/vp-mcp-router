@@ -553,6 +553,54 @@ class PlanValidatorTest {
         assertFalse(result.get("valid").getAsBoolean());
     }
 
+    @Test
+    void createRawValidatesWithDiagramAndWarnsUnverified() {
+        JsonObject result = PlanValidator.validate(project, parse("[{\"id\":\"r\","
+                + "\"op\":\"create_raw\",\"factory_method\":\"createBPMNProcess\","
+                + "\"diagram\":\"d1\",\"name\":\"Proc\"}]"));
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+        JsonObject planEntry = result.getAsJsonArray("plan").get(0).getAsJsonObject();
+        assertTrue(planEntry.get("summary").getAsString().contains("unverified"));
+        assertTrue(planEntry.get("undo").getAsString().contains("delete"));
+    }
+
+    @Test
+    void createRawWithoutDiagramIsAnOrphanModel() {
+        JsonObject result = PlanValidator.validate(project, parse("[{\"id\":\"r\","
+                + "\"op\":\"create_raw\",\"factory_method\":\"createRequirement\"}]"));
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+        JsonObject planEntry = result.getAsJsonArray("plan").get(0).getAsJsonObject();
+        assertTrue(planEntry.get("summary").getAsString().contains("orphan"));
+    }
+
+    @Test
+    void createRawMethodMustStartWithCreate() {
+        JsonObject result = PlanValidator.validate(project,
+                parse("[{\"id\":\"r\",\"op\":\"create_raw\",\"factory_method\":\"dispose\"}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+        assertTrue(result.toString().contains("create"));
+    }
+
+    @Test
+    void createRawBlankMethodRejected() {
+        JsonObject result = PlanValidator.validate(project,
+                parse("[{\"id\":\"r\",\"op\":\"create_raw\",\"factory_method\":\"  \"}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+    }
+
+    @Test
+    void createRawUnknownDiagramRejected() {
+        JsonObject result = PlanValidator.validate(project, parse("[{\"id\":\"r\","
+                + "\"op\":\"create_raw\",\"factory_method\":\"createRequirement\","
+                + "\"diagram\":\"ghost\"}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+    }
+
     private IProject projectWith(String diagramId, String elementId) {
         Map<String, Object> values = new HashMap<>();
         values.put("toDiagramArray", new com.vp.plugin.diagram.IDiagramUIModel[] {

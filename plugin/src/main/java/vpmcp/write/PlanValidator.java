@@ -33,8 +33,8 @@ public final class PlanValidator {
     private static final Set<String> OPS =
             new HashSet<>(Arrays.asList("create_diagram", "create_element", "connect",
                     "duplicate_diagram", "add_member", "update_element", "update_member",
-                    "style_element", "move_element", "show_element", "delete_model",
-                    "delete_diagram", "delete_element"));
+                    "style_element", "create_raw", "move_element", "show_element",
+                    "delete_model", "delete_diagram", "delete_element"));
 
     private PlanValidator() {
     }
@@ -100,6 +100,9 @@ public final class PlanValidator {
                 break;
             case "style_element":
                 validateStyleElement(project, op, id, symbols, plan, errors);
+                break;
+            case "create_raw":
+                validateCreateRaw(project, op, id, symbols, plan, errors);
                 break;
             case "move_element":
                 validateMoveElement(project, op, id, symbols, plan, errors);
@@ -465,6 +468,53 @@ public final class PlanValidator {
                 "restore its previous colours, line and font"));
     }
 
+    /**
+     * The escape hatch: any no-arg create method of IModelElementFactory
+     * (1453 of the 1454 in the v18.1 pack). Nothing here knows whether the
+     * method or its result behaves; that honesty is the point. The
+     * "create" prefix keeps the hatch from invoking non-creation methods.
+     */
+    private static void validateCreateRaw(IProject project, JsonObject op, String id,
+            Map<String, String> symbols, JsonArray plan, JsonArray errors) {
+        String method = text(op, "factory_method");
+        if (method == null || method.trim().isEmpty()) {
+            errors.add(error(id, "Raw creation needs a \"factory_method\"."));
+            return;
+        }
+        if (!method.startsWith("create")) {
+            errors.add(error(id,
+                    "\"factory_method\" must be a create method of IModelElementFactory, "
+                            + "for example \"createBPMNProcess\"."));
+            return;
+        }
+        String diagram = null;
+        if (op.get("diagram") != null && !op.get("diagram").isJsonNull()) {
+            diagram = resolveDiagram(project, op.get("diagram"), symbols);
+            if (diagram == null) {
+                errors.add(error(id,
+                        "Unknown diagram reference; use an existing diagram id or a plan ref."));
+                return;
+            }
+        }
+        JsonElement name = op.get("name");
+        if (name != null && !name.isJsonNull()
+                && (!name.isJsonPrimitive() || name.getAsString().trim().isEmpty())) {
+            errors.add(error(id, "Raw creation \"name\" must be a non-blank string."));
+            return;
+        }
+        if (!optionalNumbers(op, "x", "y", "width", "height")) {
+            errors.add(error(id, "Geometry fields x/y/width/height must be numbers."));
+            return;
+        }
+        symbols.put(id, "element");
+        plan.add(entry(id, "create_raw",
+                "raw model via factory method '" + method.trim() + "'"
+                        + (diagram == null ? " (no diagram; an orphan model)"
+                                : " on diagram '" + diagram + "'")
+                        + " — unverified family, VP may veto or misplace",
+                "delete what was created"));
+    }
+
     private static boolean isHexColor(String value) {
         return value != null && value.matches("#?[0-9a-fA-F]{6}");
     }
@@ -563,7 +613,7 @@ public final class PlanValidator {
         if (reference != null && reference.isJsonPrimitive()) {
             String candidate = reference.getAsString();
             try {
-                if (project != null && project.getModelElementById(candidate) != null) {
+                if (project != null && ModelLookup.byId(project, candidate) != null) {
                     return candidate;
                 }
             } catch (RuntimeException unknown) {

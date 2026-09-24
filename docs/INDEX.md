@@ -22,3 +22,4 @@
 | [0018](0018-update-element.md) | update_element with old-value snapshots | accepted |
 | [0019](0019-update-member.md) | update_member and member-aware lookups | accepted |
 | [0020](0020-style-element.md) | style_element (view colours, fill, line, font) | accepted |
+| [0021](0021-create-raw.md) | create_raw, the factory escape hatch | accepted |

@@ -92,6 +92,8 @@ public final class BatchApplier {
                 return updateMember(state, op, id, compensations);
             case "style_element":
                 return styleElement(state, op, id, compensations);
+            case "create_raw":
+                return createRaw(state, op, id, compensations);
             case "move_element":
                 return moveElement(state, op, id, compensations);
             case "show_element":
@@ -775,6 +777,88 @@ public final class BatchApplier {
             }
         }
         VpLog.info("APPLY style_element id=" + id + " view=" + element.getId());
+        return entry;
+    }
+
+    /**
+     * The escape hatch: one no-arg create method of IModelElementFactory,
+     * invoked reflectively. A diagram is optional — without one the result
+     * is an orphan model (listable via vp_list_models); with one, placement
+     * is attempted and a failure to place is reported, not hidden.
+     * vp_id is the model id; view_id is added when a view was placed.
+     */
+    private static JsonObject createRaw(State state, JsonObject op, String id,
+            List<Compensation> compensations) {
+        String method = op.get("factory_method").getAsString().trim();
+        IModelElement model;
+        try {
+            model = (IModelElement) state.factory.getClass()
+                    .getMethod(method).invoke(state.factory);
+        } catch (NoSuchMethodException missing) {
+            throw new IllegalStateException("Op \"" + id + "\": the factory has no method \""
+                    + method + "\"; see vp://schemas factory-creates for the known set.");
+        } catch (Exception failure) {
+            throw new IllegalStateException("Op \"" + id + "\": factory method \"" + method
+                    + "\" failed: " + failure);
+        }
+        if (model == null) {
+            throw new IllegalStateException("Op \"" + id + "\": factory method \"" + method
+                    + "\" returned nothing.");
+        }
+
+        String name = null;
+        if (op.get("name") != null && !op.get("name").isJsonNull()) {
+            name = op.get("name").getAsString().trim();
+            model.setName(name);
+        }
+        String effectiveName = model.getName();
+
+        IDiagramElement view = null;
+        IDiagramUIModel diagram = null;
+        if (op.get("diagram") != null && !op.get("diagram").isJsonNull()) {
+            diagram = requireDiagram(state, op.get("diagram"));
+            view = state.diagrams.createDiagramElement(diagram, model);
+            if (view != null) {
+                view.setBounds(number(op, "x", 10), number(op, "y", 10),
+                        number(op, "width", 80), number(op, "height", 40));
+            }
+        }
+
+        final IModelElement created = model;
+        final IDiagramElement placed = view;
+        final IDiagramUIModel owner = diagram;
+        compensations.add(new Compensation(id, () -> {
+            if (placed != null) {
+                deleteView(owner, placed, created);
+            } else {
+                created.delete();
+            }
+        }));
+        state.models.put(id, model);
+        if (view != null) {
+            state.views.put(id, view);
+            state.owners.put(view.getId(), diagram);
+        }
+
+        VpLog.info("APPLY create_raw id=" + id + " method=" + method
+                + " model=" + model.getId() + " placed=" + (view != null));
+        JsonObject entry = appliedEntry(id, view == null ? "model" : "element",
+                model.getId(), effectiveName);
+        entry.addProperty("method", method);
+        entry.addProperty("placed", view != null);
+        if (view != null) {
+            entry.addProperty("view_id", view.getId());
+        } else if (diagram != null) {
+            entry.addProperty("note", "no view could be placed on this diagram kind; "
+                    + "some model kinds are transient in VP (not saved, not listed)");
+        } else {
+            entry.addProperty("note", "orphan model; show it with show_element if it is "
+                    + "not one of VP's transient kinds");
+        }
+        if (name != null && !name.equals(effectiveName)) {
+            entry.addProperty("name_warning",
+                    "VP kept \"" + effectiveName + "\" instead of \"" + name + "\".");
+        }
         return entry;
     }
 
