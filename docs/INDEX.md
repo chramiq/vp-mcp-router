@@ -23,3 +23,4 @@
 | [0019](0019-update-member.md) | update_member and member-aware lookups | accepted |
 | [0020](0020-style-element.md) | style_element (view colours, fill, line, font) | accepted |
 | [0021](0021-create-raw.md) | create_raw, the factory escape hatch | accepted |
+| [0022](0022-type-tiers.md) | Tiered type gates (verified / pack / impossible) | accepted |

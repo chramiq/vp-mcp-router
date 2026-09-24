@@ -20,16 +20,6 @@ import vpmcp.vp.ModelLookup;
  */
 public final class PlanValidator {
 
-    private static final Set<String> DIAGRAMS = new HashSet<>(Arrays.asList("ClassDiagram",
-            "UseCaseDiagram", "ActivityDiagram", "StateDiagram", "ERDiagram", "InteractionDiagram",
-            "DeploymentDiagram"));
-    private static final Set<String> ELEMENTS = new HashSet<>(Arrays.asList("Actor", "UseCase",
-            "Class", "Activity", "InitialNode", "DecisionNode", "ActivityFinalNode", "State2",
-            "DBTable", "Component", "Node", "LifeLine"));
-    private static final Set<String> MEMBERS =
-            new HashSet<>(Arrays.asList("Attribute", "Operation", "DBColumn"));
-    private static final Set<String> RELATIONSHIPS = new HashSet<>(Arrays.asList("Association",
-            "Include", "Extend", "Generalization", "Dependency", "Message", "Transition2"));
     private static final Set<String> OPS =
             new HashSet<>(Arrays.asList("create_diagram", "create_element", "connect",
                     "duplicate_diagram", "add_member", "update_element", "update_member",
@@ -40,6 +30,15 @@ public final class PlanValidator {
     }
 
     public static JsonObject validate(IProject project, JsonArray ops) {
+        return validate(project, ops, TypeTiers.verifiedOnly());
+    }
+
+    /**
+     * Two tiers: verified families behave as documented; pack families
+     * (from the schema pack, passed in by the plugin) are accepted but
+     * flagged unverified. Everything else is impossible, not forbidden.
+     */
+    public static JsonObject validate(IProject project, JsonArray ops, TypeTiers tiers) {
         JsonArray plan = new JsonArray();
         JsonArray errors = new JsonArray();
         Map<String, String> symbols = new HashMap<>();
@@ -54,13 +53,13 @@ public final class PlanValidator {
                 errors.add(error("<batch>", "Every op must be an object."));
                 continue;
             }
-            validateOp(project, item.getAsJsonObject(), symbols, plan, errors);
+            validateOp(project, item.getAsJsonObject(), symbols, plan, errors, tiers);
         }
         return result(errors.size() == 0, plan, errors);
     }
 
-    private static void validateOp(IProject project, JsonObject op, Map<String, String> symbols, JsonArray plan,
-            JsonArray errors) {
+    private static void validateOp(IProject project, JsonObject op, Map<String, String> symbols,
+            JsonArray plan, JsonArray errors, TypeTiers tiers) {
         String id = text(op, "id");
         String kind = text(op, "op");
         if (id == null || id.isEmpty()) {
@@ -78,25 +77,25 @@ public final class PlanValidator {
 
         switch (kind) {
             case "create_diagram":
-                validateCreateDiagram(op, id, symbols, plan, errors);
+                validateCreateDiagram(op, id, symbols, plan, errors, tiers);
                 break;
             case "create_element":
-                validateCreateElement(project, op, id, symbols, plan, errors);
+                validateCreateElement(project, op, id, symbols, plan, errors, tiers);
                 break;
             case "connect":
-                validateConnect(project, op, id, symbols, plan, errors);
+                validateConnect(project, op, id, symbols, plan, errors, tiers);
                 break;
             case "duplicate_diagram":
                 validateDuplicateDiagram(project, op, id, symbols, plan, errors);
                 break;
             case "add_member":
-                validateAddMember(project, op, id, symbols, plan, errors);
+                validateAddMember(project, op, id, symbols, plan, errors, tiers);
                 break;
             case "update_element":
                 validateUpdateElement(project, op, id, symbols, plan, errors);
                 break;
             case "update_member":
-                validateUpdateMember(project, op, id, symbols, plan, errors);
+                validateUpdateMember(project, op, id, symbols, plan, errors, tiers);
                 break;
             case "style_element":
                 validateStyleElement(project, op, id, symbols, plan, errors);
@@ -125,12 +124,14 @@ public final class PlanValidator {
         }
     }
 
-    private static void validateCreateDiagram(JsonObject op, String id, Map<String, String> symbols, JsonArray plan,
-            JsonArray errors) {
+    private static void validateCreateDiagram(JsonObject op, String id, Map<String, String> symbols,
+            JsonArray plan, JsonArray errors, TypeTiers tiers) {
         String diagramType = text(op, "diagram_type");
         String name = text(op, "name");
-        if (diagramType == null || !DIAGRAMS.contains(diagramType)) {
-            errors.add(error(id, "Unsupported diagram_type; allowed: " + DIAGRAMS + "."));
+        if (diagramType == null || !tiers.isKnownDiagram(diagramType)) {
+            errors.add(error(id, "VP has no diagram type \"" + diagramType
+                    + "\"; use a type from the vp://schemas diagram-types resource "
+                    + "(anything beyond the verified families is unverified)."));
             return;
         }
         if (name == null || name.trim().isEmpty()) {
@@ -138,25 +139,34 @@ public final class PlanValidator {
             return;
         }
         symbols.put(id, "diagram");
-        plan.add(entry(id, "create_diagram", diagramType + " '" + name.trim() + "'",
-                "delete diagram '" + name.trim() + "'"));
+        if (tiers.isVerifiedDiagram(diagramType)) {
+            plan.add(entry(id, "create_diagram", diagramType + " '" + name.trim() + "'",
+                    "delete diagram '" + name.trim() + "'"));
+        } else {
+            plan.add(unverifiedEntry(id, "create_diagram",
+                    diagramType + " '" + name.trim() + "'",
+                    "delete diagram '" + name.trim() + "'"));
+        }
     }
 
     private static void validateCreateElement(IProject project, JsonObject op, String id,
-            Map<String, String> symbols, JsonArray plan, JsonArray errors) {
+            Map<String, String> symbols, JsonArray plan, JsonArray errors, TypeTiers tiers) {
         String diagram = resolveDiagram(project, op.get("diagram"), symbols);
         if (diagram == null) {
             errors.add(error(id, "Unknown diagram reference; use an existing diagram id or a plan ref."));
             return;
         }
         String modelType = text(op, "model_type");
-        if (modelType != null && MEMBERS.contains(modelType)) {
+        if (modelType != null && tiers.isVerifiedMember(modelType)) {
             errors.add(error(id,
                     "Members are not placeable; use add_member with a parent element."));
             return;
         }
-        if (modelType == null || !ELEMENTS.contains(modelType)) {
-            errors.add(error(id, "Unsupported model_type; allowed: " + ELEMENTS + "."));
+        if (modelType == null || !(tiers.isVerifiedElement(modelType)
+                || tiers.isCreatable(modelType))) {
+            errors.add(error(id, "VP cannot create \"" + modelType
+                    + "\"; see the vp://schemas factory-creates resource "
+                    + "(anything beyond the verified families is unverified)."));
             return;
         }
         String name = text(op, "name");
@@ -169,21 +179,30 @@ public final class PlanValidator {
             return;
         }
         symbols.put(id, "element");
-        plan.add(entry(id, "create_element",
-                modelType + " '" + name.trim() + "' on diagram '" + diagram + "'",
-                "remove '" + name.trim() + "' from its diagram and delete its model"));
+        if (tiers.isVerifiedElement(modelType)) {
+            plan.add(entry(id, "create_element",
+                    modelType + " '" + name.trim() + "' on diagram '" + diagram + "'",
+                    "remove '" + name.trim() + "' from its diagram and delete its model"));
+        } else {
+            plan.add(unverifiedEntry(id, "create_element",
+                    modelType + " '" + name.trim() + "' on diagram '" + diagram + "'",
+                    "remove '" + name.trim() + "' from its diagram and delete its model"));
+        }
     }
 
     private static void validateConnect(IProject project, JsonObject op, String id, Map<String, String> symbols,
-            JsonArray plan, JsonArray errors) {
+            JsonArray plan, JsonArray errors, TypeTiers tiers) {
         String diagram = resolveDiagram(project, op.get("diagram"), symbols);
         if (diagram == null) {
             errors.add(error(id, "Unknown diagram reference; use an existing diagram id or a plan ref."));
             return;
         }
         String relType = text(op, "rel_type");
-        if (relType == null || !RELATIONSHIPS.contains(relType)) {
-            errors.add(error(id, "Unsupported rel_type; allowed: " + RELATIONSHIPS + "."));
+        if (relType == null || !(tiers.isVerifiedRelationship(relType)
+                || tiers.isCreatable(relType))) {
+            errors.add(error(id, "VP cannot create a relationship \"" + relType
+                    + "\"; see the vp://schemas factory-creates resource "
+                    + "(anything beyond the verified families is unverified)."));
             return;
         }
         String from = resolveElement(project, op.get("from"), symbols);
@@ -204,8 +223,14 @@ public final class PlanValidator {
             return;
         }
         symbols.put(id, "relationship");
-        plan.add(entry(id, "connect", relType + " from '" + from + "' to '" + to + "'",
-                "remove the " + relType + " connector and delete its model"));
+        if (tiers.isVerifiedRelationship(relType)) {
+            plan.add(entry(id, "connect", relType + " from '" + from + "' to '" + to + "'",
+                    "remove the " + relType + " connector and delete its model"));
+        } else {
+            plan.add(unverifiedEntry(id, "connect",
+                    relType + " from '" + from + "' to '" + to + "'",
+                    "remove the " + relType + " connector and delete its model"));
+        }
     }
 
     private static void validateDuplicateDiagram(IProject project, JsonObject op, String id,
@@ -227,15 +252,18 @@ public final class PlanValidator {
     }
 
     private static void validateAddMember(IProject project, JsonObject op, String id,
-            Map<String, String> symbols, JsonArray plan, JsonArray errors) {
+            Map<String, String> symbols, JsonArray plan, JsonArray errors, TypeTiers tiers) {
         String parent = resolveElement(project, op.get("parent"), symbols);
         if (parent == null) {
             errors.add(error(id, "Unknown parent; use an existing element id or a plan ref."));
             return;
         }
         String memberType = text(op, "member_type");
-        if (memberType == null || !MEMBERS.contains(memberType)) {
-            errors.add(error(id, "Unsupported member_type; allowed: " + MEMBERS + "."));
+        if (memberType == null || !(tiers.isVerifiedMember(memberType)
+                || tiers.isCreatable(memberType))) {
+            errors.add(error(id, "VP cannot create a member \"" + memberType
+                    + "\"; see the vp://schemas factory-creates resource "
+                    + "(anything beyond the verified families is unverified)."));
             return;
         }
         String name = text(op, "name");
@@ -250,9 +278,15 @@ public final class PlanValidator {
             return;
         }
         symbols.put(id, "member");
-        plan.add(entry(id, "add_member",
-                memberType + " '" + name.trim() + "' on '" + parent + "'",
-                "remove '" + name.trim() + "' from its parent"));
+        if (tiers.isVerifiedMember(memberType)) {
+            plan.add(entry(id, "add_member",
+                    memberType + " '" + name.trim() + "' on '" + parent + "'",
+                    "remove '" + name.trim() + "' from its parent"));
+        } else {
+            plan.add(unverifiedEntry(id, "add_member",
+                    memberType + " '" + name.trim() + "' on '" + parent + "'",
+                    "remove '" + name.trim() + "' from its parent"));
+        }
     }
 
     private static void validateUpdateElement(IProject project, JsonObject op, String id,
@@ -303,8 +337,8 @@ public final class PlanValidator {
     }
 
     private static void validateUpdateMember(IProject project, JsonObject op, String id,
-            Map<String, String> symbols, JsonArray plan, JsonArray errors) {
-        String member = resolveMember(project, op.get("member"), symbols);
+            Map<String, String> symbols, JsonArray plan, JsonArray errors, TypeTiers tiers) {
+        String member = resolveMember(project, op.get("member"), symbols, tiers);
         if (member == null) {
             errors.add(error(id,
                     "Unknown member; use a member model id, or a plan ref to add_member."));
@@ -388,9 +422,9 @@ public final class PlanValidator {
         return null;
     }
 
-    /** Members resolve by plan ref or by id, but only real member kinds. */
+    /** Members resolve by plan ref or by id, but only creatable member kinds. */
     private static String resolveMember(IProject project, JsonElement reference,
-            Map<String, String> symbols) {
+            Map<String, String> symbols, TypeTiers tiers) {
         String id = resolveRef(reference, symbols, "member");
         if (id != null) {
             return id;
@@ -399,7 +433,8 @@ public final class PlanValidator {
             String candidate = reference.getAsString();
             try {
                 IModelElement model = ModelLookup.byId(project, candidate);
-                if (model != null && MEMBERS.contains(model.getModelType())) {
+                if (model != null && (tiers.isVerifiedMember(model.getModelType())
+                        || tiers.isCreatable(model.getModelType()))) {
                     return candidate;
                 }
             } catch (RuntimeException unknown) {
@@ -739,6 +774,13 @@ public final class PlanValidator {
         entry.addProperty("op", op);
         entry.addProperty("summary", summary);
         entry.addProperty("undo", undo);
+        return entry;
+    }
+
+    /** A plan entry for a pack-tier type: same shape, plus the unverified flag. */
+    private static JsonObject unverifiedEntry(String id, String op, String summary, String undo) {
+        JsonObject entry = entry(id, op, summary + " — " + TypeTiers.unverifiedNote(), undo);
+        entry.addProperty("unverified", true);
         return entry;
     }
 

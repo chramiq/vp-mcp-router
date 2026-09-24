@@ -9,6 +9,7 @@ import vpmcp.core.McpToolException;
 import vpmcp.core.ToolDefinition;
 import vpmcp.vp.DiagramLocator;
 import vpmcp.write.BatchApplier;
+import vpmcp.write.TypeTiers;
 
 /**
  * Applies a write batch to the open project. The confirm gate runs before
@@ -32,6 +33,16 @@ public final class ApplyBatchTool implements McpTool {
 
     private final ToolDefinition definition = new ToolDefinition("vp_apply_batch", DESCRIPTION,
             JsonParser.parseString(INPUT_SCHEMA).getAsJsonObject());
+    private final TypeTiers tiers;
+
+    /** Verified-only tiers: the pre-pack behavior, for dev servers and tests. */
+    public ApplyBatchTool() {
+        this(TypeTiers.verifiedOnly());
+    }
+
+    public ApplyBatchTool(TypeTiers tiers) {
+        this.tiers = tiers;
+    }
 
     @Override
     public ToolDefinition getDefinition() {
@@ -49,6 +60,6 @@ public final class ApplyBatchTool implements McpTool {
             throw new McpToolException("\"ops\" is required and must be an array.");
         }
         IProject project = DiagramLocator.requireOpenProject();
-        return BatchApplier.apply(project, ops.getAsJsonArray());
+        return BatchApplier.apply(project, ops.getAsJsonArray(), tiers);
     }
 }

@@ -25,6 +25,7 @@ import vpmcp.vp.McpServerHandle;
 import vpmcp.vp.SchemaGuard;
 import vpmcp.vp.ServerConfig;
 import vpmcp.vp.VpLog;
+import vpmcp.write.TypeTiers;
 
 /**
  * Router entry point. Mirrors the vendored plugin wiring but registers the
@@ -54,14 +55,15 @@ public final class RouterPlugin implements VPPlugin {
             if (guard.has("warning")) {
                 VpLog.info("Schema guard: " + guard.get("warning").getAsString());
             }
+            TypeTiers tiers = TypeTiers.load(pluginDir, SCHEMA_VERSION);
             McpToolRegistry registry = new McpToolRegistry()
                     .register(new CapabilitiesTool(VERSION, SCHEMA_VERSION))
                     .register(new ListDiagramsTool())
                     .register(new ListModelsTool())
                     .register(new GetModelTool())
                     .register(new ExportImageTool())
-                    .register(new PreviewBatchTool())
-                    .register(new ApplyBatchTool())
+                    .register(new PreviewBatchTool(tiers))
+                    .register(new ApplyBatchTool(tiers))
                     .register(new NeighborhoodTool())
                     .register(new SaveProjectTool())
                     .register(new GetDiagramByUrlTool());

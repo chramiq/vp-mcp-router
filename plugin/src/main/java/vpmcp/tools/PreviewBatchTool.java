@@ -9,6 +9,7 @@ import vpmcp.core.McpToolException;
 import vpmcp.core.ToolDefinition;
 import vpmcp.vp.DiagramLocator;
 import vpmcp.write.PlanValidator;
+import vpmcp.write.TypeTiers;
 
 /**
  * Dry-runs a write batch: validates every op and returns the resolved plan
@@ -18,6 +19,11 @@ public final class PreviewBatchTool implements McpTool {
 
     private static final String DESCRIPTION =
             "Validate a batch of diagram writes without applying anything. "
+            + "Type gates are tiered: verified families behave exactly as documented; "
+            + "any other type from the schema pack (see the vp://schemas resources: "
+            + "diagram-types, factory-creates) is accepted but flagged \"unverified\" in "
+            + "the plan — VP may veto silently or misplace, so read the result back; "
+            + "types outside the pack are impossible and rejected. "
             + "Every op carries its discriminator, e.g. {\"op\": \"create_element\", ...}. "
             + "Ops: create_diagram {id, diagram_type, name}, "
             + "create_element {id, diagram, model_type, name, x, y, width, height}, "
@@ -46,6 +52,8 @@ public final class PreviewBatchTool implements McpTool {
             + "delete_model {id, model} (model plus all its views, final), "
             + "delete_diagram {id, diagram}, delete_element {id, element}. "
             + "Ids and diagram/endpoint slots accept plan refs as {\"ref\": \"<op id>\"}. "
+            + "Applied entries report vp_id as the model id (stable identity) plus "
+            + "view_id where a view exists. "
             + "Returns {valid, plan[] (each with its undo), errors[]}; valid plans are applied with apply_batch.";
 
     private static final String INPUT_SCHEMA =
@@ -55,6 +63,16 @@ public final class PreviewBatchTool implements McpTool {
 
     private final ToolDefinition definition = new ToolDefinition("vp_preview_batch", DESCRIPTION,
             JsonParser.parseString(INPUT_SCHEMA).getAsJsonObject());
+    private final TypeTiers tiers;
+
+    /** Verified-only tiers: the pre-pack behavior, for dev servers and tests. */
+    public PreviewBatchTool() {
+        this(TypeTiers.verifiedOnly());
+    }
+
+    public PreviewBatchTool(TypeTiers tiers) {
+        this.tiers = tiers;
+    }
 
     @Override
     public ToolDefinition getDefinition() {
@@ -70,7 +88,7 @@ public final class PreviewBatchTool implements McpTool {
         IProject project = DiagramLocator.requireOpenProject();
         JsonObject result = new JsonObject();
         result.addProperty("mutated", false);
-        result.add("validation", PlanValidator.validate(project, ops.getAsJsonArray()));
+        result.add("validation", PlanValidator.validate(project, ops.getAsJsonArray(), tiers));
         return result;
     }
 }

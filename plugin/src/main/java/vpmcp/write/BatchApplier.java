@@ -35,7 +35,12 @@ public final class BatchApplier {
     }
 
     public static JsonObject apply(IProject project, JsonArray ops) {
-        JsonObject validation = PlanValidator.validate(project, ops);
+        return apply(project, ops, TypeTiers.verifiedOnly());
+    }
+
+    /** Re-validates with the same tiers preview used, then executes. */
+    public static JsonObject apply(IProject project, JsonArray ops, TypeTiers tiers) {
+        JsonObject validation = PlanValidator.validate(project, ops, tiers);
         JsonArray applied = new JsonArray();
         JsonArray compensated = new JsonArray();
         JsonArray errors = new JsonArray();
@@ -170,7 +175,10 @@ public final class BatchApplier {
             dropOrphan(model);
         }
         VpLog.info("APPLY create_element id=" + id + " vp_id=" + view.getId());
-        JsonObject placedEntry = appliedEntry(id, "element", view.getId(), placed.getName());
+        // vp_id is the model id (the stable identity, matching create_raw);
+        // view_id is what move/style/delete_element and add_member want.
+        JsonObject placedEntry = appliedEntry(id, "element", placed.getId(), placed.getName());
+        placedEntry.addProperty("view_id", view.getId());
         if (!name.equals(placed.getName())) {
             placedEntry.addProperty("name_warning",
                     "VP kept \"" + placed.getName() + "\" instead of \"" + name + "\".");
@@ -218,7 +226,9 @@ public final class BatchApplier {
         state.owners.put(connector.getId(), diagram);
         compensations.add(new Compensation(id, () -> deleteView(diagram, connector, relModel)));
         VpLog.info("APPLY connect id=" + id + " vp_id=" + connector.getId());
-        return appliedEntry(id, "relationship", connector.getId(), relModel.getName());
+        JsonObject entry = appliedEntry(id, "relationship", relModel.getId(), relModel.getName());
+        entry.addProperty("view_id", connector.getId());
+        return entry;
     }
 
     /**
@@ -1028,7 +1038,9 @@ public final class BatchApplier {
         state.owners.put(view.getId(), diagram);
         compensations.add(new Compensation(id, () -> removeViewOnly(diagram, view)));
         VpLog.info("APPLY show_element id=" + id + " vp_id=" + view.getId());
-        return appliedEntry(id, "element", view.getId(), model.getName());
+        JsonObject entry = appliedEntry(id, "element", model.getId(), model.getName());
+        entry.addProperty("view_id", view.getId());
+        return entry;
     }
 
     private static void removeViewOnly(IDiagramUIModel owner, IDiagramElement view) {

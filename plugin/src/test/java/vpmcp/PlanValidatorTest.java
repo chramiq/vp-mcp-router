@@ -8,10 +8,12 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.vp.plugin.model.IProject;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
 import vpmcp.write.PlanValidator;
+import vpmcp.write.TypeTiers;
 
 /**
  * Preview-batch validation contracts. The fake project holds one diagram
@@ -68,7 +70,7 @@ class PlanValidatorTest {
                 + " \"model_type\":\"QuantumEntanglement\",\"name\":\"Q\"}]"));
 
         assertFalse(result.get("valid").getAsBoolean());
-        assertTrue(result.toString().contains("model_type"));
+        assertTrue(result.toString().contains("cannot create"));
     }
 
     @Test
@@ -599,6 +601,112 @@ class PlanValidatorTest {
                 + "\"diagram\":\"ghost\"}]"));
 
         assertFalse(result.get("valid").getAsBoolean());
+    }
+
+    @Test
+    void packDiagramTypeValidatesUnverified() {
+        TypeTiers tiers = new TypeTiers(
+                java.util.Set.of("Brainstorm", "MindMap"), java.util.Set.of());
+
+        JsonObject result = PlanValidator.validate(project, parse("[{\"id\":\"d\","
+                + "\"op\":\"create_diagram\",\"diagram_type\":\"MindMap\",\"name\":\"Ideas\"}]"), tiers);
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+        JsonObject planEntry = result.getAsJsonArray("plan").get(0).getAsJsonObject();
+        assertTrue(planEntry.get("unverified").getAsBoolean());
+        assertTrue(planEntry.get("summary").getAsString()
+                .contains(TypeTiers.unverifiedNote()));
+    }
+
+    @Test
+    void unknownDiagramTypeIsImpossibleNotForbidden() {
+        TypeTiers tiers = new TypeTiers(
+                java.util.Set.of("Brainstorm"), java.util.Set.of());
+
+        JsonObject result = PlanValidator.validate(project, parse("[{\"id\":\"d\","
+                + "\"op\":\"create_diagram\",\"diagram_type\":\"QuantumDiagram\",\"name\":\"X\"}]"), tiers);
+
+        assertFalse(result.get("valid").getAsBoolean());
+        assertTrue(result.toString().contains("VP has no diagram type"));
+    }
+
+    @Test
+    void packElementTypeValidatesUnverified() {
+        TypeTiers tiers = new TypeTiers(java.util.Set.of(),
+                java.util.Set.of("Requirement", "Constraint"));
+
+        JsonObject result = PlanValidator.validate(project, parse("[{\"id\":\"e\","
+                + "\"op\":\"create_element\",\"diagram\":\"d1\",\"model_type\":\"Requirement\","
+                + "\"name\":\"Stability\"}]"), tiers);
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+        JsonObject planEntry = result.getAsJsonArray("plan").get(0).getAsJsonObject();
+        assertTrue(planEntry.get("unverified").getAsBoolean());
+    }
+
+    @Test
+    void packRelationshipTypeValidatesUnverified() {
+        TypeTiers tiers = new TypeTiers(java.util.Set.of(), java.util.Set.of("Abstraction"));
+
+        JsonObject result = PlanValidator.validate(project, parse("[{\"id\":\"r\","
+                + "\"op\":\"connect\",\"diagram\":\"d1\",\"rel_type\":\"Abstraction\","
+                + "\"from\":\"v9\",\"to\":\"v9\"}]"), tiers);
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+        assertTrue(result.getAsJsonArray("plan").get(0).getAsJsonObject()
+                .get("unverified").getAsBoolean());
+    }
+
+    @Test
+    void packMemberTypeValidatesUnverified() {
+        TypeTiers tiers = new TypeTiers(java.util.Set.of(), java.util.Set.of("Constraint"));
+
+        JsonObject result = PlanValidator.validate(project, parse("[{\"id\":\"m\","
+                + "\"op\":\"add_member\",\"parent\":\"v9\",\"member_type\":\"Constraint\","
+                + "\"name\":\"Invariant\"}]"), tiers);
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+        assertTrue(result.getAsJsonArray("plan").get(0).getAsJsonObject()
+                .get("unverified").getAsBoolean());
+    }
+
+    @Test
+    void verifiedMemberStillNotPlaceableAsTopLevel() {
+        TypeTiers tiers = new TypeTiers(java.util.Set.of(), java.util.Set.of("Constraint"));
+
+        JsonObject result = PlanValidator.validate(project, parse("[{\"id\":\"e\","
+                + "\"op\":\"create_element\",\"diagram\":\"d1\",\"model_type\":\"Attribute\","
+                + "\"name\":\"size\"}]"), tiers);
+
+        assertFalse(result.get("valid").getAsBoolean());
+        assertTrue(result.toString().contains("add_member"));
+    }
+
+    @Test
+    void typeTiersLoadReadsAPack(@org.junit.jupiter.api.io.TempDir File packParent) throws java.io.IOException {
+        File packDir = new File(packParent, "schemas/vTest");
+        assertTrue(packDir.mkdirs());
+        java.nio.file.Files.write(new File(packDir, "diagram-types.json").toPath(),
+                "[{\"name\":\"DT\",\"value\":\"Brainstorm\"}]".getBytes());
+        java.nio.file.Files.write(new File(packDir, "factory-creates.json").toPath(),
+                "[\"createRequirement\",\"create\"]".getBytes());
+
+        TypeTiers tiers = TypeTiers.load(packParent, "vTest");
+
+        assertTrue(tiers.isKnownDiagram("Brainstorm"));
+        assertFalse(tiers.isKnownDiagram("MindMap"));
+        assertTrue(tiers.isCreatable("Requirement"));
+        assertFalse(tiers.isCreatable("")); // the generic create(String) is not a model type
+        assertTrue(tiers.isVerifiedDiagram("ClassDiagram"));
+    }
+
+    @Test
+    void typeTiersLoadDegradesWithoutAPack(@org.junit.jupiter.api.io.TempDir File emptyDir) {
+        TypeTiers tiers = TypeTiers.load(emptyDir, "vMissing");
+
+        assertFalse(tiers.isKnownDiagram("Brainstorm"));
+        assertTrue(tiers.isVerifiedDiagram("ClassDiagram"));
+        assertFalse(tiers.isCreatable("Requirement"));
     }
 
     private IProject projectWith(String diagramId, String elementId) {
