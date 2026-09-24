@@ -33,8 +33,8 @@ public final class PlanValidator {
     private static final Set<String> OPS =
             new HashSet<>(Arrays.asList("create_diagram", "create_element", "connect",
                     "duplicate_diagram", "add_member", "update_element", "update_member",
-                    "move_element", "show_element", "delete_model", "delete_diagram",
-                    "delete_element"));
+                    "style_element", "move_element", "show_element", "delete_model",
+                    "delete_diagram", "delete_element"));
 
     private PlanValidator() {
     }
@@ -97,6 +97,9 @@ public final class PlanValidator {
                 break;
             case "update_member":
                 validateUpdateMember(project, op, id, symbols, plan, errors);
+                break;
+            case "style_element":
+                validateStyleElement(project, op, id, symbols, plan, errors);
                 break;
             case "move_element":
                 validateMoveElement(project, op, id, symbols, plan, errors);
@@ -401,6 +404,69 @@ public final class PlanValidator {
             }
         }
         return null;
+    }
+
+    private static void validateStyleElement(IProject project, JsonObject op, String id,
+            Map<String, String> symbols, JsonArray plan, JsonArray errors) {
+        String element = resolveElement(project, op.get("element"), symbols);
+        if (element == null) {
+            errors.add(error(id, "Unknown element reference; use an existing element id or a plan ref."));
+            return;
+        }
+        for (String field : new String[] {"background", "foreground", "line_color", "font_color",
+                "fill_color"}) {
+            JsonElement value = op.get(field);
+            if (value != null && !value.isJsonNull()
+                    && (!value.isJsonPrimitive() || !isHexColor(value.getAsString()))) {
+                errors.add(error(id, "Style field \"" + field + "\" must be a hex colour like \"#FF0000\"."));
+                return;
+            }
+        }
+        for (String field : new String[] {"line_weight", "font_size"}) {
+            JsonElement value = op.get(field);
+            if (value != null && !value.isJsonNull()
+                    && (!value.isJsonPrimitive() || !value.getAsJsonPrimitive().isNumber()
+                            || value.getAsDouble() <= 0)) {
+                errors.add(error(id, "Style field \"" + field + "\" must be a positive number."));
+                return;
+            }
+        }
+        for (String field : new String[] {"font_bold", "font_italic"}) {
+            JsonElement value = op.get(field);
+            if (value != null && !value.isJsonNull()
+                    && (!value.isJsonPrimitive() || !value.getAsJsonPrimitive().isBoolean())) {
+                errors.add(error(id, "Style field \"" + field + "\" must be a boolean."));
+                return;
+            }
+        }
+        JsonElement fontName = op.get("font_name");
+        if (fontName != null && !fontName.isJsonNull()
+                && (!fontName.isJsonPrimitive() || fontName.getAsString().trim().isEmpty())) {
+            errors.add(error(id, "Style field \"font_name\" must be a non-blank string."));
+            return;
+        }
+        boolean any = false;
+        for (String field : new String[] {"background", "foreground", "line_color", "line_weight",
+                "fill_color", "font_color", "font_size", "font_bold", "font_italic", "font_name"}) {
+            JsonElement value = op.get(field);
+            if (value != null && !value.isJsonNull()) {
+                any = true;
+                break;
+            }
+        }
+        if (!any) {
+            errors.add(error(id,
+                    "Style needs at least one of background/fill_color/foreground/line_color/"
+                            + "line_weight/font_color/font_size/font_bold/font_italic/font_name."));
+            return;
+        }
+        symbols.put(id, "element");
+        plan.add(entry(id, "style_element", "style element '" + element + "'",
+                "restore its previous colours, line and font"));
+    }
+
+    private static boolean isHexColor(String value) {
+        return value != null && value.matches("#?[0-9a-fA-F]{6}");
     }
 
     private static String pointsProblem(JsonElement points) {

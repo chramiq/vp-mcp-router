@@ -90,6 +90,8 @@ public final class BatchApplier {
                 return updateElement(state, op, id, compensations);
             case "update_member":
                 return updateMember(state, op, id, compensations);
+            case "style_element":
+                return styleElement(state, op, id, compensations);
             case "move_element":
                 return moveElement(state, op, id, compensations);
             case "show_element":
@@ -685,6 +687,162 @@ public final class BatchApplier {
                 operation.removeParameter(current[index]);
             }
         }
+    }
+
+    /**
+     * Visual styling with an old-value snapshot: view colours, line and font.
+     * Colours are hex like the reads report them ("#FF0000"); inherited
+     * (null) values restore to null, best-effort. The line model's two-arg
+     * setters take an undocumented boolean; false is probe-verified.
+     */
+    private static JsonObject styleElement(State state, JsonObject op, String id,
+            List<Compensation> compensations) {
+        IDiagramElement element = requireEndpoint(state, op.get("element")).view;
+        JsonObject entry = appliedEntry(id, "element", element.getId(), null);
+        JsonObject snapshot = new JsonObject();
+        compensations.add(new Compensation(id, () -> restoreStyle(element, snapshot)));
+
+        JsonElement background = op.get("background");
+        if (background != null && !background.isJsonNull()) {
+            java.awt.Color before = element.getBackground();
+            snapshot.add("background", colorToJson(before));
+            element.setBackground(color(background.getAsString()));
+            entry.addProperty("background", hexOrNull(element.getBackground()));
+        }
+        JsonElement foreground = op.get("foreground");
+        if (foreground != null && !foreground.isJsonNull()) {
+            snapshot.add("foreground", colorToJson(element.getForeground()));
+            element.setForeground(color(foreground.getAsString()));
+            entry.addProperty("foreground", hexOrNull(element.getForeground()));
+        }
+        JsonElement fillColor = op.get("fill_color");
+        if (fillColor != null && !fillColor.isJsonNull()
+                && element instanceof IShapeUIModel) {
+            com.vp.plugin.diagram.format.IShapeUIModelFillColor fill =
+                    ((IShapeUIModel) element).getFillColor();
+            if (fill != null) {
+                snapshot.add("fill_color", colorToJson(fill.getColor1()));
+                fill.setColor1(color(fillColor.getAsString()), false);
+                entry.addProperty("fill_color", hexOrNull(fill.getColor1()));
+            }
+        }
+        com.vp.plugin.diagram.format.IDiagramElementLineModel line = element.getLineModel();
+        if (line != null) {
+            JsonElement lineColor = op.get("line_color");
+            if (lineColor != null && !lineColor.isJsonNull()) {
+                snapshot.add("line_color", colorToJson(line.getColor()));
+                line.setColor(color(lineColor.getAsString()), false);
+                entry.addProperty("line_color", hexOrNull(line.getColor()));
+            }
+            JsonElement lineWeight = op.get("line_weight");
+            if (lineWeight != null && !lineWeight.isJsonNull()) {
+                snapshot.addProperty("line_weight", line.getWeight());
+                line.setWeight(lineWeight.getAsFloat(), false);
+                entry.addProperty("line_weight", line.getWeight());
+            }
+        }
+        com.vp.plugin.diagram.format.IElementFont font = element.getElementFont();
+        if (font != null) {
+            JsonElement fontColor = op.get("font_color");
+            if (fontColor != null && !fontColor.isJsonNull()) {
+                snapshot.add("font_color", colorToJson(font.getColor()));
+                font.setColor(color(fontColor.getAsString()));
+                entry.addProperty("font_color", hexOrNull(font.getColor()));
+            }
+            JsonElement fontSize = op.get("font_size");
+            if (fontSize != null && !fontSize.isJsonNull()) {
+                snapshot.addProperty("font_size", font.getSize());
+                font.setSize(fontSize.getAsInt());
+                entry.addProperty("font_size", font.getSize());
+            }
+            JsonElement fontName = op.get("font_name");
+            if (fontName != null && !fontName.isJsonNull()) {
+                snapshot.addProperty("font_name", font.getName());
+                font.setName(fontName.getAsString().trim());
+                entry.addProperty("font_name", font.getName());
+            }
+            JsonElement fontBold = op.get("font_bold");
+            if (fontBold != null && !fontBold.isJsonNull()) {
+                snapshot.addProperty("font_bold", font.isBold());
+                font.setBold(fontBold.getAsBoolean());
+                entry.addProperty("font_bold", font.isBold());
+            }
+            JsonElement fontItalic = op.get("font_italic");
+            if (fontItalic != null && !fontItalic.isJsonNull()) {
+                snapshot.addProperty("font_italic", font.isItalic());
+                font.setItalic(fontItalic.getAsBoolean());
+                entry.addProperty("font_italic", font.isItalic());
+            }
+        }
+        VpLog.info("APPLY style_element id=" + id + " view=" + element.getId());
+        return entry;
+    }
+
+    private static java.awt.Color color(String hex) {
+        String normalized = hex.startsWith("#") ? hex : "#" + hex;
+        return java.awt.Color.decode(normalized);
+    }
+
+    private static String hexOrNull(java.awt.Color color) {
+        return color == null ? null : vpmcp.vp.ColorFormat.toHex(color);
+    }
+
+    private static JsonElement colorToJson(java.awt.Color color) {
+        if (color == null) {
+            return com.google.gson.JsonNull.INSTANCE;
+        }
+        return new com.google.gson.JsonPrimitive(vpmcp.vp.ColorFormat.toHex(color));
+    }
+
+    private static void restoreStyle(IDiagramElement element, JsonObject snapshot) {
+        try {
+            if (snapshot.has("background")) {
+                element.setBackground(restoreColor(snapshot.get("background")));
+            }
+            if (snapshot.has("foreground")) {
+                element.setForeground(restoreColor(snapshot.get("foreground")));
+            }
+            if (snapshot.has("fill_color") && element instanceof IShapeUIModel) {
+                com.vp.plugin.diagram.format.IShapeUIModelFillColor fill =
+                        ((IShapeUIModel) element).getFillColor();
+                if (fill != null) {
+                    fill.setColor1(restoreColor(snapshot.get("fill_color")), false);
+                }
+            }
+            com.vp.plugin.diagram.format.IDiagramElementLineModel line = element.getLineModel();
+            if (line != null) {
+                if (snapshot.has("line_color")) {
+                    line.setColor(restoreColor(snapshot.get("line_color")), false);
+                }
+                if (snapshot.has("line_weight")) {
+                    line.setWeight(snapshot.get("line_weight").getAsFloat(), false);
+                }
+            }
+            com.vp.plugin.diagram.format.IElementFont font = element.getElementFont();
+            if (font != null) {
+                if (snapshot.has("font_color")) {
+                    font.setColor(restoreColor(snapshot.get("font_color")));
+                }
+                if (snapshot.has("font_size")) {
+                    font.setSize(snapshot.get("font_size").getAsInt());
+                }
+                if (snapshot.has("font_name")) {
+                    font.setName(snapshot.get("font_name").getAsString());
+                }
+                if (snapshot.has("font_bold")) {
+                    font.setBold(snapshot.get("font_bold").getAsBoolean());
+                }
+                if (snapshot.has("font_italic")) {
+                    font.setItalic(snapshot.get("font_italic").getAsBoolean());
+                }
+            }
+        } catch (RuntimeException bestEffort) {
+            VpLog.info("STYLE restore skipped: " + bestEffort);
+        }
+    }
+
+    private static java.awt.Color restoreColor(JsonElement value) {
+        return value == null || value.isJsonNull() ? null : color(value.getAsString());
     }
 
     private static void setMemberType(IModelElement child, JsonElement type, String id) {

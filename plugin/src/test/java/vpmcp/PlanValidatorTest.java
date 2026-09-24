@@ -508,6 +508,51 @@ class PlanValidatorTest {
         assertTrue(result.get("valid").getAsBoolean(), result.toString());
     }
 
+    @Test
+    void styleElementValidatesWithUndo() {
+        JsonObject result = PlanValidator.validate(project, parse("[{\"id\":\"s\","
+                + "\"op\":\"style_element\",\"element\":\"v9\",\"background\":\"#FF0000\","
+                + "\"line_weight\":2,\"font_bold\":true}]"));
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+        JsonObject planEntry = result.getAsJsonArray("plan").get(0).getAsJsonObject();
+        assertTrue(planEntry.get("undo").getAsString().contains("restore"));
+    }
+
+    @Test
+    void styleElementNeedsAField() {
+        JsonObject result = PlanValidator.validate(project,
+                parse("[{\"id\":\"s\",\"op\":\"style_element\",\"element\":\"v9\"}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+        assertTrue(result.toString().contains("at least one"));
+    }
+
+    @Test
+    void styleElementRejectsNonHexColours() {
+        JsonObject result = PlanValidator.validate(project, parse("[{\"id\":\"s\","
+                + "\"op\":\"style_element\",\"element\":\"v9\",\"background\":\"red\"}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+        assertTrue(result.toString().contains("hex"));
+    }
+
+    @Test
+    void styleElementRejectsNonPositiveWeights() {
+        JsonObject result = PlanValidator.validate(project, parse("[{\"id\":\"s\","
+                + "\"op\":\"style_element\",\"element\":\"v9\",\"line_weight\":0}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+    }
+
+    @Test
+    void styleElementUnknownTargetRejected() {
+        JsonObject result = PlanValidator.validate(project, parse("[{\"id\":\"s\","
+                + "\"op\":\"style_element\",\"element\":\"ghost\",\"background\":\"#FF0000\"}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+    }
+
     private IProject projectWith(String diagramId, String elementId) {
         Map<String, Object> values = new HashMap<>();
         values.put("toDiagramArray", new com.vp.plugin.diagram.IDiagramUIModel[] {

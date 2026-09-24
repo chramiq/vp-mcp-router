@@ -21,3 +21,4 @@
 | [0017](0017-model-tree.md) | Model tree access (list, read, model-id neighborhoods) | accepted |
 | [0018](0018-update-element.md) | update_element with old-value snapshots | accepted |
 | [0019](0019-update-member.md) | update_member and member-aware lookups | accepted |
+| [0020](0020-style-element.md) | style_element (view colours, fill, line, font) | accepted |
