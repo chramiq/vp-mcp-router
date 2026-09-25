@@ -33,7 +33,7 @@ import vpmcp.write.TypeTiers;
  */
 public final class RouterPlugin implements VPPlugin {
 
-    private static final String VERSION = "0.16.0";
+    private static final String VERSION = "0.16.1";
     private static final String SCHEMA_VERSION = "v18.1";
 
     private McpServer server;
