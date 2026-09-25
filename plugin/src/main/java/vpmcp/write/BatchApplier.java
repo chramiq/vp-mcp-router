@@ -921,14 +921,13 @@ public final class BatchApplier {
     /**
      * Shape-fill write with an explicit flush. The color setters stage the
      * value (readable immediately) but the renderer only picks it up after
-     * applySetting() — live-verified: without it fills stay theme blue
-     * while line/font styling renders. Best-effort like other cosmetic
-     * steps. Package-visible for unit tests.
+     * applySetting() — and only when the setter's boolean is true (false
+     * stages silently; live-verified both ways 2026-09-25). The line
+     * model's setters need no flush, which is why line/font styling always
+     * worked. Package-visible for unit tests.
      */
     static void setFillColor(
             com.vp.plugin.diagram.format.IShapeUIModelFillColor fill, java.awt.Color color) {
-        // PROBE 2026-09-25: the boolean's meaning is undocumented; false
-        // stages without rendering. Trying true — reverts if no effect.
         fill.setColor1(color, true);
         try {
             fill.applySetting();

@@ -27,6 +27,7 @@ class StyleFillTest {
                     switch (method.getName()) {
                         case "setColor1":
                             calls.add("setColor1=" + args[0]);
+                            calls.add("flag=" + args[1]);
                             state.put("color1", args[0]);
                             return true;
                         case "getColor1":
@@ -42,6 +43,7 @@ class StyleFillTest {
         BatchApplier.setFillColor(fill, java.awt.Color.RED);
 
         assertTrue(calls.contains("setColor1=" + java.awt.Color.RED), calls.toString());
+        assertTrue(calls.contains("flag=true"), calls.toString());
         assertTrue(calls.contains("applySetting"), calls.toString());
         assertTrue(calls.indexOf("applySetting") > calls.indexOf("setColor1=" + java.awt.Color.RED),
                 calls.toString());
