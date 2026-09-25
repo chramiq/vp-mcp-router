@@ -366,9 +366,50 @@ public final class BatchApplier {
         child.setName(name);
         setMemberType(child, op.get("type"), id);
         attachMember(parent.model, child, memberType, id);
+        JsonObject entry = appliedEntry(id, "member", child.getId(), name);
+        applyNewMemberFields(child, op, entry);
+        state.models.put(id, child);
         compensations.add(new Compensation(id, () -> detachMember(parent.model, child, memberType)));
         VpLog.info("APPLY add_member id=" + id + " child=" + child.getId());
-        return appliedEntry(id, "member", child.getId(), name);
+        return entry;
+    }
+
+    /**
+     * Field initialization for a freshly attached member. Reuses the update
+     * field writers so create and update share one path (return_type used to
+     * be dropped here); the snapshot is discarded because compensation
+     * detaches the whole member. Package-visible for unit tests —
+     * BatchApplier.apply needs live VP singletons.
+     */
+    static void applyNewMemberFields(IModelElement child, JsonObject op, JsonObject entry) {
+        JsonObject snapshot = new JsonObject();
+        if (child instanceof com.vp.plugin.model.IAttribute) {
+            applyAttribute((com.vp.plugin.model.IAttribute) child, op, entry, snapshot);
+        } else if (child instanceof com.vp.plugin.model.IOperation) {
+            applyOperation((com.vp.plugin.model.IOperation) child, op, entry, snapshot);
+        } else if (child instanceof com.vp.plugin.model.IDBColumn) {
+            applyColumn((com.vp.plugin.model.IDBColumn) child, op, entry, snapshot);
+        }
+        JsonElement type = op.get("type");
+        if (type != null && !type.isJsonNull() && !entry.has("type")) {
+            // setMemberType already applied it (it throws on failure) via a
+            // setter outside the kind writers; echo the requested value so it
+            // is not misreported as skipped. Unverified tier: read back.
+            entry.addProperty("type", type.getAsString());
+        }
+        List<String> skipped = new ArrayList<>();
+        for (String field : new String[] {"type", "visibility", "multiplicity",
+                "initial_value", "return_type", "parameters", "length", "nullable"}) {
+            if (op.get(field) != null && !op.get(field).isJsonNull()
+                    && !entry.has(field)) {
+                skipped.add(field);
+            }
+        }
+        if (!skipped.isEmpty()) {
+            JsonArray skippedFields = new JsonArray();
+            skipped.forEach(skippedFields::add);
+            entry.add("skipped_fields", skippedFields);
+        }
     }
 
     /**

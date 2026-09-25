@@ -709,6 +709,45 @@ class PlanValidatorTest {
         assertFalse(tiers.isCreatable("Requirement"));
     }
 
+    @Test
+    void addMemberWithReturnTypeValidates() {
+        JsonObject result = PlanValidator.validate(project, parse("[{\"id\":\"m\","
+                + "\"op\":\"add_member\",\"parent\":\"v9\",\"member_type\":\"Operation\","
+                + "\"name\":\"checkout\",\"return_type\":\"int\",\"visibility\":\"public\"}]"));
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+    }
+
+    @Test
+    void addMemberBlankReturnTypeRejected() {
+        JsonObject result = PlanValidator.validate(project, parse("[{\"id\":\"m\","
+                + "\"op\":\"add_member\",\"parent\":\"v9\",\"member_type\":\"Operation\","
+                + "\"name\":\"checkout\",\"return_type\":\"  \"}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+        assertTrue(result.toString().contains("return_type"));
+    }
+
+    @Test
+    void addMemberBadParametersRejected() {
+        JsonObject result = PlanValidator.validate(project, parse("[{\"id\":\"m\","
+                + "\"op\":\"add_member\",\"parent\":\"v9\",\"member_type\":\"Operation\","
+                + "\"name\":\"checkout\",\"parameters\":{\"name\":\"x\"}}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+        assertTrue(result.toString().contains("parameters"));
+    }
+
+    @Test
+    void addMemberBadLengthRejected() {
+        JsonObject result = PlanValidator.validate(project, parse("[{\"id\":\"m\","
+                + "\"op\":\"add_member\",\"parent\":\"v9\",\"member_type\":\"DBColumn\","
+                + "\"name\":\"code\",\"length\":\"long\"}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+        assertTrue(result.toString().contains("length"));
+    }
+
     private IProject projectWith(String diagramId, String elementId) {
         Map<String, Object> values = new HashMap<>();
         values.put("toDiagramArray", new com.vp.plugin.diagram.IDiagramUIModel[] {

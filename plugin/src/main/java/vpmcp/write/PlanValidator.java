@@ -277,6 +277,35 @@ public final class PlanValidator {
             errors.add(error(id, "Member \"type\" must be a non-blank string."));
             return;
         }
+        for (String field : new String[] {"visibility", "multiplicity",
+                "initial_value", "return_type"}) {
+            JsonElement value = op.get(field);
+            if (value != null && !value.isJsonNull()
+                    && (!value.isJsonPrimitive() || value.getAsString().trim().isEmpty())) {
+                errors.add(error(id, "Member \"" + field + "\" must be a non-blank string."));
+                return;
+            }
+        }
+        JsonElement parameters = op.get("parameters");
+        if (parameters != null && !parameters.isJsonNull()) {
+            String problem = parametersProblem(parameters);
+            if (problem != null) {
+                errors.add(error(id, problem));
+                return;
+            }
+        }
+        JsonElement length = op.get("length");
+        if (length != null && !length.isJsonNull()
+                && (!length.isJsonPrimitive() || !length.getAsJsonPrimitive().isNumber())) {
+            errors.add(error(id, "Member \"length\" must be a number."));
+            return;
+        }
+        JsonElement nullable = op.get("nullable");
+        if (nullable != null && !nullable.isJsonNull()
+                && (!nullable.isJsonPrimitive() || !nullable.getAsJsonPrimitive().isBoolean())) {
+            errors.add(error(id, "Member \"nullable\" must be a boolean."));
+            return;
+        }
         symbols.put(id, "member");
         if (tiers.isVerifiedMember(memberType)) {
             plan.add(entry(id, "add_member",
@@ -519,7 +548,7 @@ public final class PlanValidator {
         if (!method.startsWith("create")) {
             errors.add(error(id,
                     "\"factory_method\" must be a create method of IModelElementFactory, "
-                            + "for example \"createBPMNProcess\"."));
+                            + "for example \"createRequirement\"."));
             return;
         }
         String diagram = null;
