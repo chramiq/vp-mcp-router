@@ -38,7 +38,10 @@ public final class ExportImageTool implements McpTool {
     private static final String DESCRIPTION =
             "Render a diagram from the Visual Paradigm project that is currently open. "
             + "format png returns the image inline; svg returns the vector markup as text; "
-            + "pdf writes a file. "
+            + "pdf writes a file. Result fields per format: png "
+            + "{diagram, summary, image_mime, image_data}; svg "
+            + "{diagram, summary, file, mime, document_text}; pdf "
+            + "{diagram, summary, file, mime, bytes}. "
             + "Optional out_dir keeps the file somewhere trackable; otherwise the temp directory.";
 
     private static final String INPUT_SCHEMA =

@@ -24,3 +24,4 @@
 | [0020](0020-style-element.md) | style_element (view colours, fill, line, font) | accepted |
 | [0021](0021-create-raw.md) | create_raw, the factory escape hatch | accepted |
 | [0022](0022-type-tiers.md) | Tiered type gates (verified / pack / impossible) | accepted |
+| [0023](0023-qa-fixes.md) | QA-cycle findings (member fields, save guard, doc-only decisions) | accepted |
