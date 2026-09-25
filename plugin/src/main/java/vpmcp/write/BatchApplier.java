@@ -775,7 +775,7 @@ public final class BatchApplier {
                     ((IShapeUIModel) element).getFillColor();
             if (fill != null) {
                 snapshot.add("fill_color", colorToJson(fill.getColor1()));
-                fill.setColor1(color(fillColor.getAsString()), false);
+                setFillColor(fill, color(fillColor.getAsString()));
                 entry.addProperty("fill_color", hexOrNull(fill.getColor1()));
             }
         }
@@ -918,6 +918,23 @@ public final class BatchApplier {
         return java.awt.Color.decode(normalized);
     }
 
+    /**
+     * Shape-fill write with an explicit flush. The color setters stage the
+     * value (readable immediately) but the renderer only picks it up after
+     * applySetting() — live-verified: without it fills stay theme blue
+     * while line/font styling renders. Best-effort like other cosmetic
+     * steps. Package-visible for unit tests.
+     */
+    static void setFillColor(
+            com.vp.plugin.diagram.format.IShapeUIModelFillColor fill, java.awt.Color color) {
+        fill.setColor1(color, false);
+        try {
+            fill.applySetting();
+        } catch (RuntimeException flush) {
+            VpLog.info("FILL apply skipped: " + flush);
+        }
+    }
+
     private static String hexOrNull(java.awt.Color color) {
         return color == null ? null : vpmcp.vp.ColorFormat.toHex(color);
     }
@@ -941,7 +958,7 @@ public final class BatchApplier {
                 com.vp.plugin.diagram.format.IShapeUIModelFillColor fill =
                         ((IShapeUIModel) element).getFillColor();
                 if (fill != null) {
-                    fill.setColor1(restoreColor(snapshot.get("fill_color")), false);
+                    setFillColor(fill, restoreColor(snapshot.get("fill_color")));
                 }
             }
             com.vp.plugin.diagram.format.IDiagramElementLineModel line = element.getLineModel();
