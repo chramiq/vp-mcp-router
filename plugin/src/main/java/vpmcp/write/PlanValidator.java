@@ -255,7 +255,8 @@ public final class PlanValidator {
             Map<String, String> symbols, JsonArray plan, JsonArray errors, TypeTiers tiers) {
         String parent = resolveElement(project, op.get("parent"), symbols);
         if (parent == null) {
-            errors.add(error(id, "Unknown parent; use an existing element id or a plan ref."));
+            errors.add(error(id, "Unknown parent '" + describeRef(op.get("parent"))
+                    + "'; use a view id (view_id from an applied entry) or a plan ref."));
             return;
         }
         String memberType = text(op, "member_type");
@@ -774,6 +775,18 @@ public final class PlanValidator {
             }
         }
         return null;
+    }
+
+    /** Renders an id-or-ref slot for error messages: the raw id, "ref X", or "?". */
+    private static String describeRef(JsonElement reference) {
+        if (reference != null && reference.isJsonPrimitive()) {
+            return reference.getAsString();
+        }
+        if (reference != null && reference.isJsonObject()
+                && reference.getAsJsonObject().get("ref") != null) {
+            return "ref " + reference.getAsJsonObject().get("ref").getAsString();
+        }
+        return "?";
     }
 
     private static boolean optionalNumbers(JsonObject op, String... names) {

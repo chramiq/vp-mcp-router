@@ -260,6 +260,8 @@ class PlanValidatorTest {
                         + " \"member_type\":\"Attribute\",\"name\":\"total\"}]"));
 
         assertFalse(result.get("valid").getAsBoolean());
+        assertTrue(result.toString().contains("nope"), result.toString());
+        assertTrue(result.toString().contains("view id"), result.toString());
     }
 
     @Test
