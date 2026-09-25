@@ -85,6 +85,10 @@ report it with file/line evidence and a proposed correction.
   2026-09-25: license needed re-activation after a restart). Prefer
   to avoid restarts entirely; when one is truly needed, warn the user
   first and have them confirm the license is still active afterwards.
+- Never copy a jar over the running VP (`cp` straight onto
+  `plugins/vp.router/lib/router.jar` tore the classloader with a
+  ZipException, 2026-09-25). Stage atomically instead: copy to a temp
+  file in the same directory, then `mv` over the target.
 - Before killing, save via `vp_save_project` with confirm and poll
   the `.vpp` mtime until it moves past the pre-save value (writes land
   async, 5-20s observed — a single stat proves nothing); if the mtime
