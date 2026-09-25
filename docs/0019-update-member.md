@@ -3,13 +3,13 @@
 ## Context
 
 Members could be added but never edited: no attribute type changes, no
-operation signature changes. Probing members live exposed a deeper gap:
+operation signature changes. Reading members exposed a deeper gap:
 VP's `getModelElementById` and `toAllLevelModelElementArray` do not
 cover child models at all — attributes and operations are only
 reachable through their parent's `getChildById`. Every id-based member
 lookup (list, read, update) was impossible before this ADR.
 
-## Probe findings
+## API surface
 
 - `IAttribute`: `setType(String)`, `setVisibility`,
   `setMultiplicity(String)`, `setInitialValue(String)`.
@@ -41,11 +41,9 @@ lookup (list, read, update) was impossible before this ADR.
 ## Consequences
 
 - Members are first-class everywhere: listed, readable by id, and
-  updatable. Live-verified: attribute rename/retype/visibility/
-  multiplicity/initial value round-trip; operation return type and
-  full parameter replacement round-trip; skipped-fields note fires
-  on kind mismatches.
-- Probe artifacts were created and deleted in the scratch project;
-  pre-existing members surfaced by the list fix were left untouched.
+  updatable. Attribute rename/retype/visibility/multiplicity/initial
+  value round-trip; operation return type and full parameter
+  replacement round-trip; the skipped-fields note fires on kind
+  mismatches.
 - 7 new validator contracts plus member-resolution tests in the
   model-tool tests.

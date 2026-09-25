@@ -10,7 +10,7 @@ The wall could become a gradient.
 
 ## Decision
 
-- `TypeTiers` carries two tiers: verified (the probe-tested
+- `TypeTiers` carries two tiers: verified (the tested
   ADR-0014 families) and pack (diagram type values and
   factory-creatable model types loaded from
   `<pluginDir>/schemas/<version>/`). A missing or unreadable pack
@@ -38,9 +38,8 @@ The wall could become a gradient.
 - The write surface expands from 7 diagram / 12 element / 3 member /
   7 relationship types to 101 / ~1400 / ~1400 / ~1400 with a visible
   verification gradient; agents see the tier in every plan entry.
-- Live-verified: Brainstorm diagram created and deleted; Requirement
-  element placed, extracted, deleted; Abstraction connected,
-  extracted, deleted; verified ops unchanged; cleanup by `vp_id`
-  straight from applied entries.
+- Pack-tier types (e.g. brainstorm diagrams, requirements,
+  abstractions) create, extract, and delete cleanly; cleanup keys
+  straight off the applied-entry `vp_id`.
 - 8 new validator/tier contracts (including pack loading and
   degradation).

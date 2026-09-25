@@ -7,7 +7,7 @@ were lossless while writes could not touch name, documentation or
 stereotypes. Deletions were the only non-compensable op class; property
 mutation would have joined them unless the saga learned old values.
 
-## Probe findings
+## Findings
 
 `IModelElement` offers `setName`, `setDocumentation`,
 `addStereotype(String)`, `removeStereotype(String)`; stereotypes are
@@ -34,5 +34,5 @@ vetoes documented in ADR-0015 apply to updates too.
   two final ones (deletions).
 - 7 new validator contracts in `PlanValidatorTest` (field checks, plan
   refs, undo entries).
-- Live-verified on the scratch project: update round-tripped through
-  `vp_get_model`, baseline restored by a second update.
+- Updates round-trip through `vp_get_model`, and a second update
+  restores the baseline.

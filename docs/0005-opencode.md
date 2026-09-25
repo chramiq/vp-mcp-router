@@ -19,7 +19,5 @@ how much prompt-side material to ship.
 
 ## Consequences
 
-- Verified: capabilities → list → full 7-node diagram read over HTTP
-  against VP 18.1, 0 warnings.
-- Throwaway probe plugins removed from the VP config (`vp.router`
-  is the only one left).
+- The read loop (capabilities → list → full diagram) works end to end
+  over HTTP against the running VP.

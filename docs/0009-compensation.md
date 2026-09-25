@@ -18,11 +18,10 @@ that dies halfway must still leave the project sane.
   record for anything left standing.
 - Preview shows each op's `undo` string so the operator (and agent)
   sees reversibility before confirming.
-- Verified live with HotSwap fault injection (var/probes/pd/): a
-  mid-batch throw produced `applied:[d2]`,
-  `compensated:[{d2, undone:true}]`, the temp diagram gone from the
-  project afterwards. Injection flushed by restart; installed jar
-  untouched.
+- A mid-batch failure leaves the project as the plan promised:
+  already-applied creations appear in `applied[]`, are undone via
+  `compensated[] {id, undone}` entries, and compensated elements are
+  gone from the project afterwards.
 
 ## Consequences
 

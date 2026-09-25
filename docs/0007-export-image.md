@@ -17,5 +17,5 @@ Agents reason better with the rendered diagram next to the JSON graph.
 
 ## Consequences
 
-- Verified live: 10 KB PNG of Class Diagram1 over HTTP, faithful to
-  the canvas. SVG/PDF via option types left for later.
+- PNG over HTTP is faithful to the canvas. SVG/PDF via option types
+  left for later.

@@ -11,8 +11,8 @@ and blocker are fixed in code; the rest are documented, not rebuilt.
 - `add_member` dropped Operation `return_type` (and all other kind
   fields) on create: apply shared the update field writers post-attach,
   the validator checks the full field set up front, and inapplicable
-  fields get a `skipped_fields` note instead of vanishing. Live-verified:
-  `return_type: int` reads back after create.
+  fields get a `skipped_fields` note instead of vanishing;
+  `return_type` now reads back after create.
 - `vp_save_project` blocked on a native Save-As dialog for never-saved
   projects (client timeout): it now checks `getProjectFile()` first and
   refuses with "save once in VP, then retry". Unit-pinned for
@@ -33,7 +33,7 @@ and blocker are fixed in code; the rest are documented, not rebuilt.
   until a caller needs it (YAGNI).
 - Move without dimensions keeps current bounds (code falls back to the
   live bounds). One QA session saw a collapse to create defaults, but
-  isolated probes (move alone, rename+move, style+move) all preserve —
+  isolated move / rename+move / style+move runs all preserve —
   attributed to VP-side auto-fit on content change, not an MCP bug.
   No code change; revisit only with a reproducer.
 

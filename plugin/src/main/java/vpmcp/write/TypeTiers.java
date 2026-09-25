@@ -11,7 +11,7 @@ import java.util.Set;
 import vpmcp.vp.VpLog;
 
 /**
- * The two write tiers. Verified families are the probe-tested ADR-0014 set:
+ * The two write tiers. Verified families are the tested ADR-0014 set:
  * they behave exactly as documented. Pack families come from the schema
  * pack (diagram types, factory-creatable model types) and are accepted
  * but flagged unverified — VP may veto silently or misplace. Types in

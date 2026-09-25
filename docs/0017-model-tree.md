@@ -3,11 +3,11 @@
 ## Context
 
 Extraction started from diagram views (`toDiagramElementArray`), so model
-elements with no view were invisible to every tool. Live probe of the
-scratch project: 806 models, one empty diagram — the entire model tree was
-unreachable, including 35 use cases.
+elements with no view were invisible to every tool. In a real project
+(806 models, one empty diagram) the entire model tree was unreachable,
+including 35 use cases.
 
-## Probe findings
+## Findings
 
 `IProject.toAllLevelModelElementArray()` and `getModelElementById(String)`
 cover the tree; `IModelElement.getParent()` gives the parent link; view
@@ -34,7 +34,6 @@ new VP machinery required.
 - Tool cores are static (`index`, `read`, `resolveCenter`) beside the
   live-project entry points so unit tests run on proxy fakes
   (8 new tests across three classes).
-- Live-verified: 806-model index, type filter, orphan reads, empty
-  `shown_on`, and the not-shown neighborhood error. The model-id-to-view
-  success path is unit-tested; live verification lands with the phase-3
-  write run, which creates views.
+- The index, type filter, orphan reads, empty `shown_on`, and the
+  not-shown neighborhood error are all exercised against a real
+  project; the model-id-to-view success path is unit-tested.

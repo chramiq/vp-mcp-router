@@ -10,10 +10,10 @@ there is no injection point.
 
 - New VP-free `core/ResourceProvider` (`list`/`read`); additive-only
   overloads on `McpServer`/`McpProtocolHandler`. Old constructors keep
-  working (`DevServer` untouched, verified).
+  working (`DevServer` untouched).
 - `vp/FileResourceProvider` serves `<pluginDir>/schemas/<version>/`
   plus a capabilities snapshot baked at startup. Only `.json` inside
-  the pack dir is reachable; traversal rejected (probed).
+  the pack dir is reachable; traversal is rejected.
 - `vp_capabilities` tool reports the live part (open project); the
   resource carries the static part. No `vp_describe_schema` tool:
   `resources/read` already answers it, fewer tools is better.
@@ -22,7 +22,7 @@ there is no injection point.
 
 ## Consequences
 
-- Verified live on 18.1: `resources/list` (6 URIs), `resources/read`
-  for capabilities/diagram-types, `vp_capabilities` with open project.
+- `resources/list` / `resources/read` cover capabilities and the
+  diagram-type universe; `vp_capabilities` reports the open project.
 - First divergence from upstream in two vendored files; additive only,
   cherry-picks stay mechanical.

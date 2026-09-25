@@ -138,7 +138,7 @@ public final class BatchApplier {
         IDiagramElement view = first;
         if (view == null) {
             // Some types (lifelines) refuse model-first placement; the diagram
-            // creates the view with its own model instead (probe-verified).
+            // creates the view with its own model instead.
             String shape = VIEW_FIRST_SHAPES.getOrDefault(modelType, modelType);
             view = diagram.createDiagramElement(shape);
             if (view == null) {
@@ -355,7 +355,7 @@ public final class BatchApplier {
     /**
      * Containment writes: attributes, operations, columns. The adder is
      * resolved from the child's interface (addAttribute, addDBColumn…),
-     * so new member kinds need no new code — probe-verified.
+     * so new member kinds need no new code.
      */
     private static JsonObject addMember(State state, JsonObject op, String id,
             List<Compensation> compensations) {
@@ -746,7 +746,7 @@ public final class BatchApplier {
      * Visual styling with an old-value snapshot: view colours, line and font.
      * Colours are hex like the reads report them ("#FF0000"); inherited
      * (null) values restore to null, best-effort. The line model's two-arg
-     * setters take an undocumented boolean; false is probe-verified.
+     * setters take an undocumented boolean; false works.
      */
     private static JsonObject styleElement(State state, JsonObject op, String id,
             List<Compensation> compensations) {
@@ -922,7 +922,7 @@ public final class BatchApplier {
      * Shape-fill write with an explicit flush. The color setters stage the
      * value (readable immediately) but the renderer only picks it up after
      * applySetting() — and only when the setter's boolean is true (false
-     * stages silently; live-verified both ways 2026-09-25). The line
+     * stages silently). The line
      * model's setters need no flush, which is why line/font styling always
      * worked. Package-visible for unit tests.
      */

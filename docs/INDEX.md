@@ -14,7 +14,7 @@
 | [0010](0010-export-guard.md) | Export formats, runtime-jar guard, region cut | accepted |
 | [0011](0011-zoom.md) | Zoom loop (neighborhood, server-side crop) | accepted |
 | [0012](0012-save.md) | Explicit save tool, safe restarts | accepted |
-| [0013](0013-duplicate-dynamic.md) | Duplicate diagram + dynamic-mode probes | accepted |
+| [0013](0013-duplicate-dynamic.md) | Duplicate diagram + generic creation | accepted |
 | [0014](0014-families.md) | Homework families (curated-generic writes) | accepted |
 | [0015](0015-quirks.md) | Quirk fixes (names, columns, captions) | accepted |
 | [0016](0016-production.md) | Production footing (skill, releases, versions) | accepted |

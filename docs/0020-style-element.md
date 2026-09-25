@@ -6,12 +6,12 @@ Reads reported the full visual formatting of every element
 (`visual_properties`: fill, line, font, caption) while writes could
 not touch any of it. Phase 5 of the compatibility roadmap.
 
-## Probe findings
+## API surface
 
 - `IDiagramElement.setBackground(Color)` / `setForeground(Color)`.
 - `getLineModel()` -> `IDiagramElementLineModel.setColor(Color, boolean)`
   and `setWeight(float, boolean)`; the trailing boolean is undocumented
-  and `false` works (probe-verified).
+  and `false` works.
 - `getElementFont()` -> `IElementFont` with `setColor`, `setSize`,
   `setName`, `setBold`, `setItalic`.
 - `background` and the visible shape fill are different properties:
@@ -38,8 +38,6 @@ not touch any of it. Phase 5 of the compatibility roadmap.
 
 - Reads and writes now cover the same visual surface: colours, line,
   font family/size/weight/style.
-- Live-verified: a probe element styled with every field round-tripped
-  through `get_diagram_by_url` `visual_properties` (fill #00AA55,
-  background #FF0000, line #0000FF weight 3, Monospace 16 bold italic
-  green) and survived a VP restart; probe deleted afterwards.
+- Every field round-trips through `get_diagram_by_url`
+  `visual_properties` and survives a VP restart.
 - 5 new validator contracts in `PlanValidatorTest`.

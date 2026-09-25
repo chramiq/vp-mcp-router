@@ -1,4 +1,4 @@
-# 0013: Duplicate diagram + dynamic-mode probe results
+# 0013: Duplicate diagram + generic creation
 
 ## Context
 
@@ -14,12 +14,12 @@ generic create actually work?
 - Shallow copy by design: fresh views, **shared models**. Additive
   trials on the copy are safe; edits to shared model properties leak
   to the source; deleting the copy never deletes models. The undo
-  string says so verbatim. Live-verified: 8-node/3-edge copy exact,
-  trial went 9/4 while source stayed 8/3, full cleanup.
+  string says so verbatim. Copied diagrams match the source exactly,
+  and trials on the copy leave the source untouched.
 - Copy fidelity: bounds, connector endpoints (multi-pass for
   connector-to-connector chains), waypoints, member pins, captions.
 
-## Probe results (HotSwap, NOT committed — see var/probes/dyn/)
+## Generic creation findings
 
 Generic creation is real but NOT uniform. Three different behaviors:
 
@@ -46,9 +46,9 @@ export handled every new type with zero changes.
   shape name + waypoint policy), validated against the schema pack,
   still behind preview/confirm/saga. A blind `"create"+type`
   reflection would NPE on lifelines and misplace messages.
-- Next: promote the probe to `create_element` strategy fallback
+- Promoted to the `create_element` strategy fallback in ADR-0014
   (model-first, then view-first with pack-derived shape), plus
-  `points` on connect. One phase per family, live-rendered.
+  `points` on connect.
 - Save is asynchronous: `saveProject()` returns before the write
-  lands (~5-20s observed). The restart rule now polls mtime instead
-  of statting once.
+  lands (~5-20s). The restart rule now polls mtime instead of
+  statting once.

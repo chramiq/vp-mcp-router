@@ -2,9 +2,9 @@
 
 ## Context
 
-ADR-0013 probed generic creation via HotSwap. This promotes the
-probe findings into product: five new diagram families, member
-writes, connector waypoints.
+ADR-0013 mapped how generic creation behaves. This promotes those
+findings into product: five new diagram families, member writes,
+connector waypoints.
 
 ## Decision
 
@@ -25,7 +25,7 @@ writes, connector waypoints.
   Message models are not IRelationships, so model-end wiring is
   conditional — views carry the endpoints.
 
-## Probe-verified behavior (all rendered)
+## Verified behavior (all rendered)
 
 Activity/decision/final/initial, nodes/components, states +
 transitions, tables + columns, lifelines + messages, attributes

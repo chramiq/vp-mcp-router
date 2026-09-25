@@ -16,5 +16,5 @@ does this for the upstream toolset.
 
 ## Consequences
 
-- Verified live: `:8899` serves `vp_list_diagrams` +
-  `get_diagram_by_url`; full Class Diagram1 graph over HTTP, 0 warnings.
+- `:8899` serves `vp_list_diagrams` + `get_diagram_by_url`; the full
+  diagram graph is readable over HTTP.

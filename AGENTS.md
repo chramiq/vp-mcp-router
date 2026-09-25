@@ -2,7 +2,7 @@
 
 Visual Paradigm MCP router: an in-process VP plugin that serves the
 open project as JSON over Streamable HTTP and writes back through
-previewed, compensable batches. Writes are tiered — probe-verified
+previewed, compensable batches. Writes are tiered — verified
 families behave exactly as documented, schema-pack types are accepted
 but flagged unverified. Schema packs are versioned per VP minor so VP
 updates ship as data, not rebuilds.

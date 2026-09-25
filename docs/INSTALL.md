@@ -57,9 +57,8 @@ Delete `plugins/vp.router/` and restart Visual Paradigm.
 
 ## HotSwap: code changes without VP restart
 
-Method-body edits can go live in the running VP via the Attach API
-(proven in `var/probes/pd/PROBE.md`). New classes, methods, fields, or
-signatures still need a restart.
+Method-body edits can go live in the running VP via the Attach API.
+New classes, methods, fields, or signatures still need a restart.
 
 ```bash
 J11=/usr/lib/jvm/java-11-openjdk/bin

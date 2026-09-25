@@ -8,11 +8,10 @@ ADR-0014 left four VP quirks open. All closed or bounded here.
 
 - Column types: `IDBColumn` takes `setTypeName(String)`, not
   `setType`. `setMemberType` now tries both; `varchar` applies
-  cleanly. Column reads gained `type_name/length/nullable`
-  (unit-tested fake, live-verified).
+  cleanly. Column reads gained `type_name/length/nullable`.
 - State/decision captions: zero-area caption boxes, same bug class
-  as actors. `insideCaptionBounds` centers a box in the shape;
-  renders prove "Idle", "Driving", "Charged?".
+  as actors. `insideCaptionBounds` centers a box in the shape, and
+  the names render.
 - Table unsync: fresh tables get `SYNC_TYPE_NOT_SYNC` +
   `ORM_SYNC_STATE_NOT_SYNC` before naming (harmless — nothing to
   unsync from on a new table).
