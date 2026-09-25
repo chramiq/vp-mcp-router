@@ -49,6 +49,15 @@
           <execution>
             <phase>package</phase>
             <goals><goal>shade</goal></goals>
+            <configuration>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <!-- dev-only protocol harness (DevServer/EchoTool), not for the VP plugin jar -->
+                  <excludes><exclude>vpmcp/dev/**</exclude></excludes>
+                </filter>
+              </filters>
+            </configuration>
           </execution>
         </executions>
       </plugin>

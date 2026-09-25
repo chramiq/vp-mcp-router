@@ -37,4 +37,6 @@ cp -r "$REPO/opencode/skills" "$STAGE/vp-router-$VERSION/skills"
 (cd "$STAGE" && zip -qr "$DIST" "vp-router-$VERSION")
 rm -rf "$STAGE"
 echo "release $VERSION ready: $DIST"
-echo "commit it with: git add -A && git commit -m \"Release $VERSION\""
+echo "commit and tag with:"
+echo "  git add -A && git commit -m \"Release $VERSION\" && git tag -a \"v$VERSION\" -m \"Release $VERSION\""
+echo "publish with: git push --follow-tags && gh release create \"v$VERSION\" \"$DIST\""

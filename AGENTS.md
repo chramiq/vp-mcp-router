@@ -15,7 +15,7 @@ updates ship as data, not rebuilds.
 | `schemas/` | versioned JSON schema packs per VP minor (`v18.1/`); `autovendor.py` regenerates from `openapi.jar` |
 | `opencode/` | `install.sh`, `release.sh`, `mcp.json` snippet, `skills/vp-router/` |
 | `docs/` | architecture decision records (`INDEX.md` + one file per ADR), `INSTALL.md` |
-| `dist/` | release zips built by `opencode/release.sh` |
+| `dist/` | release zips built by `opencode/release.sh` (gitignored; published as GitHub Release assets) |
 | `var/` | runtime state and probe captures (gitignored) |
 | `TODO.md` | deferred ideas and tasks |
 

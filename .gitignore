@@ -8,3 +8,5 @@ dependency-reduced-pom.xml
 target/
 var/
 .vscode/
+dist/
+__pycache__/
