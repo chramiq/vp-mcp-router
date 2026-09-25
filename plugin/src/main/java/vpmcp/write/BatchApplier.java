@@ -927,7 +927,9 @@ public final class BatchApplier {
      */
     static void setFillColor(
             com.vp.plugin.diagram.format.IShapeUIModelFillColor fill, java.awt.Color color) {
-        fill.setColor1(color, false);
+        // PROBE 2026-09-25: the boolean's meaning is undocumented; false
+        // stages without rendering. Trying true — reverts if no effect.
+        fill.setColor1(color, true);
         try {
             fill.applySetting();
         } catch (RuntimeException flush) {
