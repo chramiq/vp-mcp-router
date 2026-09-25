@@ -1,7 +1,17 @@
 # Install
 
-Fastest path: `opencode/install.sh` (asks for every directory, merges
-the MCP entry, copies the skill; `--dry-run` previews, env overrides
+Fastest path (no clone needed):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/chramiq/vp-mcp-router/main/install.sh | bash
+```
+
+It downloads the latest release and runs the bundled installer
+interactively: VP plugins directory, schema pack, opencode MCP entry,
+skill. Pin a version with `bash -s -- 0.16.1`.
+
+From a checkout, the same installer is `opencode/install.sh` (it can
+also build from source with Maven; `--dry-run` previews, env overrides
 in the script header make it testable). What follows is the manual
 equivalent.
 

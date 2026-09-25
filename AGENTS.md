@@ -13,6 +13,7 @@ updates ship as data, not rebuilds.
 |---|---|
 | `plugin/` | Java plugin source: zero-dep MCP core, EDT invoker, extractor, write path |
 | `schemas/` | versioned JSON schema packs per VP minor (`v18.1/`); `autovendor.py` regenerates from `openapi.jar` |
+| `install.sh` | root bootstrapper: downloads a GitHub release and runs the bundled `opencode/install.sh` (the curl-pipeable install path) |
 | `opencode/` | `install.sh`, `release.sh`, `mcp.json` snippet, `skills/vp-router/` |
 | `docs/` | architecture decision records (`INDEX.md` + one file per ADR), `INSTALL.md` |
 | `dist/` | release zips built by `opencode/release.sh` (gitignored; published as GitHub Release assets) |

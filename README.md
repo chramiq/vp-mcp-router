@@ -18,9 +18,11 @@ UML/ERD diagrams in your locally running Visual Paradigm project.
 ## Quickstart
 
 ```bash
-mvn -f plugin package
-opencode/install.sh
+curl -fsSL https://raw.githubusercontent.com/chramiq/vp-mcp-router/main/install.sh | bash
 ```
+
+One command, interactive: fetches the latest release, asks for your
+Visual Paradigm plugins directory, and wires up opencode.
 
 Requires Visual Paradigm (tested on 18.1), Java 11+ and Maven.
 Full build/install/uninstall walkthrough: [docs/INSTALL.md](docs/INSTALL.md).

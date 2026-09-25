@@ -32,6 +32,7 @@ STAGE="$(mktemp -d)"
 mkdir -p "$STAGE/vp-router-$VERSION"
 cp "$REPO/plugin/target/router.jar" "$STAGE/vp-router-$VERSION/"
 cp "$REPO/plugin/src/main/resources/vp.router/plugin.xml" "$STAGE/vp-router-$VERSION/"
+cp "$REPO/opencode/install.sh" "$STAGE/vp-router-$VERSION/install.sh"
 cp -r "$REPO/schemas" "$STAGE/vp-router-$VERSION/"
 cp -r "$REPO/opencode/skills" "$STAGE/vp-router-$VERSION/skills"
 (cd "$STAGE" && zip -qr "$DIST" "vp-router-$VERSION")
