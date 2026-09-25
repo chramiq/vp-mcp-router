@@ -16,7 +16,9 @@ public final class SaveProjectTool implements McpTool {
 
     private static final String DESCRIPTION =
             "Save the open Visual Paradigm project to its file. "
-            + "Requires {\"confirm\": true}. Reports the file path.";
+            + "Requires {\"confirm\": true}. Reports the file path. "
+            + "Refuses when the project has never been saved (no .vpp file): "
+            + "save once in VP first, otherwise the native Save-As dialog blocks.";
 
     private static final String INPUT_SCHEMA =
             "{\"type\":\"object\","
@@ -38,12 +40,34 @@ public final class SaveProjectTool implements McpTool {
             throw new McpToolException("Refusing to save: pass {\"confirm\": true}.");
         }
         IProject project = DiagramLocator.requireOpenProject();
+        File file = requireSaveTarget(project);
         boolean saved = ApplicationManager.instance().getProjectManager().saveProject();
-        File file = project.getProjectFile();
         JsonObject result = new JsonObject();
         result.addProperty("saved", saved);
         result.addProperty("project", project.getName());
-        result.addProperty("file", file == null ? null : file.getAbsolutePath());
+        result.addProperty("file", file.getAbsolutePath());
         return result;
+    }
+
+    /**
+     * Save target check. Never-saved projects have no .vpp file, and
+     * saveProject() then blocks on a native Save-As dialog instead of
+     * failing — refuse upfront with a structured error telling the user to
+     * save once in VP. Public static so unit tests can pin the contract
+     * without live VP singletons.
+     */
+    public static File requireSaveTarget(IProject project) throws McpToolException {
+        File file;
+        try {
+            file = project.getProjectFile();
+        } catch (RuntimeException unreadable) {
+            throw new McpToolException(
+                    "Cannot determine the project file; save once in VP, then retry.");
+        }
+        if (file == null || !file.isFile()) {
+            throw new McpToolException("Project has never been saved to disk (no .vpp file); "
+                    + "save once in VP (File > Save), then retry vp_save_project.");
+        }
+        return file;
     }
 }
