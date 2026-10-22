@@ -744,7 +744,14 @@ public final class BatchApplier {
         JsonElement type = op.get("type");
         if (type != null && !type.isJsonNull()) {
             snapshot.addProperty("type", column.getTypeName());
-            column.setTypeName(type.getAsString());
+            String name = type.getAsString();
+            int length = op.has("length") && !op.get("length").isJsonNull()
+                    ? op.get("length").getAsInt() : column.getLength();
+            // setTypeName alone leaves the type code at integer, so the ERD
+            // renders integer(255); the typed setter updates code and name.
+            if (!column.setType(name, length, column.getScale())) {
+                column.setTypeName(name);
+            }
             entry.addProperty("type", column.getTypeName());
         }
         JsonElement length = op.get("length");

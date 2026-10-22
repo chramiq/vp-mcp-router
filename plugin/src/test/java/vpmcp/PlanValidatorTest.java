@@ -468,6 +468,31 @@ class PlanValidatorTest {
     }
 
     @Test
+    void updateColumnKeyFlagsValidate() {
+        IProject withColumn = VpFakes.project("p",
+                new com.vp.plugin.model.IModelElement[] {VpFakes.model("col", "id", "DBColumn")},
+                new com.vp.plugin.diagram.IDiagramUIModel[0]);
+
+        JsonObject result = PlanValidator.validate(withColumn, parse("[{\"id\":\"u\","
+                + "\"op\":\"update_member\",\"member\":\"col\",\"primary_key\":true,"
+                + "\"unique\":false}]"));
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+    }
+
+    @Test
+    void updateColumnNonBooleanKeyFlagRejected() {
+        IProject withColumn = VpFakes.project("p",
+                new com.vp.plugin.model.IModelElement[] {VpFakes.model("col", "id", "DBColumn")},
+                new com.vp.plugin.diagram.IDiagramUIModel[0]);
+
+        JsonObject result = PlanValidator.validate(withColumn, parse("[{\"id\":\"u\","
+                + "\"op\":\"update_member\",\"member\":\"col\",\"primary_key\":\"yes\"}]"));
+
+        assertFalse(result.get("valid").getAsBoolean());
+    }
+
+    @Test
     void updateMemberByPlanRefValidates() {
         JsonArray ops = parse("["
                 + "{\"id\":\"m\",\"op\":\"add_member\",\"parent\":\"v9\","

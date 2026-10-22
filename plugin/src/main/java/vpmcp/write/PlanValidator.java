@@ -409,11 +409,13 @@ public final class PlanValidator {
             errors.add(error(id, "Updated \"length\" must be a number."));
             return;
         }
-        JsonElement nullable = op.get("nullable");
-        if (nullable != null && !nullable.isJsonNull()
-                && (!nullable.isJsonPrimitive() || !nullable.getAsJsonPrimitive().isBoolean())) {
-            errors.add(error(id, "Updated \"nullable\" must be a boolean."));
-            return;
+        for (String field : new String[] {"nullable", "primary_key", "unique"}) {
+            JsonElement value = op.get(field);
+            if (value != null && !value.isJsonNull() && (!value.isJsonPrimitive()
+                    || !value.getAsJsonPrimitive().isBoolean())) {
+                errors.add(error(id, "Updated \"" + field + "\" must be a boolean."));
+                return;
+            }
         }
         for (String field : new String[] {"type", "visibility", "multiplicity",
                 "initial_value", "return_type"}) {
@@ -425,7 +427,8 @@ public final class PlanValidator {
         }
         boolean any = false;
         for (String field : new String[] {"name", "type", "visibility", "multiplicity",
-                "initial_value", "return_type", "parameters", "length", "nullable"}) {
+                "initial_value", "return_type", "parameters", "length", "nullable",
+                "primary_key", "unique"}) {
             JsonElement value = op.get(field);
             if (value != null && !value.isJsonNull()) {
                 any = true;
@@ -435,7 +438,8 @@ public final class PlanValidator {
         if (!any) {
             errors.add(error(id,
                     "Update needs at least one of name/type/visibility/multiplicity/"
-                            + "initial_value/return_type/parameters/length/nullable."));
+                            + "initial_value/return_type/parameters/length/nullable/"
+                            + "primary_key/unique."));
             return;
         }
         symbols.put(id, "member");
