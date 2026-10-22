@@ -52,3 +52,12 @@ rendered image.
   verified relationship set), so preview marks it unverified.
 - Failure paths now log the stack trace to `vpmcp.log`; a refused
   connector reports which relationship kind was refused.
+- Column types are written with `setType(name, length, scale)`:
+  `setTypeName` alone leaves VP's type code at integer, so the ERD
+  renders `integer(255)` for a varchar. The display follows the code,
+  not the name.
+- `update_member` accepts `primary_key`/`unique` (booleans), including
+  on its own — the validator's "needs at least one field" list covers
+  them.
+- Deleting and re-creating an ER foreign key reuses the columns that
+  already exist with the generated names; no duplicates appear.

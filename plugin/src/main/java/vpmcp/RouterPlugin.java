@@ -18,6 +18,7 @@ import vpmcp.tools.PreviewBatchTool;
 import vpmcp.tools.SaveProjectTool;
 import vpmcp.tools.ListDiagramsTool;
 import vpmcp.tools.ListModelsTool;
+import vpmcp.tools.OpenDiagramTool;
 import vpmcp.vp.EdtToolInvoker;
 import vpmcp.vp.FileResourceProvider;
 import vpmcp.vp.GuardStatus;
@@ -66,7 +67,8 @@ public final class RouterPlugin implements VPPlugin {
                     .register(new ApplyBatchTool(tiers))
                     .register(new NeighborhoodTool())
                     .register(new SaveProjectTool())
-                    .register(new GetDiagramByUrlTool());
+                    .register(new GetDiagramByUrlTool())
+                    .register(new OpenDiagramTool());
             server = new McpServer(config.getBindAddress(), config.getPort(), registry,
                     new EdtToolInvoker(), VERSION, VpLog::error,
                     new FileResourceProvider(pluginDir, SCHEMA_VERSION, capabilities));
