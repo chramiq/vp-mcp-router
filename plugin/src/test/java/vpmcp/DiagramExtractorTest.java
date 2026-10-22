@@ -11,8 +11,10 @@ import com.vp.plugin.model.IModelElement;
 import com.vp.plugin.model.IProject;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import vpmcp.vp.DiagramExtractor;
@@ -84,6 +86,48 @@ class DiagramExtractorTest {
         assertEquals(50, waypoints.get(1).getAsJsonObject().get("x").getAsInt());
         assertEquals("mA", edge.getAsJsonObject("from_model").get("id").getAsString());
         assertEquals("mB", edge.getAsJsonObject("to_model").get("id").getAsString());
+    }
+
+    @Test
+    void associationEdgeCarriesEndProperties() {
+        IModelElement from = VpFakes.model("mA", "A", "Class");
+        IModelElement to = VpFakes.model("mB", "B", "Class");
+        com.vp.plugin.model.IAssociationEnd fromEnd =
+                VpFakes.of(com.vp.plugin.model.IAssociationEnd.class, Map.of(
+                        "getMultiplicity", "0..1",
+                        "getNavigable", com.vp.plugin.model.IAssociationEnd.NAVIGABLE_NAV_NAVIGABLE,
+                        "getAggregationKind",
+                        com.vp.plugin.model.IAssociationEnd.AGGREGATION_KIND_NONE));
+        com.vp.plugin.model.IAssociationEnd toEnd =
+                VpFakes.of(com.vp.plugin.model.IAssociationEnd.class, Map.of(
+                        "getMultiplicity", "0..*",
+                        "getNavigable",
+                        com.vp.plugin.model.IAssociationEnd.NAVIGABLE_NAV_NON_NAVIGABLE,
+                        "getAggregationKind",
+                        com.vp.plugin.model.IAssociationEnd.AGGREGATION_KIND_COMPOSITED));
+        Map<String, Object> linkValues = new HashMap<>();
+        linkValues.put("getId", "mR");
+        linkValues.put("getName", "rel");
+        linkValues.put("getModelType", "Association");
+        linkValues.put("getFrom", from);
+        linkValues.put("getTo", to);
+        linkValues.put("getFromEnd", fromEnd);
+        linkValues.put("getToEnd", toEnd);
+        com.vp.plugin.model.IAssociation link =
+                VpFakes.of(com.vp.plugin.model.IAssociation.class, linkValues);
+        com.vp.plugin.diagram.IShapeUIModel viewA = VpFakes.shape("vA", from, "Class", 0, 0, 10, 10);
+        com.vp.plugin.diagram.IShapeUIModel viewB = VpFakes.shape("vB", to, "Class", 50, 0, 10, 10);
+        IDiagramUIModel diagram = VpFakes.diagram("d", "D", "ClassDiagram", viewA, viewB,
+                VpFakes.connector("vR", link, viewA, viewB, null));
+
+        JsonObject edge = extract(diagram, false).getAsJsonArray("edges").get(0).getAsJsonObject();
+
+        assertEquals("0..1", edge.get("from_multiplicity").getAsString());
+        assertEquals("0..*", edge.get("to_multiplicity").getAsString());
+        assertEquals("navigable", edge.get("from_navigable").getAsString());
+        assertEquals("non-navigable", edge.get("to_navigable").getAsString());
+        assertEquals("None", edge.get("from_aggregation").getAsString());
+        assertEquals("Composited", edge.get("to_aggregation").getAsString());
     }
 
     @Test

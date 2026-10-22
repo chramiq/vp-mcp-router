@@ -132,12 +132,25 @@ class AddMemberFieldsTest {
                     return null;
                 case "isNullable":
                     return state.get("nullable");
+                case "setPrimaryKey":
+                    calls.add("setPrimaryKey=" + args[0]);
+                    state.put("primaryKey", args[0]);
+                    return null;
+                case "isPrimaryKey":
+                    return state.get("primaryKey");
+                case "setUnique":
+                    calls.add("setUnique=" + args[0]);
+                    state.put("unique", args[0]);
+                    return null;
+                case "isUnique":
+                    return state.get("unique");
                 default:
                     return null;
             }
         });
         JsonObject op = JsonParser.parseString(
-                "{\"type\":\"varchar\",\"length\":20,\"nullable\":true}").getAsJsonObject();
+                "{\"type\":\"varchar\",\"length\":20,\"nullable\":true,"
+                + "\"primary_key\":true,\"unique\":false}").getAsJsonObject();
         JsonObject entry = new JsonObject();
 
         BatchApplier.applyNewMemberFields(column, op, entry);
@@ -145,8 +158,13 @@ class AddMemberFieldsTest {
         assertTrue(calls.contains("setTypeName=varchar"), calls.toString());
         assertTrue(calls.contains("setLength=20"), calls.toString());
         assertTrue(calls.contains("setNullable=true"), calls.toString());
+        assertTrue(calls.contains("setPrimaryKey=true"), calls.toString());
+        assertTrue(calls.contains("setUnique=false"), calls.toString());
         assertEquals("varchar", entry.get("type").getAsString());
         assertEquals(20, entry.get("length").getAsInt());
         assertTrue(entry.get("nullable").getAsBoolean());
+        assertTrue(entry.get("primary_key").getAsBoolean());
+        assertFalse(entry.get("unique").getAsBoolean());
+        assertFalse(entry.has("skipped_fields"), entry.toString());
     }
 }

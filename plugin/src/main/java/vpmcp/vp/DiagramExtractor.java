@@ -120,6 +120,7 @@ public final class DiagramExtractor {
             IRelationship relationship = (IRelationship) model;
             json.add("from_model", modelReader.reference(relationship.getFrom()));
             json.add("to_model", modelReader.reference(relationship.getTo()));
+            describeLinkEnds(relationship, json);
         }
 
         JsonArray waypoints = new JsonArray();
@@ -138,6 +139,52 @@ public final class DiagramExtractor {
         json.add("waypoints", waypoints);
         json.add("visual_properties", visualReader.readConnector(connector));
         return json;
+    }
+
+    /**
+     * Cardinality and navigability live on the relationship ends, not on the
+     * relationship itself. They are what the class-diagram and ERD checks
+     * read, so every edge carries them, not only full detail.
+     */
+    private void describeLinkEnds(IRelationship relationship, JsonObject json) {
+        if (relationship instanceof com.vp.plugin.model.IDBForeignKey) {
+            com.vp.plugin.model.IDBForeignKey foreignKey =
+                    (com.vp.plugin.model.IDBForeignKey) relationship;
+            json.addProperty("from_multiplicity", foreignKey.getFromMultiplicity());
+            json.addProperty("to_multiplicity", foreignKey.getToMultiplicity());
+            json.addProperty("identifying", foreignKey.isIdentifying());
+            return;
+        }
+        if (!(relationship instanceof com.vp.plugin.model.IEndRelationship)) {
+            return;
+        }
+        com.vp.plugin.model.IEndRelationship ends =
+                (com.vp.plugin.model.IEndRelationship) relationship;
+        describeAssociationEnd(json, "from", ends.getFromEnd());
+        describeAssociationEnd(json, "to", ends.getToEnd());
+    }
+
+    private void describeAssociationEnd(JsonObject json, String prefix,
+            com.vp.plugin.model.IRelationshipEnd end) {
+        if (!(end instanceof com.vp.plugin.model.IAssociationEnd)) {
+            return;
+        }
+        com.vp.plugin.model.IAssociationEnd associationEnd =
+                (com.vp.plugin.model.IAssociationEnd) end;
+        json.addProperty(prefix + "_multiplicity", associationEnd.getMultiplicity());
+        json.addProperty(prefix + "_navigable", navigableName(associationEnd.getNavigable()));
+        json.addProperty(prefix + "_aggregation", associationEnd.getAggregationKind());
+    }
+
+    private String navigableName(int navigable) {
+        switch (navigable) {
+            case com.vp.plugin.model.IAssociationEnd.NAVIGABLE_NAV_NAVIGABLE:
+                return "navigable";
+            case com.vp.plugin.model.IAssociationEnd.NAVIGABLE_NAV_NON_NAVIGABLE:
+                return "non-navigable";
+            default:
+                return "unspecified";
+        }
     }
 
     /** The fields every diagram element has, whether it is a shape or a connector. */

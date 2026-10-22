@@ -25,3 +25,4 @@
 | [0021](0021-create-raw.md) | create_raw, the factory escape hatch | accepted |
 | [0022](0022-type-tiers.md) | Tiered type gates (verified / pack / impossible) | accepted |
 | [0023](0023-qa-fixes.md) | QA-cycle findings (member fields, save guard, doc-only decisions) | accepted |
+| [0024](0024-keys-and-ends.md) | Keys and relationship ends (PK/unique, multiplicities, FKs) | accepted |

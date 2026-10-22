@@ -57,6 +57,7 @@ public final class BatchApplier {
             try {
                 applied.add(executeOne(state, op, id, compensations));
             } catch (RuntimeException failure) {
+                VpLog.error("APPLY failed id=" + id, failure);
                 errors.add(failureEntry(id, failure.toString()));
                 compensate(compensations, compensated);
                 break;
@@ -205,20 +206,37 @@ public final class BatchApplier {
 
     private static JsonObject connect(State state, JsonObject op, String id, List<Compensation> compensations) {
         IDiagramUIModel diagram = requireDiagram(state, op.get("diagram"));
-        IModelElement relModel = newRelationship(state.factory, op.get("rel_type").getAsString());
+        String relType = op.get("rel_type").getAsString();
         Endpoint from = requireEndpoint(state, op.get("from"));
         Endpoint to = requireEndpoint(state, op.get("to"));
-        if (relModel instanceof IRelationship) {
-            // Messages are not relationships; their views carry the endpoints.
-            IRelationship rel = (IRelationship) relModel;
-            rel.setFrom(from.model);
-            rel.setTo(to.model);
+        IModelElement relModel;
+        IDiagramElement connector;
+        if ("ForeignKey".equals(relType) || "DBForeignKey".equals(relType)) {
+            // Model-first returns no view for ER foreign keys; the typed
+            // overload creates the connector and its model together.
+            connector = state.diagrams.createConnector(diagram, "DBForeignKey", from.view, to.view,
+                    toPointArray(op.get("points")));
+            relModel = connector == null ? null : connector.getModelElement();
+            if (relModel == null) {
+                throw new IllegalStateException("VP refused to create a " + relType + " connector");
+            }
+        } else {
+            relModel = newRelationship(state.factory, relType);
+            if (relModel instanceof IRelationship) {
+                // Messages are not relationships; their views carry the endpoints.
+                IRelationship rel = (IRelationship) relModel;
+                rel.setFrom(from.model);
+                rel.setTo(to.model);
+            }
+            connector = state.diagrams.createConnector(diagram, relModel, from.view,
+                    to.view, toPointArray(op.get("points")));
+            if (connector == null) {
+                throw new IllegalStateException("VP refused to place a " + relType + " connector");
+            }
         }
         if (op.has("name") && op.get("name").isJsonPrimitive()) {
             relModel.setName(op.get("name").getAsString());
         }
-        IDiagramElement connector = state.diagrams.createConnector(diagram, relModel, from.view,
-                to.view, toPointArray(op.get("points")));
         pinMember(connector, op.get("from_member"), true);
         pinMember(connector, op.get("to_member"), false);
         state.views.put(id, connector);
@@ -228,7 +246,72 @@ public final class BatchApplier {
         VpLog.info("APPLY connect id=" + id + " vp_id=" + connector.getId());
         JsonObject entry = appliedEntry(id, "relationship", relModel.getId(), relModel.getName());
         entry.addProperty("view_id", connector.getId());
+        applyLinkEnds(relModel, op, entry);
         return entry;
+    }
+
+    /**
+     * Relationship-end properties set right after the connector exists:
+     * multiplicities for both ER keys and UML associations, navigability for
+     * associations, identifying for foreign keys. A missing end means VP did
+     * not build one; the property is then absent from the entry.
+     */
+    private static void applyLinkEnds(IModelElement relModel, JsonObject op, JsonObject entry) {
+        if (relModel instanceof com.vp.plugin.model.IDBForeignKey) {
+            com.vp.plugin.model.IDBForeignKey foreignKey =
+                    (com.vp.plugin.model.IDBForeignKey) relModel;
+            String from = stringField(op, "from_multiplicity");
+            if (from != null) {
+                foreignKey.setFromMultiplicity(from);
+                entry.addProperty("from_multiplicity", foreignKey.getFromMultiplicity());
+            }
+            String to = stringField(op, "to_multiplicity");
+            if (to != null) {
+                foreignKey.setToMultiplicity(to);
+                entry.addProperty("to_multiplicity", foreignKey.getToMultiplicity());
+            }
+            JsonElement identifying = op.get("identifying");
+            if (identifying != null && !identifying.isJsonNull()) {
+                foreignKey.setIdentifying(identifying.getAsBoolean());
+                entry.addProperty("identifying", foreignKey.isIdentifying());
+            }
+            return;
+        }
+        if (relModel instanceof com.vp.plugin.model.IEndRelationship) {
+            com.vp.plugin.model.IEndRelationship ends =
+                    (com.vp.plugin.model.IEndRelationship) relModel;
+            applyAssociationEnd(ends.getFromEnd(), op, "from", entry);
+            applyAssociationEnd(ends.getToEnd(), op, "to", entry);
+        }
+    }
+
+    private static void applyAssociationEnd(com.vp.plugin.model.IRelationshipEnd end, JsonObject op,
+            String prefix, JsonObject entry) {
+        if (!(end instanceof com.vp.plugin.model.IAssociationEnd)) {
+            return;
+        }
+        com.vp.plugin.model.IAssociationEnd associationEnd =
+                (com.vp.plugin.model.IAssociationEnd) end;
+        String multiplicity = stringField(op, prefix + "_multiplicity");
+        if (multiplicity != null) {
+            associationEnd.setMultiplicity(multiplicity);
+            entry.addProperty(prefix + "_multiplicity", associationEnd.getMultiplicity());
+        }
+        JsonElement navigable = op.get(prefix + "_navigable");
+        if (navigable != null && !navigable.isJsonNull()) {
+            associationEnd.setNavigable(navigable.getAsBoolean()
+                    ? com.vp.plugin.model.IAssociationEnd.NAVIGABLE_NAVIGABLE
+                    : com.vp.plugin.model.IAssociationEnd.NAVIGABLE_NAV_NON_NAVIGABLE);
+            entry.addProperty(prefix + "_navigable", associationEnd.getNavigable());
+        }
+    }
+
+    private static String stringField(JsonObject op, String name) {
+        JsonElement value = op.get(name);
+        if (value == null || !value.isJsonPrimitive()) {
+            return null;
+        }
+        return value.getAsString();
     }
 
     /**
@@ -399,7 +482,8 @@ public final class BatchApplier {
         }
         List<String> skipped = new ArrayList<>();
         for (String field : new String[] {"type", "visibility", "multiplicity",
-                "initial_value", "return_type", "parameters", "length", "nullable"}) {
+                "initial_value", "return_type", "parameters", "length", "nullable",
+                "primary_key", "unique"}) {
             if (op.get(field) != null && !op.get(field).isJsonNull()
                     && !entry.has(field)) {
                 skipped.add(field);
@@ -521,7 +605,8 @@ public final class BatchApplier {
             applyColumn((com.vp.plugin.model.IDBColumn) member, op, entry, snapshot);
         }
         for (String field : new String[] {"type", "visibility", "multiplicity",
-                "initial_value", "return_type", "parameters", "length", "nullable"}) {
+                "initial_value", "return_type", "parameters", "length", "nullable",
+                "primary_key", "unique"}) {
             if (op.get(field) != null && !op.get(field).isJsonNull()
                     && !entry.has(field)) {
                 skipped.add(field);
@@ -674,6 +759,18 @@ public final class BatchApplier {
             column.setNullable(nullable.getAsBoolean());
             entry.addProperty("nullable", column.isNullable());
         }
+        JsonElement primaryKey = op.get("primary_key");
+        if (primaryKey != null && !primaryKey.isJsonNull()) {
+            snapshot.addProperty("primary_key", column.isPrimaryKey());
+            column.setPrimaryKey(primaryKey.getAsBoolean());
+            entry.addProperty("primary_key", column.isPrimaryKey());
+        }
+        JsonElement unique = op.get("unique");
+        if (unique != null && !unique.isJsonNull()) {
+            snapshot.addProperty("unique", column.isUnique());
+            column.setUnique(unique.getAsBoolean());
+            entry.addProperty("unique", column.isUnique());
+        }
     }
 
     /** Best-effort restore of every snapshotted member field, in reverse. */
@@ -717,6 +814,12 @@ public final class BatchApplier {
             }
             if (snapshot.has("nullable")) {
                 column.setNullable(snapshot.get("nullable").getAsBoolean());
+            }
+            if (snapshot.has("primary_key")) {
+                column.setPrimaryKey(snapshot.get("primary_key").getAsBoolean());
+            }
+            if (snapshot.has("unique")) {
+                column.setUnique(snapshot.get("unique").getAsBoolean());
             }
         }
     }

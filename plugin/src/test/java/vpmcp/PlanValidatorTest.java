@@ -164,6 +164,41 @@ class PlanValidatorTest {
     }
 
     @Test
+    void linkEndPropertiesAccepted() {
+        JsonArray ops = parse("[{\"id\":\"r\",\"op\":\"connect\",\"diagram\":\"d1\","
+                + "\"rel_type\":\"Association\",\"from\":\"v9\",\"to\":\"v9\","
+                + "\"from_multiplicity\":\"0..1\",\"to_multiplicity\":\"0..*\","
+                + "\"from_navigable\":false,\"to_navigable\":true}]");
+
+        JsonObject result = PlanValidator.validate(project, ops);
+
+        assertTrue(result.get("valid").getAsBoolean(), result.toString());
+    }
+
+    @Test
+    void unknownMultiplicityRejected() {
+        JsonArray ops = parse("[{\"id\":\"r\",\"op\":\"connect\",\"diagram\":\"d1\","
+                + "\"rel_type\":\"Association\",\"from\":\"v9\",\"to\":\"v9\","
+                + "\"to_multiplicity\":\"many\"}]");
+
+        JsonObject result = PlanValidator.validate(project, ops);
+
+        assertFalse(result.get("valid").getAsBoolean());
+        assertTrue(result.toString().contains("to_multiplicity"), result.toString());
+    }
+
+    @Test
+    void nonBooleanNavigableRejected() {
+        JsonArray ops = parse("[{\"id\":\"r\",\"op\":\"connect\",\"diagram\":\"d1\","
+                + "\"rel_type\":\"Association\",\"from\":\"v9\",\"to\":\"v9\","
+                + "\"from_navigable\":\"yes\"}]");
+
+        JsonObject result = PlanValidator.validate(project, ops);
+
+        assertFalse(result.get("valid").getAsBoolean());
+    }
+
+    @Test
     void blankMemberIdRejected() {
         JsonArray ops = parse("[{\"id\":\"r\",\"op\":\"connect\",\"diagram\":\"d1\",\"rel_type\":\"Association\","
                 + " \"from\":\"v9\",\"to\":\"v9\",\"to_member\":\"  \"}]");

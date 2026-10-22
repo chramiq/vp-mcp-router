@@ -1,6 +1,7 @@
 package vpmcp;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.google.gson.JsonArray;
@@ -25,6 +26,8 @@ class ColumnMembersTest {
         values.put("getTypeName", "varchar");
         values.put("getLength", 20);
         values.put("isNullable", true);
+        values.put("isPrimaryKey", true);
+        values.put("isUnique", false);
         IDBColumn column = VpFakes.of(IDBColumn.class, values);
         IModelElement table = VpFakes.of(IModelElement.class, Map.of(),
                 (method, args) -> "toChildArray".equals(method.getName())
@@ -37,5 +40,7 @@ class ColumnMembersTest {
         assertEquals("varchar", member.get("type_name").getAsString());
         assertEquals(20, member.get("length").getAsInt());
         assertTrue(member.get("nullable").getAsBoolean());
+        assertTrue(member.get("primary_key").getAsBoolean());
+        assertFalse(member.get("unique").getAsBoolean());
     }
 }

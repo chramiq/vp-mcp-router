@@ -26,6 +26,10 @@ public final class PlanValidator {
                     "style_element", "create_raw", "move_element", "show_element",
                     "delete_model", "delete_diagram", "delete_element"));
 
+    private static final Set<String> MULTIPLICITIES = new HashSet<>(Arrays.asList(
+            "Unspecified", "0", "0..1", "0..*", "1", "1..*", "*"));
+    private static final String MULTIPLICITY_HELP = "Unspecified, 0, 0..1, 0..*, 1, 1..*, *";
+
     private PlanValidator() {
     }
 
@@ -217,6 +221,17 @@ public final class PlanValidator {
         }
         if (problem == null) {
             problem = memberProblem(op.get("to_member"), "to_member");
+        }
+        if (problem == null) {
+            problem = multiplicityProblem(op.get("from_multiplicity"), "from_multiplicity");
+        }
+        if (problem == null) {
+            problem = multiplicityProblem(op.get("to_multiplicity"), "to_multiplicity");
+        }
+        for (String field : new String[] {"from_navigable", "to_navigable", "identifying"}) {
+            if (problem == null) {
+                problem = booleanProblem(op.get(field), field);
+            }
         }
         if (problem != null) {
             errors.add(error(id, problem));
@@ -800,6 +815,26 @@ public final class PlanValidator {
             }
         }
         return true;
+    }
+
+    private static String multiplicityProblem(JsonElement value, String field) {
+        if (value == null || value.isJsonNull()) {
+            return null;
+        }
+        if (!value.isJsonPrimitive() || !MULTIPLICITIES.contains(value.getAsString())) {
+            return "\"" + field + "\" must be one of " + MULTIPLICITY_HELP + ".";
+        }
+        return null;
+    }
+
+    private static String booleanProblem(JsonElement value, String field) {
+        if (value == null || value.isJsonNull()) {
+            return null;
+        }
+        if (!value.isJsonPrimitive() || !value.getAsJsonPrimitive().isBoolean()) {
+            return "\"" + field + "\" must be true or false.";
+        }
+        return null;
     }
 
     private static String text(JsonObject holder, String name) {

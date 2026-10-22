@@ -107,6 +107,8 @@ public final class ModelPropertiesReader {
         member.addProperty("type_name", column.getTypeName());
         member.addProperty("length", column.getLength());
         member.addProperty("nullable", column.isNullable());
+        member.addProperty("primary_key", column.isPrimaryKey());
+        member.addProperty("unique", column.isUnique());
     }
 
     private void describeOperation(IOperation operation, JsonObject member) {
